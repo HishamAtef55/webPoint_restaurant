@@ -1,0 +1,854 @@
+/*
+    ==================
+    == Start Global ==
+    ==================
+*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --main-color: #337ab7;
+}
+
+button:focus,
+.btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+body {
+    font-family: "Cairo", sans-serif;
+    overflow-x: hidden;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #000;
+    color: #999898;
+}
+
+.custom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
+    gap: 5%;
+}
+
+.custom-grid .form-element {
+    margin: 10px 0;
+}
+
+.custom-grid-delivery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    column-gap: 30px;
+}
+
+.table-responsive {
+    margin-bottom: 56px;
+    text-align: center;
+}
+.btn-toolbar {
+    justify-content: center !important;
+}
+
+/*
+    ==================
+    == End Global ==
+    ==================
+*/
+/*
+    =============================
+    == Start Navbar & Asidebar ==
+    =============================
+*/
+
+/* Side Bar Button */
+.sidebar-btn {
+    position: absolute;
+    top: 300px;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    left: -35px;
+    transform: rotate(45deg);
+    border: none;
+    border-radius: 0 25px 0;
+    z-index: 2;
+    background: var(--main-color);
+    color: #fff;
+    text-align: right;
+}
+
+/* Side Bar Icon */
+.sidebar-btn i {
+    transform: rotate(-45deg) translate(-8px, 0);
+    font-size: 25px;
+    display: block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-btn i.rotate {
+    transform: rotate(135deg) translate(0px, 10px);
+}
+
+/* Background Item */
+li.nav-item-custom {
+    height: 51.39px;
+    width: 100%;
+    background: #13598b;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: 0.3s;
+    --index: 1;
+}
+
+/* Background Item For Main Item List */
+.nav-item.nav-parent ~ li.nav-item-custom {
+    top: var(--top, calc(70px + (51.39px * (var(--index) - 1))));
+}
+
+ul:not([aria-level="1"]) {
+    position: relative;
+}
+
+/* Background Item For Sub Item List */
+ul:not([aria-level="1"]) .nav-item.nav-parent ~ li.nav-item-custom,
+.nav-item ~ li.nav-item-custom {
+    top: var(--top, calc(0px + (51.39px * (var(--index) - 1))));
+}
+
+li.nav-item-custom div {
+    display: none;
+}
+
+.nav-item:hover ~ li.nav-item-custom,
+.nav-item.active ~ li.nav-item-custom {
+    opacity: 1;
+}
+
+.nav-item:nth-of-type(1):hover ~ li.nav-item-custom {
+    --index: 1 !important;
+}
+
+.nav-item:nth-of-type(2):hover ~ li.nav-item-custom {
+    --index: 2 !important;
+}
+
+.nav-item:nth-of-type(3):hover ~ li.nav-item-custom {
+    --index: 3 !important;
+}
+
+.nav-item:nth-of-type(4):hover ~ li.nav-item-custom {
+    --index: 4 !important;
+}
+
+.nav-item:nth-of-type(5):hover ~ li.nav-item-custom {
+    --index: 5 !important;
+}
+
+.nav-item:nth-of-type(6):hover ~ li.nav-item-custom {
+    --index: 6 !important;
+}
+
+.nav-item:nth-of-type(7):hover ~ li.nav-item-custom {
+    --index: 7 !important;
+}
+
+.nav-item:nth-of-type(8):hover ~ li.nav-item-custom {
+    --index: 8 !important;
+}
+
+.nav-item:nth-of-type(9):hover ~ li.nav-item-custom {
+    --index: 9 !important;
+}
+
+.nav-item:nth-of-type(10):hover ~ li.nav-item-custom {
+    --index: 10 !important;
+}
+
+.nav-item:nth-of-type(11):hover ~ li.nav-item-custom {
+    --index: 11 !important;
+}
+
+.nav-item:nth-of-type(12):hover ~ li.nav-item-custom {
+    --index: 12 !important;
+}
+
+.nav-item:nth-of-type(13):hover ~ li.nav-item-custom {
+    --index: 13 !important;
+}
+
+.nav-item:nth-of-type(14):hover ~ li.nav-item-custom {
+    --index: 14 !important;
+}
+
+.nav-item:nth-of-type(15):hover ~ li.nav-item-custom {
+    --index: 15 !important;
+}
+
+.nav-item:nth-of-type(16):hover ~ li.nav-item-custom {
+    --index: 16 !important;
+}
+
+.nav-item:nth-of-type(17):hover ~ li.nav-item-custom {
+    --index: 17 !important;
+}
+.nav-item:nth-of-type(18):hover ~ li.nav-item-custom {
+    --index: 18 !important;
+}
+
+.nav-item:nth-of-type(19):hover ~ li.nav-item-custom {
+    --index: 19 !important;
+}
+
+.nav-item:nth-of-type(20):hover ~ li.nav-item-custom {
+    --index: 20 !important;
+}
+
+.nav-item:nth-of-type(21):hover ~ li.nav-item-custom {
+    --index: 21 !important;
+}
+
+.nav-item:nth-of-type(22):hover ~ li.nav-item-custom {
+    --index: 22 !important;
+}
+
+.nav-item:nth-of-type(23):hover ~ li.nav-item-custom {
+    --index: 23 !important;
+}
+
+.nav-item:nth-of-type(24):hover ~ li.nav-item-custom {
+    --index: 24 !important;
+}
+
+.nav-item:nth-of-type(25):hover ~ li.nav-item-custom {
+    --index: 25 !important;
+}
+
+.hc-offcanvas-nav:not(.touch-device)
+    li:not(.nav-item-custom)
+    a:not([disabled]):hover {
+    background: transparent;
+}
+
+/*
+    ===========================
+    == End Navbar & Asidebar ==
+    ===========================
+*/
+
+/*
+    =====================
+    == Start Part Main ==
+    =====================
+*/
+
+/* Main Body */
+main {
+    min-height: Calc(100vh - 112px);
+    padding-top: 20px;
+}
+
+/* Section Tilte */
+section h2.section-title {
+    color: var(--main-color);
+    font-weight: 700;
+    margin: 0 auto 20px;
+    text-align: center;
+}
+
+/*
+    ===================
+    == End Part Main ==
+    ===================
+*/
+
+/*
+    ======================================
+    == Start Accordens For Setting Page ==
+    ======================================
+*/
+
+/* Custom Input */
+.form-element {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    margin: 20px 0;
+}
+
+.form-element .input-label {
+    position: absolute;
+    color: var(--input-color);
+    font-size: 17px;
+    top: 5px;
+    user-select: none;
+    transition: var(--transition-time) ease-in-out;
+}
+
+.form-element .input-label.focused {
+    color: var(--main-color);
+    font-size: 13px;
+    top: -15px;
+}
+
+.form-element .input-label i {
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    left: 0;
+}
+
+.form-element .input-label.focused i {
+    left: -20px;
+    opacity: 0;
+}
+
+.form-element .mycustom-input {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    background: none;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid var(--input-color);
+}
+
+.form-element .under_line {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: var(--main-color);
+    transition: width var(--transition-time) ease-in-out;
+}
+
+.form-element textarea + .under_line {
+    bottom: 0px;
+}
+
+.form-element .under_line.fill {
+    width: 100%;
+}
+
+/* Select Box */
+.form-element-label {
+    position: absolute;
+    top: 0.75rem;
+    line-height: 1.5rem;
+    pointer-events: none;
+    padding-left: 0.125rem;
+    z-index: 1;
+    font-size: 1rem;
+    font-weight: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    color: #a6a6a6;
+    transform: translateY(-50%);
+    transform-origin: left center;
+    transition: transform 0.28s ease, color 0.28s linear, opacity 0.28s linear;
+    will-change: transform, color, opacity;
+}
+
+.multi-section {
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    transition: all 0.3s ease-in-out;
+}
+
+.multi-section:not(:empty) {
+    opacity: 1;
+    visibility: visible;
+    height: 120px;
+    width: 100%;
+}
+
+.chosen-container-single .chosen-single,
+.chosen-container-active.chosen-with-drop .chosen-single {
+    background: none;
+    border: none;
+    border-bottom: 1px solid #aaa;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    height: 30px;
+    padding: 2px 0 0 10px;
+}
+
+.chosen-container-single .chosen-default span {
+    display: none !important;
+}
+
+/* Form Input Number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Form Buttons */
+.form-action {
+    position: relative;
+    margin-top: 65px;
+}
+
+.form-action .form-btn {
+    background: var(--main-color);
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 5px 24px;
+    margin-top: 2.25rem;
+    position: relative;
+    z-index: 0;
+    transition: transform 0.28s ease;
+}
+
+/* Upload Image */
+.file-image {
+    display: inline-block;
+    position: relative;
+}
+
+.file-image input {
+    position: absolute;
+    overflow: hidden;
+    opacity: 0;
+    width: 0;
+}
+
+.file-image .reset {
+    cursor: pointer;
+    display: block;
+    position: absolute;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.file-image .reset:before {
+    content: "\d7";
+    font: normal normal 40px/39px sans-serif, Arial;
+    color: #fa8e8e;
+}
+
+.file-image .image {
+    cursor: pointer;
+    display: block;
+    box-sizing: border-box;
+    width: 200px;
+    height: 200px;
+    border: 1px solid #dbdbdb;
+    background-color: #f0f0f0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+.file-image .image:before,
+.file-image .image:after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    font: normal normal 14px sans-serif, Arial;
+    line-height: 0;
+    color: #ababab;
+    text-align: center;
+}
+
+.file-image .image:before {
+    content: "+";
+    font-size: 100px;
+    margin-top: -20px;
+}
+
+.file-image .image:after {
+    content: attr(data-label);
+    margin-top: 30px;
+}
+
+.file-image .image.unvisibile:after,
+.file-image .image.unvisibile:before {
+    display: none;
+}
+
+.file-image .reset {
+    display: none;
+}
+
+.file-image input:not([title=""]) ~ .reset {
+    display: block;
+}
+
+.file-image input:not([title=""]) ~ .image {
+    border: 0 none;
+}
+
+.file-image input:not([title=""]) ~ .image:before,
+.file-image input:not([title=""]) ~ .image:after {
+    display: none;
+}
+
+/*
+    ====================================
+    == End Accordens For Setting Page ==
+    ====================================
+*/
+/*
+    ==========================
+    == Start Add Items Page ==
+    ==========================
+*/
+section nav {
+    background: #d1d1d1;
+    border-radius: 5px 5px 0 0;
+    box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.25);
+}
+
+section nav .nav-tabs,
+.nav-tabs .nav-link,
+.nav-tabs .nav-link:focus,
+.nav-tabs .nav-link:hover {
+    border: none;
+}
+
+.card-items {
+    background: #fff;
+    transition: all 0.5s ease-in-out;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.card-items h2 {
+    color: var(--main-color);
+}
+
+.form-element textarea {
+    height: 93px;
+    resize: none;
+}
+
+.form-element textarea + span {
+    bottom: -63px;
+}
+
+.items-table td, .items-table th {
+    padding: 0.5rem !important;
+}
+/*
+    ========================
+    == End Add Items Page ==
+    ========================
+*/
+/*
+    ===================================
+    == Start Tabs For Services Pages ==
+    ===================================
+*/
+/* Car Services Page */
+@media (max-width: 650px) {
+    .check-mb-custom {
+        margin-bottom: 2.5rem;
+    }
+
+    .check-mb-custom + .form-element {
+        padding-right: 0;
+        padding-left: 0;
+    }
+}
+
+.form-group {
+    height: 30px;
+    margin-top: 15px;
+    margin-bottom: 15px !important;
+}
+
+/*
+    =================================
+    == End Tabs For Services Pages ==
+    =================================
+*/
+.radios .shadow {
+    background: var(--light);
+}
+
+.radios div:nth-of-type(2) {
+    background: var(--white);
+}
+
+/* Table Design */
+.dark .table .thead-dark th {
+    background: #151515;
+    border-color: #151515;
+}
+
+.table td,
+.table th {
+    vertical-align: middle !important;
+}
+
+.search {
+    position: absolute;
+    width: 100%;
+    height: 75px;
+    overflow-y: scroll;
+    background: #95999c;
+}
+
+.search li {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.search li:hover {
+    background: #1f6fb2;
+}
+
+.custom-alert {
+    position: fixed;
+    bottom: 40px;
+    right: -420px;
+    width: 400px;
+    padding: 10px;
+    font-size: 15px;
+    transition: left 0.3s ease-in-out;
+}
+
+.custom-alert.show {
+    right: 20px;
+}
+
+/*
+    ===========================
+    == Start Add Tables Page ==
+    ===========================
+*/
+/* .tables {
+    width: 1900px;
+    height: 1020px;
+    margin-bottom: 56px;
+    overflow: hidden;
+} */
+
+/* .tables .tabs {
+    width: 100%;
+    height: 100%;
+} */
+
+.btn-toggle-form {
+    width: 50px;
+    height: 50px;
+    line-height: 60px;
+    display: block;
+    position: fixed;
+    top: 50%;
+    right: -16px;
+    text-align: center;
+    background: var(--gray);
+    color: #1d2023;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    z-index: 9;
+}
+
+.btn-toggle-form.active {
+    right: 200px;
+}
+
+.tables .tabs .tab-content {
+    overflow: hidden;
+}
+
+.tables .tabs .tab-content .tab-pane {
+    height: 100%;
+    position: relative;
+    text-align: center;
+}
+.tables .nav-tabs .nav-link,
+.tables .nav-tabs .nav-link.active,
+.tables .nav-tabs .nav-link:hover {
+    border: none;
+}
+
+.tables .nav-tabs .nav-link.active,
+.tables .nav-tabs .nav-item.show .nav-link {
+    color: #ffffff;
+    background-color: var(--main-color);
+}
+
+.tables .tabs .tab-content .tab-pane .trash_hole {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    background: var(--danger);
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 99;
+}
+
+.new {
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+    height: 140px;
+    width: 140px;
+    background: #fff;
+    user-select: none;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+}
+
+.new.circle {
+    border-radius: 50%;
+}
+
+.circle .ui-resizable-se {
+    right: 15%;
+    bottom: 10%;
+}
+
+.new .text {
+    opacity: 1;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: color 0.3s ease-in-out;
+}
+
+.new .chair {
+    opacity: 1;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgb(35 71 134);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    color: #cccccc;
+    transition: all 0.3s ease-in-out;
+    line-height: 50px;
+}
+
+.table-menu {
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    display: none;
+    background: #fff;
+    width: 200px;
+    padding: 10px 0;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+}
+
+.table-menu.open {
+    display: block;
+}
+
+.form-tables {
+    position: fixed;
+    top: 0;
+    right: -220px;
+    width: 220px;
+    background: var(--main-color);
+    height: 100vh;
+    padding: 20px 10px;
+    text-align: center;
+    color: #fff;
+    z-index: 999;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-tables.open {
+    right: 0;
+}
+
+.form-tables input[type="number"],
+.form-tables input[type="text"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    outline: none;
+    border: none;
+}
+
+.form-tables label {
+    margin-right: 5px;
+    margin-bottom: 0;
+}
+
+.form-tables button {
+    display: block;
+    margin: auto;
+    color: #fff;
+    background: rgb(52 58 130);
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #712364;
+    outline: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.ui-icon-gripsmall-diagonal-se {
+    z-index: 0 !important;
+}
+
+/*
+    =========================
+    == End Add Tables Page ==
+    =========================
+*/
+
+/*
+    ===========================
+    == Start Min-Charge Page ==
+    ===========================
+*/
+
+.check-column {
+    position: relative;
+}
+
+.check-column input[type="checkbox"] {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0;
+}
+
+/*
+    =========================
+    == End Min-Charge Page ==
+    =========================
+*/

@@ -1,0 +1,105 @@
+:root {
+    --main-color: #337ab7;
+    --input-color: #808ea3;
+    --transition-time: 0.3s;
+}
+
+/* Custom Input */
+.search-select {
+    position: relative;
+    height: 30px;
+    margin: 20px 0;
+}
+
+.search-select .label-Select {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    border-bottom: 1px solid var(--input-color);
+}
+
+.search-select .label-Select label {
+    position: absolute;
+    color: var(--input-color);
+    font-size: 17px;
+    top: 0;
+    user-select: none;
+    transition: var(--transition-time) ease-in-out;
+}
+
+.search-select .label-Select label.focused {
+    color: var(--main-color);
+    font-size: 13px;
+    top: -15px;
+}
+
+.search-select .label-Select .arrow {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    border: 5px Solid transparent;
+    border-top-color: #000;
+}
+
+.search-select .search-input {
+    display: block;
+    width: 100%;
+    background: none;
+    outline: none;
+    border: none;
+    border-bottom: none;
+    padding: 0;
+}
+
+.search-select .line {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: var(--main-color);
+    transition: width var(--transition-time) ease-in-out;
+}
+
+.search-select .line.fill {
+    width: 100%;
+}
+
+.search-select .input-options {
+    position: absolute;
+    width: 100%;
+    padding-top: 10px;
+    border: 1px solid #ddd;
+    border-top: none;
+    background: #ddd;
+    display: none;
+    z-index: 2;
+}
+
+.search-select ul,
+ul.list-of-items {
+    list-style: none;
+    max-height: 192px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    width: 100%;
+    padding: 0;
+}
+.search-select ul li,
+ul.list-of-items li {
+    display: block;
+    background: #ddd;
+    padding: 10px;
+    cursor: pointer;
+}
+.search-select ul li:hover,
+.search-select ul li.active,
+ul.list-of-items li:hover,
+ul.list-of-items li.active {
+    background: #ccc;
+}
+
+ul.list-of-items {
+    z-index: 999;
+}

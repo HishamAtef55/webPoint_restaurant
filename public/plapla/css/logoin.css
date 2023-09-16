@@ -1,0 +1,193 @@
+* {
+    user-select: none;
+}
+body {
+    font-family: "Cairo", sans-serif !important;
+    height: 100vh;
+    width: 100vw;
+}
+
+.container-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+section.login {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+section.login .pass-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 40px;
+}
+
+section.login .pass-div h1 {
+    margin: 50px 0;
+    color: #fff;
+    font-family: "Michroma", sans-serif;
+    font-size: 3.5rem;
+}
+
+section.login .pass-div #email {
+    background: #5270e8;
+    outline: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    color: #fff;
+    border-radius: 50px;
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+    appearance:none;
+}
+
+section.login .pass-div input[type="text"]::placeholder {
+    color: rgb(255 255 255 / 33%);
+}
+
+section.login .pass-div p {
+    display: flex;
+    align-items: center;
+    width: 220px;
+    height: 50px;
+    margin: 10px 0 0;
+    font-size: 6em;
+    color: #fff;
+    overflow: hidden;
+}
+
+section.login .pass-div p span {
+    transform: rotate(55deg);
+    display: inline-block;
+    transform-origin: center center;
+}
+
+section.login .key-numbers {
+    display: grid;
+    gap: 15px;
+    grid-template-areas:
+        "one one two two three three"
+        "four four five five six six"
+        "seven seven eight eight nine nine"
+        "zero zero icon icon icon icon";
+}
+
+section.login .key-numbers span {
+    background: rgb(82, 112, 232);
+    color: #fff;
+    font-size: 2.2rem;
+    text-align: center;
+    width: 82px;
+    line-height: 82px;
+    border-radius: 82px;
+    height: 82px;
+    cursor: pointer;
+}
+
+section.login .key-numbers span:first-of-type {
+    grid-area: one;
+}
+section.login .key-numbers span:nth-of-type(2) {
+    grid-area: two;
+}
+section.login .key-numbers span:nth-of-type(3) {
+    grid-area: three;
+}
+section.login .key-numbers span:nth-of-type(4) {
+    grid-area: four;
+}
+section.login .key-numbers span:nth-of-type(5) {
+    grid-area: five;
+}
+section.login .key-numbers span:nth-of-type(6) {
+    grid-area: six;
+}
+section.login .key-numbers span:nth-of-type(7) {
+    grid-area: seven;
+}
+section.login .key-numbers span:nth-of-type(8) {
+    grid-area: eight;
+}
+section.login .key-numbers span:nth-of-type(9) {
+    grid-area: nine;
+}
+section.login .key-numbers span:nth-of-type(10) {
+    grid-area: zero;
+}
+section.login .key-numbers span:last-of-type {
+    grid-area: icon;
+    width: auto;
+}
+
+section.login button {
+    background: rgb(82, 112, 232);
+    color: #fff;
+    font-size: 1.7rem;
+    cursor: pointer;
+
+    border-radius: 82px;
+}
+
+@media (max-width: 414px) {
+    section.login .key-numbers span {
+        width: 65px;
+        line-height: 65px;
+        border-radius: 65px;
+        height: 65px;
+    }
+
+    .container-login .back {
+        top: 15px;
+    }
+
+    section.login .pass-div p {
+        width: 200px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    section.login .pass-div h1 {
+        margin: 10px 0;
+    }
+    .main div {
+        max-width: 145px;
+    }
+
+    .main div i {
+        font-size: 2rem;
+    }
+
+    .main div h3 {
+        font-size: 1.3rem;
+    }
+
+    section.login {
+        flex-flow: column;
+    }
+
+    section.login .pass-div {
+        margin: 0;
+    }
+
+    section.login .key-numbers {
+        width: 100%;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .main div {
+        margin: 10px;
+        height: 150px;
+    }
+}

@@ -1,0 +1,56 @@
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    user-select: none
+}
+
+.moveTo .table-num label{ margin-top: 0.5rem; flex-basis: 30%; margin-right: 10px }
+
+.btn-primary.disabled, .btn-primary:disabled { cursor: not-allowed }
+
+.moveTo .lists div:first-of-type { order: 1 }
+
+.moveTo .lists div:last-of-type { order: 0 }
+
+.moveTo .left,
+.moveTo .right { min-height: 400px; box-shadow: 1px 1px 10px #d3d3d3; padding: 10px }
+
+.moveTo .left ul li,
+.moveTo .right ul li {
+    cursor: pointer;
+    padding: 10px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e4e3e3;
+}
+
+.moveTo .left ul li:not(:first-child),
+.moveTo .right ul li:not(:first-child) { border-top: 2px solid #FFF }
+
+.moveTo ul li input {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    text-align: right;
+    background: transparent;
+    width: 50%;
+}
+.moveTo .lists .arrow { margin-top: 150px;}
+
+.moveTo ul li span { flex-grow: 1; text-align: left; padding-left: 15px }
+
+@media (max-width: 991.98px) {
+    .moveTo .table-num label { flex-basis: 50% !important }
+}
+
+@media (max-width: 767.98px) {
+    .moveTo .table-num label { flex-basis: 25% !important }
+    .moveTo .lists div:last-of-type { order: 1 }
+    .moveTo .lists .arrow { margin-top: 20px; display: flex; flex-direction: row }
+    .moveTo .lists .arrow * { width: auto; flex-grow: 1; margin: 0 10px; padding: 5px 0}
+    .moveTo .lists .arrow button { margin-top: 0 !important;}
+}
+
