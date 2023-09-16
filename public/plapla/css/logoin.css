@@ -44,23 +44,23 @@ section.welcome-page img {
 }
 
 .welcome-page.open ul .menu-item:nth-child(1) {
-    transform: rotate(0deg) translate(-290px);
+    transform: rotate(0deg) translate(-250px);
 }
 
 .welcome-page.open ul .menu-item:nth-child(2) {
-    transform: rotate(72deg) translateX(-290px);
+    transform: rotate(72deg) translateX(-250px);
 }
 
 .welcome-page.open ul .menu-item:nth-child(3) {
-    transform: rotate(144deg) translateX(-290px);
+    transform: rotate(144deg) translateX(-250px);
 }
 
 .welcome-page.open ul .menu-item:nth-child(4) {
-    transform: rotate(216deg) translateX(-290px);
+    transform: rotate(216deg) translateX(-250px);
 }
 
 .welcome-page.open ul .menu-item:nth-child(5) {
-    transform: rotate(288deg) translateX(-290px);
+    transform: rotate(288deg) translateX(-250px);
 }
 
 .welcome-page.open ul .menu-item span {
@@ -96,8 +96,8 @@ section.welcome-page img {
     left: 0;
     right: 0;
     margin: auto;
-    width: 180px;
-    height: 180px;
+    width: 150px;
+    height: 150px;
     opacity: 0;
     transition: 0.5s;
     text-align: center;
@@ -109,12 +109,12 @@ section.welcome-page img {
     height: inherit;
     background: rgb(82, 112, 232);
     color: rgba(255, 255, 255, 0.7);
-    line-height: 180px;
+    line-height: 150px;
     border-radius: 50%;
     white-space: nowrap;
     text-align: center;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 18px;
     pointer-events: none;
     transition: 0.2s;
     cursor: pointer;
@@ -125,7 +125,7 @@ section.welcome-page img {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
     color: white;
     background: rgb(82, 112, 232, 0.3);
-    font-size: 28px
+    font-size: 22px
 }
 
 
