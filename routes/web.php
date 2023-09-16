@@ -63,7 +63,7 @@ use App\Http\Controllers\Stock\OrdersControllers;
 
 use App\Http\Controllers\StockReports\ExchangesReportController;
 use App\Http\Controllers\StockReports\TransferReportController;
-use App\Http\Controllers\StockReports\ReportsController;
+use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\StockReports\PurchasesReportController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 /*
@@ -664,7 +664,7 @@ Route::group(['prefix'=>'stock','controller'=>materialManufacturing::class],func
     Route::post('getMaterialsManufacturing','getMaterials')->name('getMaterialsManufacturing');
 });
 
-Route::group(['prefix'=>'reports','controller'=>ReportsController::class,'as'=>'reports.'],function(){
+Route::group(['prefix'=>'reports','controller'=>StockReportsController::class,'as'=>'reports.'],function(){
     Route::get('store-balance','store_balance')->name('store_balance');
 });
 
