@@ -6,14 +6,42 @@
     <style>
         body {
             background-color: rgb(66, 68, 117) !important;
+            overflow-y:hidden
         }
     </style>
-<div class="container container-login ibrahim">
-    <section class='login'>
+<div class="container-login">
+    <section class="welcome-page open">
+        <img src="{{asset('global/image/logo.png')}}" alt="Logo" >
+        <ul>
+            <li class="menu-item" data-value="pos">
+                <span>pos</span>
+            </li>
+            <li class="menu-item" data-value="stock">
+                <span>Cost & Stock</span>
+            </li>
+            <li class="menu-item" data-value="hr">
+                <span>HR</span>
+            </li>
+            <li class="menu-item" data-value="accounting">
+                <span>Accounting</span>
+            </li>
+            <li class="menu-item"  data-value="dashboard">
+                <span>Dashboard</span>
+            </li>
+        </ul>
+
+    </section>
+
+    <section class='login close'>
         <div class='pass-div'>
-            <img src="{{asset('global/image/logo.png')}}" width="160px" style="margin-bottom: 25px"  alt="Logo" >
+            <div class="back-btn text-white">
+                <i class="fas fa-long-arrow-alt-left"></i>
+                <span>Back</span>
+            </div>
+            <h2 class="login-section text-white"></h2>
 
             <form method="POST" action="{{ route('login') }}">
+                <input type="hidden" id="login_method" name="type"/>
                 @csrf
                 <select id="email" class="@error('email') is-invalid @enderror form-control email-select"  name="email" placeholder="UserName" required autocomplete="off">
                     @foreach(\App\Models\User::select(['email'])->get() as $user)

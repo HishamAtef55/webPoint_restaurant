@@ -1,6 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+
 * {
     user-select: none;
 }
+
 body {
     font-family: "Cairo", sans-serif !important;
     height: 100vh;
@@ -10,7 +13,6 @@ body {
 .container-login {
     display: flex;
     align-items: center;
-    justify-content: center;
     position: absolute;
     top: 0;
     left: 0;
@@ -18,10 +20,164 @@ body {
     right: 0;
 }
 
+section.welcome-page {
+    position: relative;
+    flex-basis: 50%;
+    transition: all 0.5s ease-in-out;
+}
+
+section.welcome-page.open {
+    flex-grow: 1;
+}
+
+section.welcome-page img {
+    position: absolute;
+    transition: all 0.5s ease-in-out;
+    width: 200px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.welcome-page.open ul .menu-item {
+    opacity: 1;
+}
+
+.welcome-page.open ul .menu-item:nth-child(1) {
+    transform: rotate(0deg) translate(-290px);
+}
+
+.welcome-page.open ul .menu-item:nth-child(2) {
+    transform: rotate(72deg) translateX(-290px);
+}
+
+.welcome-page.open ul .menu-item:nth-child(3) {
+    transform: rotate(144deg) translateX(-290px);
+}
+
+.welcome-page.open ul .menu-item:nth-child(4) {
+    transform: rotate(216deg) translateX(-290px);
+}
+
+.welcome-page.open ul .menu-item:nth-child(5) {
+    transform: rotate(288deg) translateX(-290px);
+}
+
+.welcome-page.open ul .menu-item span {
+    pointer-events: auto;
+}
+
+.menu-item:nth-child(1) span {
+    transform: rotate(0deg);
+}
+
+.menu-item:nth-child(2) span {
+    transform: rotate(-72deg);
+
+}
+
+.menu-item:nth-child(3) span {
+    transform: rotate(-144deg);
+}
+
+.menu-item:nth-child(4) span {
+    transform: rotate(-216deg);
+}
+
+.menu-item:nth-child(5) span {
+    transform: rotate(-288deg);
+}
+
+.menu-item {
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 180px;
+    height: 180px;
+    opacity: 0;
+    transition: 0.5s;
+    text-align: center;
+}
+
+.menu-item span {
+    display: block;
+    width: inherit;
+    height: inherit;
+    background: rgb(82, 112, 232);
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 180px;
+    border-radius: 50%;
+    white-space: nowrap;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    pointer-events: none;
+    transition: 0.2s;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.menu-item span:hover {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    color: white;
+    background: rgb(82, 112, 232, 0.3);
+    font-size: 28px
+}
+
+
+
 section.login {
+    position: relative;
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     align-items: center;
+    flex-basis: 50%;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.5s ease-in-out;
+}
+
+section.login.close {
+    position: absolute;
+    flex-basis: 0;
+    opacity: 0;
+    visibility: hidden;
+    top: 50%;
+    right: 25%;
+    transform: translateY(-50%);
+}
+
+section.login .back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    align-self: start;
+    position: absolute;
+    top: 0;
+}
+
+section.login .back-btn i {
+    font-size: 2rem;
+    transition: transform 0.5s ease-in-out;
+}
+
+section.login .back-btn:hover i {
+    transform: translateX(-10px);
+}
+
+section.login .login-section {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: 'Play', sans-serif;
+    text-transform: uppercase;
 }
 
 section.login .pass-div {
@@ -47,9 +203,11 @@ section.login .pass-div #email {
     font-size: 1.2rem;
     color: #fff;
     border-radius: 50px;
-    -moz-appearance:none; /* Firefox */
-    -webkit-appearance:none; /* Safari and Chrome */
-    appearance:none;
+    -moz-appearance: none;
+    /* Firefox */
+    -webkit-appearance: none;
+    /* Safari and Chrome */
+    appearance: none;
 }
 
 section.login .pass-div input[type="text"]::placeholder {
@@ -98,33 +256,43 @@ section.login .key-numbers span {
 section.login .key-numbers span:first-of-type {
     grid-area: one;
 }
+
 section.login .key-numbers span:nth-of-type(2) {
     grid-area: two;
 }
+
 section.login .key-numbers span:nth-of-type(3) {
     grid-area: three;
 }
+
 section.login .key-numbers span:nth-of-type(4) {
     grid-area: four;
 }
+
 section.login .key-numbers span:nth-of-type(5) {
     grid-area: five;
 }
+
 section.login .key-numbers span:nth-of-type(6) {
     grid-area: six;
 }
+
 section.login .key-numbers span:nth-of-type(7) {
     grid-area: seven;
 }
+
 section.login .key-numbers span:nth-of-type(8) {
     grid-area: eight;
 }
+
 section.login .key-numbers span:nth-of-type(9) {
     grid-area: nine;
 }
+
 section.login .key-numbers span:nth-of-type(10) {
     grid-area: zero;
 }
+
 section.login .key-numbers span:last-of-type {
     grid-area: icon;
     width: auto;
@@ -160,6 +328,7 @@ section.login button {
     section.login .pass-div h1 {
         margin: 10px 0;
     }
+
     .main div {
         max-width: 145px;
     }
