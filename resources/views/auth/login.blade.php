@@ -10,6 +10,15 @@
         }
     </style>
 <div class="container-login">
+    @if($errors->any())
+    <script>
+        Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '{{$errors->first()}}',
+        })
+    </script>
+    @endif
     <section class="welcome-page open">
         <img src="{{asset('global/image/logo.png')}}" alt="Logo" >
         <ul>

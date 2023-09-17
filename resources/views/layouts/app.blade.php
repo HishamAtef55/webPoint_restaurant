@@ -42,6 +42,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <script src="{{URL::asset('global/js/sweetalert2@10.js')}}"></script>
 
     <script src="{{URL::asset('menu/js/datatables.min.js')}}"></script>
     <script src="{{URL::asset('menu/js/vfs_fonts.js')}}"></script>
@@ -60,7 +61,6 @@
 
         <script src="{{URL::asset('global/js/popper-1.16.0.js')}}"></script>
         <script src="{{URL::asset('global/js/bootstrap.min.js')}}"></script>
-        <script src="{{URL::asset('global/js/sweetalert2@10.js')}}"></script>
         <script src="{{URL::asset('control/js/hc-offcanvas-nav.js')}}"></script>
         <script src="{{URL::asset('control/js/main.js')}}"></script>
         <script src="{{URL::asset('control/js/search_select.js')}}"></script>

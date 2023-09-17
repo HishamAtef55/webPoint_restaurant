@@ -116,27 +116,27 @@ $title = 'User';
                                 <div class="shadow p-3 rounded d-block">Access System</div>
                                 <div class='radio-box p-3 shadow'>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="type" id="pos"
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="pos"
                                             value="pos">
                                         <label class="form-check-label" for="pos">POS</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="type" id="stock"
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="stock"
                                             value="stock">
                                         <label class="form-check-label" for="stock">Stock</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="type" id="hr"
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="hr"
                                             value="hr">
                                         <label class="form-check-label" for="hr">HR</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="type" id="accounting"
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="accounting"
                                             value="accounting">
                                         <label class="form-check-label" for="accounting">Accounting</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="type" id="dashboard"
+                                        <input class="form-check-input" type="checkbox" name="type[]" id="dashboard"
                                             value="dashboard">
                                         <label class="form-check-label" for="dashboard">Dashboard</label>
                                     </div>

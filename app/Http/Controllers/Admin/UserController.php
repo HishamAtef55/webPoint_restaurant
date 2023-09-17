@@ -43,7 +43,8 @@ class UserController extends Controller
                 'discount_ratio'          =>$request->discount_ratio,
                 'dialy_salary'            =>$request->dialy_salary,
                 'image'                   =>$file,
-                'mopile'                   =>$request->mopile,
+                'mopile'                  =>$request->mopile,
+                'access_system'           => json_encode($request->type,true),  
             ]);
             if($data)
             {

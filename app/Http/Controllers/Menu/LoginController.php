@@ -32,6 +32,18 @@ class LoginController extends Controller
     {
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
+            $access_system = json_decode( Auth::user()->access_system) ?? [];
+            $flagAccess = 0;
+            foreach($access_system as $access){
+                if($request->type == $access){
+                    $flagAccess = 1;
+                }
+            }
+            if($flagAccess == 0){
+                $users = User::select(['email'])->get()->all();
+                Auth::logout();
+                return view('auth.login',compact('users'))->withErrors(['message' => $request->type . " " . 'هذا المستخدم لايجوز له الدخول الي ']);
+            }
             switch ($request->type)
             {
               case 'pos':
@@ -67,35 +79,6 @@ class LoginController extends Controller
                 break;
             }
         }
-        // $email = $request->email;
-        // $user = User::where('email', '=', $email)->first();
-        // if (!$user) {
-        //     return response()->json(['success'=>false, 'message' => 'Not Login successfull 0 ']);
-        // }
-        // if (!Hash::check($request->password, $user->password)) {
-        //     return response()->json(['success'=>false, 'message' => 'Not Login successfull']);
-        // }
-        // //return response()->json(['success'=>true,'message'=>'success', 'data' => $user]);
-        // $data = ['success'=>true,'message'=>'success', 'data' => $user];
-        // $holes = Hole::where('branch_id',$user->branch_id)->get();
-        // $branch = $user->branch_id;
-        // $user_ = Auth::User();
-        // Session::put('user', $user);
-        // $user_=Session::get('user');
-        switch ($request->type)
-        {
-          case 'pos':
-                return Auth::User();
-            break;
-            case '3':
-              $branchs = Branch::get()->all();
-              return view('control.welcome',compact(['user','branchs']));
-              break;
-          default:
-            // code...
-            break;
-        }
-
     }
 
     public function logout()
