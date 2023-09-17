@@ -75,7 +75,7 @@ $(document).on('click','#save_user',function (e) {
             dataType:"json",
             columns:{
                 identifier:[[0, 'id']],
-                editable:[[1, 'name'], [2, 'email'], [3,'mopile'],[4,'dialy_salary'],[5,'pass'],[6,'job_id']]
+                editable:[[1, 'name'], [2, 'email'], [3,'mopile'],[4,'dialy_salary'],[5,'pass'],[6,'job_id'],[7,'access_system']]
             },
             restoreButton:false,
             onSuccess:function(data, textStatus, jqXHR)
@@ -148,11 +148,11 @@ $(document).on('click','#save_user',function (e) {
                             html +='</td>';
 
                             html += '<td class="tabledit-view-mode">'
-                            // html += '<span class="tabledit-span tabledit-identifier">*****</span>';
+                            html += '<span class="tabledit-span tabledit-identifier">*****</span>';
                             html += '<input type="password" style="display: none;" disabled class="tabledit-input tabledit-identifier" name="pass" value="">';
                             html +='</td>';
 
-                            html += '<td class="tabledit-view-mode" id="show-hide">';
+                            html += '<td class="tabledit-edit-mode job_name">';
                             html += '<span class="tabledit-span tabledit-identifier">'+data[count].job.name+'</span>';
                             html += '<select class="tabledit-input form-control input-sm" name="type'+data[count].id+'"  style="display: none;">';
                             html += '<option value="1"> Cashier </option>';
@@ -162,6 +162,18 @@ $(document).on('click','#save_user',function (e) {
                             html += '<option value="5"> Take Away </option>';
                             html += '<option value="6"> Car Service </option>';
                             html += '<option value="7"> Other </option>';
+                            html += '</select>';
+                            html +='</td>';
+
+                            let access_system = data[count].access_system ? JSON.parse(data[count].access_system) : []
+                            html += '<td class="tabledit-view-mode access_sys">';
+                            html += '<span class="tabledit-span tabledit-identifier">'+access_system.map(sys => sys)+'</span>';
+                            html += '<select class="tabledit-input form-control input-sm" name="access_system[]" multiple value="'+access_system+'"  style="display: none;">';
+                            html += '<option value="pos">POS </option>';
+                            html += '<option value="stock"> Stock </option>';
+                            html += '<option value="hr"> HR </option>';
+                            html += '<option value="accounting"> Accounting </option>';
+                            html += '<option value="dashboard"> Dashboard </option>';
                             html += '</select>';
                             html +='</td>';
 
@@ -190,13 +202,18 @@ $(document).on('click','#save_user',function (e) {
         });
 
         $(document).on('click', '#edit-btn', function() {
-            let showHideParent = $(this).parents('tr').find('#show-hide');
+            let jobName = $(this).parents('tr').find('.job_name');
+            let accessSys = $(this).parents('tr').find('.access_sys');
 
-            let spanValue      = showHideParent.children('span');
+            let spanValue      = jobName.children('span');
+            let mySelect      = jobName.children('select');
 
-            let mySelect      = showHideParent.children('select');
+            let accessArr = accessSys.children('span').text().split(',');
+            let accessSelect = accessSys.children('select');
 
-            mySelect.children(`option:contains(${spanValue.text()})`).prop('selected', true)
+            mySelect.children(`option:contains(${spanValue.text()})`).prop('selected', true);
+
+            accessArr.map(sys=> accessSelect.children(`option:contains(${sys})`).prop('selected', true))
 
         });
     });

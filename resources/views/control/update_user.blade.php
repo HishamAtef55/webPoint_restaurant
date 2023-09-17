@@ -185,6 +185,7 @@ $title = 'User';
                         <th scope="col">Salary</th>
                         <th scope="col">Pass</th>
                         <th scope="col">Job</th>
+                        <th scope="col">Access</th>
                     </tr>
                 </thead>
                 <tbody id="tbody">
