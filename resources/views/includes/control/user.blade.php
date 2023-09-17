@@ -213,7 +213,9 @@ $(document).on('click','#save_user',function (e) {
 
             mySelect.children(`option:contains(${spanValue.text()})`).prop('selected', true);
 
-            accessArr.map(sys=> accessSelect.children(`option:contains(${sys})`).prop('selected', true))
+            console.log(accessArr)
+
+            accessArr.map(sys=> accessSelect.children(`option[value=${sys}]`).prop('selected', true))
 
         });
     });
