@@ -51,6 +51,7 @@ footer {
     margin-bottom: 56px;
     text-align: center;
 }
+
 .btn-toolbar {
     justify-content: center !important;
 }
@@ -199,6 +200,7 @@ li.nav-item-custom div {
 .nav-item:nth-of-type(17):hover ~ li.nav-item-custom {
     --index: 17 !important;
 }
+
 .nav-item:nth-of-type(18):hover ~ li.nav-item-custom {
     --index: 18 !important;
 }
@@ -231,9 +233,7 @@ li.nav-item-custom div {
     --index: 25 !important;
 }
 
-.hc-offcanvas-nav:not(.touch-device)
-    li:not(.nav-item-custom)
-    a:not([disabled]):hover {
+.hc-offcanvas-nav:not(.touch-device) li:not(.nav-item-custom) a:not([disabled]):hover {
     background: transparent;
 }
 
@@ -551,9 +551,11 @@ section nav .nav-tabs,
     bottom: -63px;
 }
 
-.items-table td, .items-table th {
+.items-table td,
+.items-table th {
     padding: 0.5rem !important;
 }
+
 /*
     ========================
     == End Add Items Page ==
@@ -604,6 +606,7 @@ section nav .nav-tabs,
 .table td,
 .table th {
     vertical-align: middle !important;
+    padding: 0.75rem 0rem !important;
 }
 
 .search {
@@ -683,6 +686,7 @@ section nav .nav-tabs,
     position: relative;
     text-align: center;
 }
+
 .tables .nav-tabs .nav-link,
 .tables .nav-tabs .nav-link.active,
 .tables .nav-tabs .nav-link:hover {

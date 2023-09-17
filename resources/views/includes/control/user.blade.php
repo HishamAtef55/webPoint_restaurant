@@ -166,9 +166,10 @@ $(document).on('click','#save_user',function (e) {
                             html +='</td>';
 
                             let access_system = data[count].access_system ? JSON.parse(data[count].access_system) : []
+
                             html += '<td class="tabledit-view-mode access_sys">';
-                            html += '<span class="tabledit-span tabledit-identifier">'+access_system.map(sys => sys)+'</span>';
-                            html += '<select class="tabledit-input form-control input-sm" name="access_system[]" multiple value="'+access_system+'"  style="display: none;">';
+                            html += '<span class="tabledit-span tabledit-identifier">'+access_system.join(' ')+'</span>';
+                            html += '<select class="tabledit-input form-control input-sm" name="access_system[]" multiple  style="display: none;">';
                             html += '<option value="pos">POS </option>';
                             html += '<option value="stock"> Stock </option>';
                             html += '<option value="hr"> HR </option>';
@@ -181,10 +182,10 @@ $(document).on('click','#save_user',function (e) {
                             <div class="tabledit-toolbar btn-toolbar" style="text-align: left; font-size: 50px;">
                                 <div class="btn-group btn-group-sm" style="float: none; font_Size:50px;">
                                 <button type="button" id='edit-btn' class="tabledit-edit-button btn btn-sm btn-default" style="float: none; font_Size:50px;">
-                                    <span><i class="far fa-edit fa-2x"></i></span>
+                                    <span><i class="far fa-edit"></i></span>
                                 </button>
                                 <button type="button" class="tabledit-delete-button btn btn-sm btn-default" style="float: none;">
-                                    <span style="font-size: 15px;" ><i class="fas fa-trash fa-2x"></i></span>
+                                    <span style="font-size: 15px;" ><i class="fas fa-trash"></i></span>
                                 </button>
                                 </div>
                                 <button type="button" class="tabledit-save-button btn btn-sm btn-success" style=" font-size:10px;display: none; float: none;">Confirm</button><button type="button" class="tabledit-confirm-button btn btn-sm btn-danger" style=" font-size:10px;display: none; float: none;">Confirm</button>
@@ -208,14 +209,12 @@ $(document).on('click','#save_user',function (e) {
             let spanValue      = jobName.children('span');
             let mySelect      = jobName.children('select');
 
-            let accessArr = accessSys.children('span').text().split(',');
+            let accessArr = accessSys.children('span').text().toLowerCase().split(' ');
             let accessSelect = accessSys.children('select');
 
             mySelect.children(`option:contains(${spanValue.text()})`).prop('selected', true);
 
-            console.log(accessArr)
-
-            accessArr.map(sys=> accessSelect.children(`option[value=${sys}]`).prop('selected', true))
+            accessArr.map(sys=> sys !== '' ? accessSelect.children(`option[value=${sys}]`).prop('selected', true) : null)
 
         });
     });
