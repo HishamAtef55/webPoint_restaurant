@@ -17,16 +17,16 @@
                 <span>pos</span>
             </li>
             <li class="menu-item" data-value="stock">
-                <span>Cost & Stock</span>
+                <span>Stock</span>
             </li>
             <li class="menu-item" data-value="hr">
                 <span>HR</span>
             </li>
             <li class="menu-item" data-value="accounting">
-                <span>Accounting</span>
+                <span style="font-size: 14px;">Accounting</span>
             </li>
             <li class="menu-item"  data-value="dashboard">
-                <span>Dashboard</span>
+                <span style="font-size: 14px;">Dashboard</span>
             </li>
         </ul>
 

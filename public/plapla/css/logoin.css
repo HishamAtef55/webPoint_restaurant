@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Michroma:wght@400;700&display=swap');
 
 * {
     user-select: none;
@@ -119,13 +119,14 @@ section.welcome-page img {
     transition: 0.2s;
     cursor: pointer;
     text-transform: uppercase;
+    font-family: "Michroma", sans-serif;
 }
 
 .menu-item span:hover {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
     color: white;
     background: rgb(82, 112, 232, 0.3);
-    font-size: 22px
+    font-size: 20px
 }
 
 
@@ -176,7 +177,7 @@ section.login .login-section {
     margin-bottom: 20px;
     font-size: 2rem;
     font-weight: bold;
-    font-family: 'Play', sans-serif;
+    font-family: "Michroma", sans-serif;
     text-transform: uppercase;
 }
 
@@ -186,13 +187,6 @@ section.login .pass-div {
     justify-content: space-between;
     align-items: center;
     margin-right: 40px;
-}
-
-section.login .pass-div h1 {
-    margin: 50px 0;
-    color: #fff;
-    font-family: "Michroma", sans-serif;
-    font-size: 3.5rem;
 }
 
 section.login .pass-div #email {
