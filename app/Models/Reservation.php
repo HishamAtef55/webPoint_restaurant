@@ -13,7 +13,6 @@ class Reservation extends Model
         'created_at',
         'updated_at',
     ];
-
     public function Table()
     {
         return $this->belongsTo(Table::class,'table_id','number_table');

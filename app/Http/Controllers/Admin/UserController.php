@@ -33,7 +33,7 @@ class UserController extends Controller
                 $file = $this->saveimage($request->image,'control/images/users');
             }
             $pass = Hash::make($request->password);
-            $data = \App\User::create
+            $data = User::create
             ([
                 'name'                    =>$request->name,
                 'email'                   =>$request->email,
