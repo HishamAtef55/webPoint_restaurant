@@ -90,8 +90,10 @@ class UserController extends Controller
         {
             if($request->action == 'edit')
             {
+                
+                // $list =  implode(', ', $request->access_system);
+                // return json_encode($list);
                 $data_pass = "type".$request->id;
-
                 if($request->pass == null){
                     $data = array(
                         'name'	        =>	$request->name,
@@ -99,6 +101,7 @@ class UserController extends Controller
                         'mopile'        =>	$request->mopile,
                         'job_id'        =>	$request->$data_pass,
                         'dialy_salary'	=>	$request->dialy_salary,
+                        'access_system' => $request->access_system,
                     );
                 }else{
                     $data = array(
@@ -107,6 +110,7 @@ class UserController extends Controller
                         'mopile'        =>	$request->mopile,
                         'job_id'        =>	$request->$data_pass,
                         'dialy_salary'	=>	$request->dialy_salary,
+                        'access_system' => $request->access_system,
                         'password'      =>Hash::make($request->pass),
                     );
                 }
