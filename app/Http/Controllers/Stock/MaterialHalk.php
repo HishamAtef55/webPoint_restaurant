@@ -312,7 +312,7 @@ class MaterialHalk extends Controller
         $data['serial'] = $this->getSerialItem();
         $data['halkItems'] = HalkItem::with('getbranch','getsection')->orderBy('id','DESC')->paginate(10);
         $data['branches'] = Branch::get()->all();
-        return view('Stock.halk_item',$data);
+        return view('stock.stock.halk_item',$data);
     }
     public function save_halk_item(Request $request){
         $materials = MainComponents::with('Materials')->where(['branch'=>$request->branch,'item'=>$request->item])->first();

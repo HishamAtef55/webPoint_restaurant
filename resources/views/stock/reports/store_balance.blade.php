@@ -1,5 +1,5 @@
 @php $title='رصيد المخزن';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
     <section class="material_manufacturing">
         <div class="container">
@@ -54,5 +54,5 @@
             </div>
         </div>
     </section>
-    @include('includes.reports_ajax.store_balance')
+    @include('includes.stock.reports_ajax.store_balance')
 @stop

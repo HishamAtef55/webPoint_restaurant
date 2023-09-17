@@ -1,5 +1,5 @@
 @php $title='إذن صرف';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 <section class="exchange">
         <div id="permissionId" value="{{$serial}}"></div>

@@ -1,5 +1,5 @@
 @php $title='الخامات';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 <div id="pageStatus" status="new"></div>
 <section class='material pt-2'>

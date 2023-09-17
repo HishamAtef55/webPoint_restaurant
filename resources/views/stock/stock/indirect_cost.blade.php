@@ -1,5 +1,5 @@
 @php $title='المصاريف الغير مباشرة';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 <section class="expenses">
     <div class="container">

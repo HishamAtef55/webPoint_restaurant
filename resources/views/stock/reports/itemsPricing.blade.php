@@ -1,5 +1,5 @@
 @php $title='تسعير اصناف';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 
 <section class="expenses">
@@ -99,5 +99,5 @@
         </div>
     </div>
 </section>
-@include('includes.reports_ajax.itemsPricing')
+@include('includes.stock.reports_ajax.itemsPricing')
 @endsection

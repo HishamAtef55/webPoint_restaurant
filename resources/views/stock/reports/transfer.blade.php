@@ -1,5 +1,5 @@
 @php $title='تحويل مخازن';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 <section class="purchases">
     <div class="container">

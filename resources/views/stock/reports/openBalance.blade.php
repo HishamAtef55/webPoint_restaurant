@@ -1,5 +1,5 @@
 @php $title='الجرد';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
     <section class="inventory">
         <div class="container">
@@ -81,5 +81,5 @@
             </div>
         </div>
     </section>
-    @include('includes.reports_ajax.inventory')
+    @include('includes.stock.reports_ajax.inventory')
 @endsection

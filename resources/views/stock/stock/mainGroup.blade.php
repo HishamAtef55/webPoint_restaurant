@@ -1,5 +1,5 @@
 @php $title='المجموعات';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
     <section class='pt-2'>
         <div class="container">

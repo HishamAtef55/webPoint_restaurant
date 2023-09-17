@@ -1,4 +1,4 @@
-@include('includes.Stock_Ajax.public_function')
+@include('includes.stock.Stock_Ajax.public_function')
 <script>
     let id           = $('#store_id');
     let name         = $('#store_name');

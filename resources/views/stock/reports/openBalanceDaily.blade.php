@@ -1,5 +1,5 @@
 @php $title='الجرد';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
     <section class="inventory">
         <div class="container">

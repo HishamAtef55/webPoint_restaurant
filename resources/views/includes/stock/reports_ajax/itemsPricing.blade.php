@@ -1,4 +1,4 @@
-@include('includes.Stock_Ajax.public_function')
+@include('includes.stock.Stock_Ajax.public_function')
 <script>
     const saveItemPriceBtn = $('#save_item_price');
     const material = $('#material');

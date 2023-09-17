@@ -36,7 +36,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public static function index(Request $request)
     {
 //        $this->deleteOrderRep();
         $user = Auth::user();
@@ -49,8 +49,6 @@ class HomeController extends Controller
         $this->LogInfo($data);
         $this->CheckDay();
         $this->CheckLastOrder();
-
-
         $holes = Hole::where('branch_id',$user->branch_id)->get();
         $branch = $user->branch_id;
         $order_delivery = 1;
@@ -62,5 +60,9 @@ class HomeController extends Controller
         $del_noti_hold     = $this->Delivery_hold();
         $printers = Printers::where(['active'=>'1'])->get();
         return view('menu.tables',compact(['transfers','printers','to_noti_hold','user','holes','branch','order_delivery','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold']));
+    }
+
+    public function costControl(){
+        return view('stock.stock.home');
     }
 }

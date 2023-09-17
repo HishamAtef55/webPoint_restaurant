@@ -1,5 +1,5 @@
 @php $title='مكونات الاصناف';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 <section class="component_items">
     <div class="container">
@@ -229,5 +229,5 @@
     </div>
 </div>
 
-@include('includes.Stock_Ajax.component_items')
+@include('includes.stock.Stock_Ajax.component_items')
 @endsection

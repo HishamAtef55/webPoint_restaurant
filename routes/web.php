@@ -87,6 +87,8 @@ Route::get('/', function () {
     return view('auth.login',compact('users'));
 });
 
+Route::post('webPoint',[LoginController::class,'check_admin'])->name('check_admin');
+
 Auth::routes();
 Route::get('/logout',[LogoutController::class,'logout'])->name('logout');
 
@@ -96,11 +98,11 @@ Route::group(['middleware' => ['auth']], function() {
 });
 
 Route::get('/home',[HomeController::class ,'index'])->name('home');
-
+Route::get('costControl',[HomeController::class,'costControl'])->name('costControl');
 ############################ Start Routes in Admin Control #####################
 Route::group(['prefix' => 'admin'] ,function()
 {
-    ###################### Start Information And Print  PAges###################
+    ###################### Start Information And Print  Pages###################
     Route::group(['controller'=>InformationController::class],function(){
       Route::post('/SaveInformation','save')->name('save.information');
       Route::get('/Information','view')->name('view.information');
@@ -302,7 +304,7 @@ Route::group(['prefix' => 'admin'] ,function()
 Route::group(['prefix'=>'menu'],function()
 {
 
-    Route::post('/Tables',[LoginController::class,'check_admin'])->name('check.user');
+    // Route::post('/Tables',[LoginController::class,'check_admin'])->name('check.user');
 
     ############################## MenuController #####################################
     Route::group(['controller'=>MenuController::class],function(){

@@ -14,11 +14,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Traits\All_Functions;
-
+use App\Http\Controllers\HomeController;
+use App\Traits\All_Notifications_menu;
+use App\Models\Printers;
 
 class LoginController extends Controller
 {
     use All_Functions;
+    use All_Notifications_menu;
     public function view_login(Request $request)
     {
         $get = System::get()->all();
@@ -27,27 +30,62 @@ class LoginController extends Controller
     }
     public function check_admin(Request $request)
     {
-
-        $email = $request ->user;
-        $user = User::where('email', '=', $email)->first();
-        if (!$user) {
-            return response()->json(['success'=>false, 'message' => 'Not Login successfull']);
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt($credentials)) {
+            switch ($request->type)
+            {
+              case 'pos':
+                    //$this->deleteOrderRep();
+                    $user = Auth::user();
+                    //$this->orderLate();
+                    $this->removeActionTable();
+                    $data = array(
+                        'type' => 'login',
+                        'note' => 'User is login now',
+                    );
+                    $this->LogInfo($data);
+                    $this->CheckDay();
+                    $this->CheckLastOrder();
+                    $holes = Hole::where('branch_id',$user->branch_id)->get();
+                    $branch = $user->branch_id;
+                    $order_delivery = 1;
+                    $transfers = $this->checkTransfers();
+                    $to_noti_hold      = $this->TOGO_hold();
+                    $del_noti          = $this->Delivery();
+                    $del_noti_to_pilot = $this->Delivery_to_pilot();
+                    $del_noti_pilot    = $this->Delivery_pilot();
+                    $del_noti_hold     = $this->Delivery_hold();
+                    $printers = Printers::where(['active'=>'1'])->get();
+                    return view('menu.tables',compact([
+                        'transfers','printers','to_noti_hold','user','holes','branch',
+                        'order_delivery','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold']));
+                break;
+                case 'stock':
+                  return view('stock.stock.home');
+              default:
+                // code...
+                break;
+            }
         }
-        if (!Hash::check($request->pass, $user->password)) {
-            return response()->json(['success'=>false, 'message' => 'Not Login successfull']);
-        }
-        //return response()->json(['success'=>true,'message'=>'success', 'data' => $user]);
-        $data = ['success'=>true,'message'=>'success', 'data' => $user];
-        $holes = Hole::where('branch_id',$user->branch_id)->get();
-        $branch = $user->branch_id;
-        $user_ = Auth::User();
-        Session::put('user', $user);
-        $user_=Session::get('user');
-
+        // $email = $request->email;
+        // $user = User::where('email', '=', $email)->first();
+        // if (!$user) {
+        //     return response()->json(['success'=>false, 'message' => 'Not Login successfull 0 ']);
+        // }
+        // if (!Hash::check($request->password, $user->password)) {
+        //     return response()->json(['success'=>false, 'message' => 'Not Login successfull']);
+        // }
+        // //return response()->json(['success'=>true,'message'=>'success', 'data' => $user]);
+        // $data = ['success'=>true,'message'=>'success', 'data' => $user];
+        // $holes = Hole::where('branch_id',$user->branch_id)->get();
+        // $branch = $user->branch_id;
+        // $user_ = Auth::User();
+        // Session::put('user', $user);
+        // $user_=Session::get('user');
         switch ($request->type)
         {
-          case '1':
-              return view('menu.tables',compact(['user','holes','branch']));
+          case 'pos':
+                return Auth::User();
             break;
             case '3':
               $branchs = Branch::get()->all();

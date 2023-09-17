@@ -1,5 +1,5 @@
 @php $title='مكونات تفاصيل الاصناف';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
     <section class="component_items">
         <div class="container">

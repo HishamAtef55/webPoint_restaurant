@@ -1,5 +1,5 @@
 @php $title='التشغيل';@endphp
-@extends('layouts.app')
+@extends('layouts.stock.app')
 @section('content')
 <section class="material_operations">
     <div class="container">

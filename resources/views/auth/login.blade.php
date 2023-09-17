@@ -40,7 +40,7 @@
             </div>
             <h2 class="login-section text-white"></h2>
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('check_admin') }}">
                 <input type="hidden" id="login_method" name="type"/>
                 @csrf
                 <select id="email" class="@error('email') is-invalid @enderror form-control email-select"  name="email" placeholder="UserName" required autocomplete="off">
