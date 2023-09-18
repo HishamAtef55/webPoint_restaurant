@@ -127,8 +127,7 @@
                                 position: 'center-center',
                                 icon: 'success',
                                 title: data.msg,
-                                showConfirmButton: false,
-                                timer: 2250
+                                showConfirmButton: true,
                             });
                         }
                     }

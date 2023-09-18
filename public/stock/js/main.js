@@ -1,16 +1,19 @@
 "use strict";
-// Show & Hide SideBar
-const menuToggleBtn = document.querySelector(".toggle-menu");
-const sideBar = document.querySelector("aside");
 
-menuToggleBtn.onclick = function () {
-    sideBar.classList.toggle("show");
-};
-document.getElementById("close_menu").onclick = function () {
-    sideBar.classList.remove("show");
-};
-// Show & Hide SideBar
+$(".nav-item").on("click", function (e) {
+    e.stopPropagation();
+    let menuTarget = $(this).attr("data-target");
+
+    $(this).toggleClass("active").siblings().removeClass("active");
+
+    $(`.sub-menu.${menuTarget}`)
+        .toggleClass("open")
+        .siblings(".sub-menu")
+        .removeClass("open");
+});
 
 $(document).on("click", function () {
     $(".search-result").html("");
+    $(`.sub-menu`).removeClass("open");
+    $(".nav-item").removeClass("active");
 });
