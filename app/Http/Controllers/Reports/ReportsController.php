@@ -45,7 +45,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.sales_current_report',compact([
+        return view('Reports.sales_current_report',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -70,7 +70,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.daily_reposrt',compact([
+        return view('Reports.daily_reposrt',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -95,7 +95,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.waiter_sales',compact([
+        return view('Reports.waiter_sales',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -119,7 +119,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.shift_sales',compact([
+        return view('Reports.shift_sales',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -138,7 +138,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.transfer_sales',compact([
+        return view('Reports.transfer_sales',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -155,7 +155,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.discount_report',compact([
+        return view('Reports.discount_report',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -173,7 +173,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.void_sales',compact([
+        return view('Reports.void_sales',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -190,7 +190,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.sales_item',compact([
+        return view('Reports.sales_item',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -206,7 +206,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.costreport',compact([
+        return view('Reports.costreport',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',
@@ -222,7 +222,7 @@ class ReportsController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        return view('reports.cost_sold_report',compact([
+        return view('Reports.cost_sold_report',compact([
             'del_noti',
             'del_noti_to_pilot',
             'del_noti_pilot',

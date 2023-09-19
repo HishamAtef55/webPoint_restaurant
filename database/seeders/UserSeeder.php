@@ -27,6 +27,7 @@ class UserSeeder extends Seeder
              'dialy_salary'    => '1',
              'email'           => 'admin',
              'roles_name'      => 'admin',
+             'access_system'   => '["pos","stock"]',
              'password' => Hash::make('0011'),
          ]);
 

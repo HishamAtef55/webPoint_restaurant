@@ -356,7 +356,7 @@ Route::group(['prefix'=>'menu'],function()
       Route::post('/view_main_table','search_main_table')->name('search.main.table');
       Route::post('/view_new_table','search_new_table')->name('search.new.table');
       Route::post('/moveto_item','moveto_item')->name('move.to.item');
-      Route::post('/CopyCheck','copy_check')->name('copy.check');
+      Route::get('/CopyCheck','copy_check')->name('copy.check');
       Route::post('/View_check','view_check')->name('view.check');
       Route::post('/print_copy_check','print_copy_check')->name('print_copy_check');
    });
@@ -368,14 +368,6 @@ Route::group(['prefix'=>'menu'],function()
      Route::post('/update_customer','update_customer')-> name('update.customer');
      Route::post('/order_customer','order_customer')-> name('order.customer');
    });
-   ############################  End Routes Customer    ###########################
-
-   ############################  Start Routes Customer    #########################
-   Route::post('/Save_customer'      ,'CustomerController@save_customer')     -> name('Save.customer');
-   Route::post('/search_customer'      ,'CustomerController@search_customer') -> name('search.customer');
-   Route::post('/update_customer'      ,'CustomerController@update_customer') -> name('update.customer');
-   Route::post('/order_customer'      ,'CustomerController@order_customer') -> name('order.customer');
-   ############################  End Routes Customer    ###########################
 
    ############################  Start Routes Reservation    ###########################
     Route::post('/save_reservation',[ReservationController::class , 'save_reservation'])->name('save.reservation');
