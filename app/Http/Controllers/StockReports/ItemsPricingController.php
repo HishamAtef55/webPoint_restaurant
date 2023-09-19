@@ -8,7 +8,7 @@ use App\Models\detailsComponent;
 use App\Models\DetailsItem;
 use App\Models\Groups;
 use App\Models\InDirectCostDaily;
-use App\Models\Items;
+use App\Models\Item;
 use App\Models\material;
 use App\Models\Sub_group;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class ItemsPricingController extends Controller
         $material = $request->material;
         if($request->branch != null || $request->branch != ""){
             if($request->groupId == "all"){
-                $data = Items::whereHas('material_components',function($query) use($material){
+                $data = Item::whereHas('material_components',function($query) use($material){
                         if($material != "all") {
                             $query->where(['material_id' => $material]);
                         }
@@ -44,7 +44,7 @@ class ItemsPricingController extends Controller
                     ->whereHas('material_components')->withSum('material_direct','cost')->withSum('material_indirect','cost')->where(['branch_id'=>$request->branch])->get();
             }else{
                 if($request->subGroupsId == "all"){
-                    $data = Items::whereHas('material_components',function($query) use($material){
+                    $data = Item::whereHas('material_components',function($query) use($material){
                             if($material != "all") {
                                 $query->where(['material_id' => $material]);
                             }
@@ -54,7 +54,7 @@ class ItemsPricingController extends Controller
                         ->where(['group_id'=>$request->groupId])
                         ->get();
                 }else{
-                    $data = Items::whereHas('material_components',function($query) use($material){
+                    $data = Item::whereHas('material_components',function($query) use($material){
                             if($material != "all") {
                                 $query->where(['material_id' => $material]);
                             }
@@ -67,7 +67,7 @@ class ItemsPricingController extends Controller
                 }
             }
         }else{
-            $data = Items::whereHas('material_components',function($query) use($material){
+            $data = Item::whereHas('material_components',function($query) use($material){
                 if($material != "all") {
                     $query->where(['material_id' => $material]);
                 }

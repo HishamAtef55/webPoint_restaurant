@@ -51,4 +51,32 @@ class Item extends Model
     {
         return $this->hasMany(Wait_order_m::class,'item_id','id');
     }
+    
+    public function Materials(){
+        return $this->belongsToMany(material::class , 'components_items','item_id','id');
+    }
+
+    public function material_components(){
+        return $this->hasMany(ComponentsItems::class , 'item_id','id');
+    }
+
+    public function material_direct(){
+        return $this->hasMany(ComponentsItems::class , 'item_id','id')->whereHas('material_with_packing',function($query){
+            $query->where('packing',0);
+        });
+    }
+
+    public function material_indirect(){
+        return $this->hasMany(ComponentsItems::class , 'item_id','id')->whereHas('material_with_packing',function($query){
+            $query->where('packing','1');
+        });
+    }
+
+    public function details_components(){
+        return $this->hasMany(mainDetailsComponent::class,'item','id');
+    }
+
+    public function custom_materials(){
+        return $this->belongsTo(MainComponents::class , 'id','item');
+    }
 }
