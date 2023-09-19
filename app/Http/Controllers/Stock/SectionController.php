@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\SectionRequest;
 use App\Models\Branch;
-use App\Models\Groups;
+use App\Models\Group;
 use App\Models\Stores;
 use App\Models\stocksection;
 use App\Models\section_group;
@@ -33,7 +33,7 @@ class SectionController extends Controller
         return view('stock.stock.sections',compact(['new_section','branchs','stores','sections']));
     }
     public function get_group(Request $request){
-        $groups = Groups::where(['branch_id'=>$request->branch])->select(['id','name'])->get();
+        $groups = Group::where(['branch_id'=>$request->branch])->select(['id','name'])->get();
         return response()->json(['status'=>'true','groups'=>$groups]);
     }
     public function save_section(SectionRequest $request){

@@ -17,9 +17,9 @@ class CreateCustomerLocationTable extends Migration
             $table->bigIncrements('id');
             $table->string('location')->default(0);
             $table->integer('branch_id')->default(0);
-            $table->double('price')->default(0);
-            $table->double('pilot_value')->default(0);
-            $table->string('time', 100)->nullable(0);
+            $table->double('price')->default(0)->nullable();
+            $table->double('pilot_value')->default(0)->nullable();
+            $table->string('time', 100)->nullable(0)->nullable();
             $table->timestamps();
         });
     }

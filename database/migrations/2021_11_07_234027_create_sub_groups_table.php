@@ -19,7 +19,7 @@ class CreateSubGroupsTable extends Migration
             $table->integer('menu_id');
             $table->integer('group_id');
             $table->string('name')->nullable();
-            $table->string('active')->nullable();
+            $table->string('active')->default("Show");
             $table->timestamps();
         });
     }

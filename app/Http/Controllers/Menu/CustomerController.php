@@ -144,7 +144,12 @@ class CustomerController extends Controller
                 }
             break;
             default :
-                return response()->json(false);
+                {
+                    $data = Customer_phone::with('Customer')
+                    ->where('branch_id', $request->ID)
+                    ->where('phone', 'LIKE', '%' . $query . "%")
+                    ->get();
+                }
         }
 
 
