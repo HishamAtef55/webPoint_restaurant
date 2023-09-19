@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\GroupRequest;
+use App\Http\Requests\StockGroupRequest;
 use App\Models\MainGroup;
 use App\Models\stocksection;
 use Illuminate\Http\Request;
@@ -27,7 +27,7 @@ class GroupMaterialControllers extends Controller
         $groups = material_group::with('maingroup')->get()->all();
         return view('stock.stock.groups',compact('new_group','mainGroup','groups'));
     }
-    public function save_groups(GroupRequest $request){
+    public function save_groups(StockGroupRequest $request){
         $flag = 0;
         $status = '';
         $msg = '';
