@@ -89,7 +89,6 @@ branch.on('change', function () {
 /* ============================ Start Get Details Items =======================*/
 items.on('change', function () {
     let price = $(this).find('option:selected').attr('data-price');
-    let tableBody = $('.table-materials tbody');
     materialArray = [];
     $.ajax({
         url: "{{route('getDetails')}}",
@@ -139,7 +138,7 @@ details.on('change', function () {
                     productQty.focus().select();
                     let html = '';
                     let count = 1;
-                    tableBody.empty();
+                    tableBody.html('<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>');
                     $('.percentage').val(0);
                     $('.total-price').val(0);
                     getRowsNumber();

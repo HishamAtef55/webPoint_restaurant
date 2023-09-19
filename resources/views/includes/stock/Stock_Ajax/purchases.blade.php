@@ -35,12 +35,9 @@
 
 $(document).ready(function() {
 
-    $('select').select2({
-        selectOnClose: true,
-        dir: "rtl"
-    });
     items.select2({
-        matcher: customMatcher
+        matcher: customMatcher,
+        dir: 'rtl'
     });
     function customMatcher(params, data) {
         // Always return the object if there is nothing to compare
@@ -272,6 +269,7 @@ $(document).ready(function() {
             </td>
         </tr>`
 
+        tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
         tableBody.append($(html));
         discount.val('');
         totalUnit.val('');
@@ -699,7 +697,7 @@ $(document).ready(function() {
         Expire.val(today);
         discount.val('');
         notes.val('');
-        tableBody.html('');
+        tableBody.html('<tr class="not-found"> <td colspan="11">لا يوجد بيانات</td></tr>');
         saveBtn.removeClass('d-none');
         updateBtn.addClass('d-none');
         deleteBtn.addClass('d-none');

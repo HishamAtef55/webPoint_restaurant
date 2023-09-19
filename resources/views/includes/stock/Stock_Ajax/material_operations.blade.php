@@ -157,7 +157,7 @@ $(document).ready(function() {
         let type = $(this).val();
         if (type === 'variable') {
             $('.variable-sec').removeClass('d-none');
-            tableBody.html('');
+            tableBody.html(' <tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>');
             calcPricePercent();
             quantityComp.val('');
             checkForm();

@@ -265,6 +265,7 @@ $(document).ready(function() {
             </td>
         </tr>`
 
+        tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
         tableBody.append($(html));
         discount.val('');
         totalUnit.val('');
@@ -667,7 +668,7 @@ $(document).ready(function() {
         Expire.val(today);
         discount.val('');
         notes.val('');
-        tableBody.html('');
+        tableBody.html('<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>');
         saveBtn.removeClass('d-none');
         updateBtn.addClass('d-none');
         deleteBtn.addClass('d-none');

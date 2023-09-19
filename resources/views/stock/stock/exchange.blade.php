@@ -64,53 +64,22 @@
                     <div class="col-md-2 branch-sec">
                         <label for="sections"  class="select-label">القسم</label>
                         <select class="form-select" id="sections">
+                            <option selected disabled>اختر القسم</option>
                         </select>
                     </div>
-{{--                    <div class="col">--}}
-{{--                        <div class="custom-form">--}}
-{{--                            <input type="number"  name="tax" id="tax">--}}
-{{--                            <label for="tax" > (%) الضريبة</label>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col">--}}
-{{--                        <div class="custom-form">--}}
-{{--                            <input type="number"  name="discount" id="discount">--}}
-{{--                            <label for="discount" >الخصم</label>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col">--}}
-{{--                        <div class="form-check">--}}
-{{--                            <input class="form-check-input pay-method" type="radio" value="installment"--}}
-{{--                                id="installment_method" name="pay_method">--}}
-{{--                            <label class="form-check-label" for="installment_method">--}}
-{{--                                اجل--}}
-{{--                            </label>--}}
-{{--                        </div>--}}
-{{--                        <div class="form-check">--}}
-{{--                            <input class="form-check-input pay-method" type="radio" value="cash"--}}
-{{--                                id="cash_method" name="pay_method" checked>--}}
-{{--                            <label class="form-check-label" for="cash_method">--}}
-{{--                                نقدى--}}
-{{--                            </label>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
                 </div>
                 <hr />
                 <div class="row align-items-end" style="margin-top: -1rem;">
-{{--                    <div class="col-md-2">--}}
-{{--                        <div class="custom-form">--}}
-{{--                            <input type="date"  name="Expire" id="Expire" value="<?php echo date('Y-m-d'); ?>" min="<?php echo date('Y-m-d'); ?>">--}}
-{{--                            <label for="Expire" >تاريخ الصلاحية</label>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
                     <div class="col-md-2">
-                        <label for="items"  class="select-label">اسم الصنف</label>
+                        <label for="items"  class="select-label"> الصنف</label>
                         <select class="form-select" id="items">
+                            <option selected disabled>اختر الصنف</option>
                         </select>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col">
                         <label for="unit" class="select-label" >الوحدة</label>
                         <select class="form-select" id="unit">
+                            <option selected disabled>اختر الوحدة</option>
                         </select>
                     </div>
                     <div class="col">
@@ -145,7 +114,7 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive materials-responsive">
+            <div class="table-responsive materials-responsive rounded">
                 <table class="table table-light table-striped text-center table-exchange">
                     <thead>
                         <tr>
@@ -159,6 +128,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr class="not-found">
+                            <td colspan="7">لا يوجد بيانات</td>
+                        </tr>
                     </tbody>
                     <tfoot class="table-dark">
                             <th colspan="5"> الاجمالي </th>

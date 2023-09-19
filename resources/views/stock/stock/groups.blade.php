@@ -65,7 +65,7 @@
                                 </tr>
                             @endforeach
                         @else
-                            <tr>
+                            <tr class="not-found">
                                 <td colspan="5">لا يوجد مجموعات</td>
                             </tr>
                         @endif

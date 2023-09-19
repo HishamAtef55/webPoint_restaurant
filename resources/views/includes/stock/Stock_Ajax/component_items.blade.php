@@ -104,7 +104,7 @@ items.on('change', function() {
                 productQty.focus().select()
                 let html = '';
                 let count = 1;
-                tableBody.empty()
+                tableBody.html('<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>');
                 data.materials.materials.forEach((material) => {
                         html += `<tr id="${material.material_id}">
                         <td>${count}</td>
@@ -226,6 +226,8 @@ unitInput.on('keyup', function(e) {
                 return false
             }
 
+
+
             if (tableBody.find(`tr#${materialCode}`).length > 0) {
                 let tableRow = tableBody.find(`tr#${materialCode}`);
                 tableRow.find('.tr-qty').text(qty);
@@ -250,7 +252,8 @@ unitInput.on('keyup', function(e) {
                     <td class="tr-qty">${qty}</td>
                     <td class="tr-price">${unitPriceInput.val()}</td>
                     <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
-                </tr>`
+                </tr>`;
+                tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
                 tableBody.append($(html));
             }
             unitPriceInput.val('')

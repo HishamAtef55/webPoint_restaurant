@@ -1,81 +1,93 @@
 @php $title='مكونات تفاصيل الاصناف';@endphp
 @extends('layouts.stock.app')
 @section('content')
-    <section class="component_items">
+<section>
+    <h2 class="page-title">{{$title}}</h2>
         <div class="container">
             @CSRF
             <div class="row">
                 <div class="col-lg-5">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label class="form-label">اسم الفرع</label>
-                                <select class="form-control select2" id="branch">
-                                    <option disabled selected></option>
-                                    @foreach($branchs as $branch)
-                                        <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                    @endforeach
-                                </select>
+                    <div class="bg-light p-2 rounded shadow">
+                        <div class="row">
+                            <div class="col-12">
+                                <div >
+                                    <label class="select-label"> الفرع</label>
+                                    <select id="branch">
+                                        <option disabled selected>اختر الفرع </option>
+                                        @foreach($branchs as $branch)
+                                            <option value="{{$branch->id}}">{{$branch->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label for="items"> اسم الصنف </label>
-                                <select class="form-control select2 " id="items"></select>
+                            <div class="col-12">
+                                <div >
+                                    <label for="items"  class="select-label">  الصنف </label>
+                                    <select class="form-control select2 " id="items">
+                                        <option disabled selected>اختر الصنف</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label for="detailsItems"> تفاصيل الصنف </label>
-                                <select class="form-control select2 " id="detailsItems"></select>
+                            <div class="col-12">
+                                <div>
+                                    <label for="detailsItems"  class="select-label"> تفاصيل الصنف </label>
+                                    <select id="detailsItems">
+                                        <option disabled selected>اختر تفاصيل الصنف</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label for="item_price" class="form-label">سعر البيع</label>
-                                <input type="text" class="form-control item-price" name="item_price" id="item_price" disabled>
+                            <div class="col-6">
+                                <div class="custom-form mt-3">
+                                    <input type="text" name="item_price" id="item_price" disabled>
+                                    <label for="item_price" >سعر البيع</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label for="product_qty" class="form-label">الكمية المنتجة</label>
-                                <input type="number" class="form-control product-qty" min='1' value="1" name="product_qty" id="product_qty" >
+                            <div class="col-6">
+                                <div class="custom-form mt-3">
+                                    <input type="number" class="product-qty" min='1' value="1" name="product_qty" id="product_qty" >
+                                    <label for="product_qty" >الكمية المنتجة</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="select-box mb-2">
-                                <label class="form-label"> المجموعة الرئيسية </label>
-                                <select class="form-control select2" id="main_group">
-                                    <option disabled selected></option>
-                                    <option value="all">all</option>
-                                    @foreach($groups as $group)
-                                        <option value="{{$group->id}}">{{$group->name}}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col-12">
+                                <div class="select-box">
+                                    <label class="select-label"> المجموعة الرئيسية </label>
+                                    <select id="main_group">
+                                        <option disabled selected> اختر المجموعة الرئيسية </option>
+                                        <option value="all">all</option>
+                                        @foreach($groups as $group)
+                                            <option value="{{$group->id}}">{{$group->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label for="materials">الخامة</label>
-                                <select class="form-control select2" id="materials"></select>
+                            <div class="col-12">
+                                <div>
+                                    <label for="materials" class="select-label">الخامة</label>
+                                    <select class="form-control select2" id="materials">
+                                        <option disabled selected>اختر الخامة</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label for="unit" class="form-label" >الكمية ( <span id="unit_label"></span> )</label>
-                                <input type="number" class="form-control unit" name="unit" id="unit">
+                            <div class="col-6">
+                                <div class="custom-form mt-3">
+                                    <input type="number" class="unit" name="unit" id="unit">
+                                    <label for="unit" >الكمية ( <span id="unit_label"></span> )</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label for="unit_price" class="form-label">سعر الوحدة</label>
-                                <input type="number" class="form-control unit-price" name="unit_price" id="unit_price" disabled>
+                            <div class="col-6">
+                                <div class="custom-form mt-3">
+                                    <input type="number" name="unit_price" id="unit_price" disabled>
+                                    <label for="unit_price" >سعر الوحدة</label>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <div class="d-grid gap-2  mt-4">
+                        <button class='btn btn-success ' id="save_component">Save</button>
+                    </div>
                 </div>
                 <div class="col-lg-7">
-                    <div class="table-responsive materials-responsive">
+                    <div class="table-responsive materials-responsive rounded" style="min-height: 420px" >
                         <table class="table table-light table-striped text-center table-materials">
                             <thead>
                             <tr>
@@ -88,22 +100,23 @@
                             </tr>
                             </thead>
                             <tbody>
+                                <tr class="not-found">
+                                    <td colspan="6">لا يوجد بيانات</td>
+                                </tr>
                             </tbody>
                             <tfoot class="table-dark">
                             <tr>
                                 <td>0</td>
                                 <td>النسبة</td>
-                                <td><input type="number" class="percentage" disabled> <span class="fs-5">%</span> </td>
+                                <td><input type="number" class="percentage" value="0" disabled> <span class="fs-5">%</span> </td>
                                 <td>الاجمالى</td>
-                                <td><input type="number" class="total-price" disabled></td>
+                                <td><input type="number" class="total-price" value="0" disabled></td>
                                 <td></td>
                             </tr>
                             </tfoot>
                         </table>
                     </div>
-                    <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
-                        <button class='btn btn-success  fs-4' id="save_component">Save</button>
-                    </div>
+
                     <div class="d-flex flex-wrap gap-2 material-buttons justify-content-center mt-4">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transferModal">
                             تكرار مكونات الاصناف
@@ -127,7 +140,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-5">
-                            <div class="mb-3">
+                            <div class="custom-form mt-3">
                                 <label class="form-label">اسم الفرع</label>
                                 <select class="form-control select2" id="fromBranch">
                                     <option disabled selected></option>
@@ -136,12 +149,12 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div class="custom-form mt-3">
                                 <label for="fromItems"> اسم الصنف </label>
                                 <select class="form-control select2" id="fromItems"></select>
                             </div>
                             <div class="col-12">
-                                <div class="mb-3">
+                                <div class="custom-form mt-3">
                                     <label for="fromDetailsItems"> تفاصيل الصنف </label>
                                     <select class="form-control select2 " id="fromDetailsItems"></select>
                                 </div>
@@ -152,7 +165,7 @@
                             <button class="btn dark-btn transAll">TransAll</button>
                         </div>
                         <div class="col-md-5">
-                            <div class="mb-3">
+                            <div class="custom-form mt-3">
                                 <label class="form-label">اسم الفرع</label>
                                 <select class="form-control select2" id="toBranch">
                                     <option disabled selected></option>
@@ -161,12 +174,12 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div class="custom-form mt-3">
                                 <label for="toItems"> اسم الصنف </label>
                                 <select class="form-control select2" id="toItems"></select>
                             </div>
                             <div class="col-12">
-                                <div class="mb-3">
+                                <div class="custom-form mt-3">
                                     <label for="toDetailsItems"> تفاصيل الصنف </label>
                                     <select class="form-control select2 " id="toDetailsItems"></select>
                                 </div>

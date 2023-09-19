@@ -67,18 +67,18 @@
                     table.html('')
                     data.halks.forEach((halk) => {
                         htmlhalk += `<tr value="${halk.id}">
-                                <td>${halk.id}</td>
-                                <td>${halk.getbranch.name}</td>
-                                <td>${halk.getsection.name}</td>
-                                <td>${halk.item}</td>
-                                <td>${halk.qty}</td>
-                                <td>${halk.date}</td>
-                                <td>
-                                    <div class="del-edit">
-                                        <button class="btn btn-danger delete" halkId="${halk.id}"><i class="fa-regular fa-trash-can"></i></button>
-                                    </div>
-                                </td>
-                                      </tr>`;
+                            <td>${halk.id}</td>
+                            <td>${halk.getbranch.name}</td>
+                            <td>${halk.getsection.name}</td>
+                            <td>${halk.item}</td>
+                            <td>${halk.qty}</td>
+                            <td>${halk.date}</td>
+                            <td>
+                                <div class="del-edit">
+                                    <button class="btn btn-danger delete" halkId="${halk.id}"><i class="fa-regular fa-trash-can"></i></button>
+                                </div>
+                            </td>
+                        </tr>`;
                     });
                     table.html(htmlhalk)
                 },

@@ -96,7 +96,7 @@ mainMaterial.on('change', function() {
                 productQty.focus().select()
                 let html = '';
                 let count = 1;
-                tableBody.empty()
+                tableBody.html('<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>');
                 data.materials.materials.forEach((material) => {
                         html += `<tr id="${material.material_id}">
                         <td>${count}</td>

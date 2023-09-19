@@ -20,7 +20,9 @@
             success:function(data)
             {
                 if(data.status == 'true') {
-                    let html = $(`<tr><th>${id.val()}</th><td>${main_group.val()}</td><td>${name.val()}</td><td>${from.val()}</td><td>${to.val()}</td></tr>`)
+                    let optionName =  main_group.find(`option[value="${main_group.val()}"]`).text()
+                    let html = $(`<tr><th>${id.val()}</th><td>${optionName}</td><td>${name.val()}</td><td>${from.val()}</td><td>${to.val()}</td></tr>`)
+                    $('tbody').find('tr.not-found').length ? $('tr.not-found').remove() : '';
                     $('tbody').append(html)
                     id.val(data.new_group);
                     name.val('');

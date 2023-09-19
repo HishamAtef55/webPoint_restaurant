@@ -2,6 +2,7 @@
 @extends('layouts.stock.app')
 @section('content')
 <section class="material_operations">
+    <h2 class="page-title">{{$title}}</h2>
     <div class="container">
         <div class="bg-light p-4 mb-2 rounded shadow">
             @CSRF
@@ -52,6 +53,7 @@
                 <div class="col-md-3">
                     <label for="sections" class="select-label">الاقسام</label>
                     <select class="form-select" id="sections">
+                        <option selected disabled>اختر القسم</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -86,6 +88,7 @@
                 <div class="col-md-3">
                     <label for="material" class="select-label">الخامة</label>
                     <select class="form-select" id="material">
+                        <option disabled selected>اختر الخامة</option>
                     </select>
                 </div>
                 <div class="col">
@@ -116,10 +119,13 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <tr class="not-found">
+                        <td colspan="7">لا يوجد بيانات</td>
+                    </tr>
                 </tbody>
                 <tfoot class="table-dark">
                     <th colspan="5"> الاجمالي </th>
-                    <th class="sumFinal"></th>
+                    <th class="sumFinal">0</th>
                     <th></th>
             </tfoot>
             </table>
