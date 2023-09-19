@@ -110,7 +110,7 @@ section.welcome-page img {
     background: rgb(82, 112, 232);
     color: rgba(255, 255, 255, 0.7);
     line-height: 150px;
-    border-radius: 50%;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
     white-space: nowrap;
     text-align: center;
     text-decoration: none;
@@ -128,7 +128,6 @@ section.welcome-page img {
     background: rgb(82, 112, 232, 0.3);
     font-size: 20px
 }
-
 
 
 section.login {

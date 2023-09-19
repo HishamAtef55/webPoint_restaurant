@@ -2,6 +2,7 @@
 @extends('layouts.stock.app')
 @section('content')
 <section class='store pt-2'>
+    <h2 class="page-title">{{$title}}</h2>
     <div class="container">
         @CSRF
         <div class='row'>
@@ -34,6 +35,7 @@
                     <input type="text" class="form-control" name="section_name" id="section_name">
                     <ul class="search-result"></ul>
                 </div>
+
                 <h3>المجموعات</h3>
                 <div class="groups">
                 </div>
