@@ -10,30 +10,33 @@
             <div class="col-lg-7 col-md-8">
                 <div class="bg-light p-2 rounded shadow">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div>
-                                <label for="main_group" class="select-label">المجموعة الرئيسية</label>
-                                <select id="main_group">
-                                    <option selected disabled>اختر المجموعة الرئيسية</option>
-                                        @foreach($mainGroup as $group)
-                                            <option value="{{$group->id}}">{{$group->name}}</option>
-                                        @endforeach
-                                </select>
+                        <div class="row">
+                            <div class="col">
+                                <div class="custom-form mt-3 position-relative">
+                                    <input type="text" name="material_id" id="material_id" value="1" disabled>
+                                    <label for="material_id">كود الخامة</label>
+                                </div>
+                            </div>
+                            <div class="col flex-grow-1">
+                                <div>
+                                    <label for="main_group" class="select-label">المجموعة الرئيسية</label>
+                                    <select id="main_group">
+                                        <option selected disabled>اختر المجموعة الرئيسية</option>
+                                            @foreach($mainGroup as $group)
+                                                <option value="{{$group->id}}">{{$group->name}}</option>
+                                            @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col flex-grow-1">
+                                <div>
+                                    <label for="sub_group" class="select-label">المجموعة الفرعية</label>
+                                    <select class="form-select" id="sub_group">
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div>
-                                <label for="sub_group" class="select-label">المجموعة الفرعية</label>
-                                <select class="form-select" id="sub_group">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="custom-form mt-3 position-relative">
-                                <input type="text" name="material_id" id="material_id" value="1" disabled>
-                                <label for="material_id">كود الخامة</label>
-                            </div>
-                        </div>
+                        <hr />
                         <div class="col-md-5">
                             <div class="custom-form mt-3 position-relative">
                                 <input type="text" name="material_name" id="material_name">
