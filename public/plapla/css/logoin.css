@@ -103,11 +103,23 @@ section.welcome-page img {
     text-align: center;
 }
 
+.menu-item svg {
+    position: absolute;
+    left: 0;
+    transform: scale(1.2);
+    transition: transform 0.5s ease-in-out;
+}
+
+.menu-item:nth-child(4) svg,
+.menu-item:nth-child(5) svg {
+    transform: scale(1.4);
+}
+
+
 .menu-item span {
     display: block;
     width: inherit;
     height: inherit;
-    background: rgb(82, 112, 232);
     color: rgba(255, 255, 255, 0.7);
     line-height: 150px;
     border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
@@ -122,11 +134,41 @@ section.welcome-page img {
     font-family: "Michroma", sans-serif;
 }
 
-.menu-item span:hover {
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
-    color: white;
-    background: rgb(82, 112, 232, 0.3);
-    font-size: 20px
+.menu-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: 40% 60% 53% 47% / 85% 66% 34% 15%;
+    background-color: #4f6ce0;
+    filter: blur(35px);
+    animation: round infinite alternate forwards 5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+    z-index: -1;
+}
+
+.menu-item:hover::after {
+    width: 150px;
+    height: 150px;
+}
+
+@keyframes round {
+    0% {
+        transform: rotate(0deg);
+        border-radius: 40% 60% 53% 47% / 85% 66% 34% 15%;
+    }
+
+    100% {
+        transform: rotate(360deg);
+        border-radius: 76% 24% 72% 28% / 44% 87% 13% 56%;
+    }
+}
+
+.menu-item:hover svg {
+    transform: scale(1.5);
 }
 
 
