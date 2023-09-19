@@ -2,6 +2,7 @@
 @extends('layouts.stock.app')
 @section('content')
 <section class="purchases">
+    <h2 class="page-title">{{$title}}</h2>
         <div id="permissionId" value="{{$serial}}"></div>
         <div class="container">
             <div class="bg-light p-4 mb-2 rounded shadow">
@@ -68,19 +69,22 @@
                     <div class="col-md-2 branch-sec d-none">
                         <label for="sections"  class="select-label">القسم</label>
                         <select class="form-select" id="sections">
+                            <option selected disabled>اختر القسم</option>
                         </select>
                     </div>
                 </div>
                 <hr />
                 <div class="row align-items-end" style="margin-top: -1rem;">
                     <div class="col-md-2">
-                        <label for="items"  class="select-label">اسم الصنف</label>
+                        <label for="items"  class="select-label"> الصنف</label>
                         <select class="form-select" id="items">
+                            <option selected disabled>اختر الصنف</option>
                         </select>
                     </div>
                     <div class="col">
                         <label for="unit" class="select-label" >الوحدة</label>
                         <select class="form-select" id="unit">
+                            <option selected disabled>اختر الوحدة</option>
                         </select>
                     </div>
                     <div class="col">
@@ -116,7 +120,7 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive materials-responsive">
+            <div class="table-responsive materials-responsive rounded">
                 <table class="table table-light table-striped text-center table-purchases">
                     <thead>
                         <tr>
@@ -130,10 +134,13 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr class="not-found">
+                            <td colspan="7">لا يوجد بيانات</td>
+                        </tr>
                     </tbody>
                     <tfoot class="table-dark">
                             <th colspan="5"> الاجمالي </th>
-                            <th class="sumTotal">  </th>
+                            <th class="sumTotal">0.00</th>
                             <th></th>
                     </tfoot>
                 </table>

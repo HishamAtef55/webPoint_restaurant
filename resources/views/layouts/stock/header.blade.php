@@ -98,23 +98,9 @@
                     <li class="@if(Route::current()->getName() == 'materialManufacturing') active @endif">
                         <a class="text-muted py-1 d-block" href="{{route('materialManufacturing')}}"> التصنيع </a>
                     </li>
-                    <li class="@if(Route::current()->getName() == 'reports.store_balance') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{route('reports.store_balance')}}"> رصيد المخزن </a>
-                    </li>
-                    <li class="@if(Route::current()->getName() == 'inventoryDaily.index') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{route('inventoryDaily.index')}}"> الجرد الشهري </a>
-                    </li>
-
-                    <li class="@if(Route::current()->getName() == 'inventory.index') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{route('inventory.index')}}"> الجرد اليومي </a>
-                    </li>
 
                     <li class="@if(Route::current()->getName() == 'inDirectCost.index') active @endif">
                         <a class="text-muted py-1 d-block" href="{{route('inDirectCost.index')}}"> المصاريف الغير مباشرة </a>
-                    </li>
-
-                    <li class="@if(Route::current()->getName() == 'reports.items-pricing.index') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{route('reports.items-pricing.index')}}"> تسعير اصناف </a>
                     </li>
 
                     <li class="@if(Route::current()->getName() == 'stock.orders.index') active @endif">
@@ -126,6 +112,19 @@
         <div class="sub-menu reports">
             <div class="container">
                     <ul class="list-unstyled p-3">
+                        <li class="@if(Route::current()->getName() == 'reports.items-pricing.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.items-pricing.index')}}"> تسعير اصناف </a>
+                        </li>
+                        <li class="@if(Route::current()->getName() == 'reports.store_balance') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.store_balance')}}"> رصيد المخزن </a>
+                        </li>
+                        <li class="@if(Route::current()->getName() == 'inventoryDaily.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('inventoryDaily.index')}}"> الجرد الشهري </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'inventory.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('inventory.index')}}"> الجرد اليومي </a>
+                        </li>
                         <li class="@if(Route::current()->getName() == 'reports.exchange.index') active @endif">
                             <a class="text-muted py-1 d-block" href="{{route('reports.exchange.index')}}"> تقرير الصرف </a>
                         </li>

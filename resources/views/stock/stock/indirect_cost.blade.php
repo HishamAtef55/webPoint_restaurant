@@ -2,6 +2,7 @@
 @extends('layouts.stock.app')
 @section('content')
 <section class="expenses">
+    <h2 class="page-title">{{$title}}</h2>
     <div class="container">
         @CSRF
         <div class="row">
@@ -15,7 +16,7 @@
                         <button class='btn btn-success fs-6' id="save_expenses">Save</button>
                     </div>
                 </div>
-                <div class="table-responsive expenses-name-responsive">
+                <div class="table-responsive expenses-name-responsive rounded">
                     <table class="table table-light table-striped text-center expenses_name_table table-purchases">
                         <thead>
                             <tr>
@@ -24,21 +25,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($data as $one)
-                                <tr rowId="{{$one->id}}">
-                                    <td>
-                                        <input type="text" class="form-control" value="{{$one->name}}"/>
-                                        <span>{{$one->name}}</span>
-                                    </td>
-                                    <td>
-                                        <div class="del-edit">
-                                            <button class="btn btn-danger delete_expenses"><i class="fa-regular fa-trash-can"></i></button>
-                                            <button class="btn btn-warning edit_expenses"><i class="fa-regular fa-pen-to-square"></i></button>
-                                        </div>
-                                        <button class="btn btn-primary update_expenses update">Update</button>
-                                    </td>
-                                </tr>
-                            @endforeach
+                            @if(count($data) > 0)
+                                @foreach($data as $one)
+                                    <tr rowId="{{$one->id}}">
+                                        <td>
+                                            <input type="text" class="form-control" value="{{$one->name}}"/>
+                                            <span>{{$one->name}}</span>
+                                        </td>
+                                        <td>
+                                            <div class="del-edit">
+                                                <button class="btn btn-danger delete_expenses"><i class="fa-regular fa-trash-can"></i></button>
+                                                <button class="btn btn-warning edit_expenses"><i class="fa-regular fa-pen-to-square"></i></button>
+                                            </div>
+                                            <button class="btn btn-primary update_expenses update">Update</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                            <tr class="not-found">
+                                <td colspan="2">لا يوجد بيانات</td>
+                            </tr>
+                            @endif
 
                         </tbody>
                     </table>
@@ -73,7 +80,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-responsive expenses-responsive">
+                <div class="table-responsive expenses-responsive rounded">
                     <table class="table table-light table-striped text-center expenses_table table-purchases">
                         <thead>
                             <tr>
@@ -84,18 +91,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach($inDirectCosts as $row)
-                            <tr rowId="{{$row->id}}">
-                                <td>{{$row->cost->name}}</td>
-                                <td>{{$row->date}}</td>
-                                <td>{{$row->value}}</td>
-                                <td>
-                                    <div class="del-edit">
-                                        <button class="btn btn-danger delete_expenses"><i class="fa-regular fa-trash-can"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
+                        @if(count($inDirectCosts) > 0)
+                            @foreach($inDirectCosts as $row)
+                                <tr rowId="{{$row->id}}">
+                                    <td>{{$row->cost->name}}</td>
+                                    <td>{{$row->date}}</td>
+                                    <td>{{$row->value}}</td>
+                                    <td>
+                                        <div class="del-edit">
+                                            <button class="btn btn-danger delete_expenses"><i class="fa-regular fa-trash-can"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
+                        <tr class="not-found">
+                            <td colspan="4">لا يوجد بيانات</td>
+                        </tr>
+                        @endif
                         </tbody>
                     </table>
                 </div>

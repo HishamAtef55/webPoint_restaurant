@@ -2,6 +2,7 @@
 @extends('layouts.stock.app')
 @section('content')
 <section class="purchases">
+    <h2 class="page-title">{{$title}}</h2>
     <div class="container">
         <div class="bg-light p-4 mb-2 rounded shadow">
             @CSRF
@@ -54,11 +55,13 @@
                 <div class="col-md-3 branch-sec d-none">
                     <label for="fromSection"  class="select-label">من قسم</label>
                     <select class="form-select" id="fromSection">
+                        <option selected disabled>اختر القسم</option>
                     </select>
                 </div>
                 <div class="col-md-3 branch-sec d-none">
                     <label for="toSection"  class="select-label">الي قسم</label>
                     <select class="form-select" id="toSection">
+                        <option selected disabled>اختر القسم</option>
                     </select>
                 </div>
             </div>
