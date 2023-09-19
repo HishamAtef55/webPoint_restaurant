@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\Models\Items;
+use App\Models\Item;
 use App\Models\MainComponents;
 use App\Models\MainGroup;
 use App\Models\material;
@@ -26,7 +26,7 @@ class ComponentItemsController extends Controller
         return view('stock.stock.component_items',compact('branchs','groups'));
     }
     public function get_items(Request $request){
-        $items = Items::where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
+        $items = Item::where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
         if($items){
             return response()->json([
                 'status'=>true,
@@ -134,7 +134,7 @@ class ComponentItemsController extends Controller
                 $addMaterial = ComponentsItems::create($main);
             }
         }
-        $getItem = Items::limit(1)->where(['branch_id'=>$addItem['branch'],'id'=>$addItem['item']])->select(['price'])->first();
+        $getItem = Item::limit(1)->where(['branch_id'=>$addItem['branch'],'id'=>$addItem['item']])->select(['price'])->first();
         $addItem['cost'] = $sum;
         $addItem['percentage'] = number_format($sum / $getItem->price * 100, 2, '.', '');
         if($chekMain){
@@ -152,7 +152,7 @@ class ComponentItemsController extends Controller
         if($request->branch){
             $newData = [];
             $c = 0;
-            $items = Items::with('custom_materials')->where(['branch_id'=>$request->branch])->get();
+            $items = Item::with('custom_materials')->where(['branch_id'=>$request->branch])->get();
             $this->status = true;
             foreach ($items as $item){
                 if($item->custom_materials == null){
@@ -176,9 +176,9 @@ class ComponentItemsController extends Controller
         $conGroups = [];
         if($request->branch){
             if($request->details == 1){
-                $data = Items::with('custom_materials.Materials','details.details','details.materials','details.materials.materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
+                $data = Item::with('custom_materials.Materials','details.details','details.materials','details.materials.materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
             }else{
-                $data = Items::with('custom_materials.Materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
+                $data = Item::with('custom_materials.Materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
             }
             $this->status = true;
         }else{
@@ -188,7 +188,7 @@ class ComponentItemsController extends Controller
     }
     public function printItems(Request $request){
         if($request->items){
-            $data = Items::with('material_components')->where(['branch_id'=>$request->branch,'id'=>$request->items])->select(['id','name'])->get();
+            $data = Item::with('material_components')->where(['branch_id'=>$request->branch,'id'=>$request->items])->select(['id','name'])->get();
             $this->status = true;
         }else{
             $data = "select item please";

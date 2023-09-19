@@ -7,7 +7,7 @@ use App\Models\Branch;
 use App\Models\halkDetails;
 use App\Models\HalkItem;
 use App\Models\halkMain;
-use App\Models\Items;
+use App\Models\Item;
 use App\Models\MainComponents;
 use App\Models\materialLog;
 use App\Models\sectionCost;
@@ -323,7 +323,7 @@ class MaterialHalk extends Controller
             $materialSection->qty -= $qtyUnit;
             $materialSection->save();
         }
-        $item = Items::find($request->item);
+        $item = Item::find($request->item);
         $saveHalk = HalkItem::create([
             'branch'=>$request->branch,
             'section_id'=>$request->section,

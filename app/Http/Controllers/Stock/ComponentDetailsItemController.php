@@ -7,7 +7,7 @@ use App\Models\Branch;
 use App\Models\ComponentsItems;
 use App\Models\detailsComponent;
 use App\Models\DetailsItem;
-use App\Models\Items;
+use App\Models\Item;
 use App\Models\MainComponents;
 use App\Models\mainDetailsComponent;
 use App\Models\MainGroup;
@@ -27,7 +27,7 @@ class ComponentDetailsItemController extends Controller
         return view('stock.stock.componentDetailsItems',compact('branchs','groups'));
     }
     public function getItemDetails(Request $request){
-        $items = Items::whereHas('details')->where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
+        $items = Item::whereHas('details')->where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
         if($items){
             return response()->json([
                 'status'=>true,
@@ -173,7 +173,7 @@ class ComponentDetailsItemController extends Controller
         $counter_item = 0;
         $counter_details = 0;
         if($request->branch){
-            $item = Items::with('details','details.details')->whereHas('details')
+            $item = Item::with('details','details.details')->whereHas('details')
                 ->where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
             foreach ($item as $oneItem){
                 $items[$counter_item]['id'] = $oneItem->id;
@@ -207,12 +207,12 @@ class ComponentDetailsItemController extends Controller
         if(!$request->branch){$data = 'select branch please';}
         if($request->items && $request->details){
             $details = $request->details;
-            $data = Items::limit(1)->with(['details_components'=>function($query)use($details){
+            $data = Item::limit(1)->with(['details_components'=>function($query)use($details){
                 $query->where('details',$details);
             },'details_components.materials','details_components.details'])->where(['branch_id'=>$request->branch,'id'=>$request->items])->select(['id','name','cost_price','price'])->first();
             $status = true;
         }elseif (!$request->details && $request->items){
-            $data = Items::limit(1)->with('details_components','details_components.materials','details_components.details')
+            $data = Item::limit(1)->with('details_components','details_components.materials','details_components.details')
                 ->where(['branch_id'=>$request->branch,'id'=>$request->items])->select(['id','name','cost_price','price'])->first();
             $status = true;
         }else{
