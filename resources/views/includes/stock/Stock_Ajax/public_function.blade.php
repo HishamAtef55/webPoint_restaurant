@@ -1,5 +1,13 @@
 <script>
     let _token = $('input[name="_token"]').val();
+
+    $(document).ready(function() {
+        $('select').select2({
+            selectOnClose: true,
+            dir: "rtl"
+        });
+    });
+
     function searchDb(url , query , inputSearch , branch){
         let searchList = inputSearch.siblings('.search-result');
         if(query != ''){

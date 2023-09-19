@@ -42,62 +42,12 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar sticky-top shadow-sm px-3">
-            <div class="navbar-brand">
-                <a href="{{ route('costControl') }}" class="text-white">
-                    Web Point
-                </a>
-                <button class="toggle-menu me-2">
-                    <i class="fa-solid fa-bars-staggered fa-xl"></i>
-                </button>
-            </div>
 
-            <div>
-                <!-- Right Side Of Navbar -->
-                <ul class="navbar-nav ms-auto">
-                    <!-- Authentication Links -->
-                    @guest
-                        @if (Route::has('login'))
-                            <li class="nav-item">
-                                <a class="nav-link  text-white" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                        @endif
+        @include('layouts.stock.header')
 
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="nav-link  text-white" href="{{ route('register') }}">{{ __('Register') }}</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
-                            </a>
-
-                            <div class="dropdown-menu position-absolute bg-dark" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item text-white" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
-                                </a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </div>
-                        </li>
-                    @endguest
-                </ul>
-            </div>
-        </nav>
-
-        <main>
-            @include('layouts.stock.header')
-            <div class="wrapper">
-                @yield('content')
-                @include('layouts.stock.footer')
-            </div>
-        </main>
+        <div class="stock-wrapper">
+            @yield('content')
+        </div>
     </div>
 </body>
 </html>

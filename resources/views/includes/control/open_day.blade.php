@@ -83,8 +83,7 @@
                         position: 'center-center',
                         icon: 'success',
                         title: 'Your Day Is Open',
-                        showConfirmButton: false,
-                        timer: 2500
+                        showConfirmButton: true
                     });
                 }
                 else if(data.status == false)

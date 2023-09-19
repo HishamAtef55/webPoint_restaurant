@@ -303,10 +303,11 @@ section.login button {
 
 @media (max-width: 414px) {
     section.login .key-numbers span {
-        width: 65px;
-        line-height: 65px;
-        border-radius: 65px;
-        height: 65px;
+        width: 60px;
+        line-height: 60px;
+        border-radius: 60px;
+        height: 60px;
+        font-size: 1.5rem;
     }
 
     .container-login .back {
@@ -342,10 +343,6 @@ section.login button {
     section.login .pass-div {
         margin: 0;
     }
-
-    section.login .key-numbers {
-        width: 100%;
-    }
 }
 
 @media (max-width: 991.98px) {
@@ -353,4 +350,43 @@ section.login button {
         margin: 10px;
         height: 150px;
     }
+}
+
+@media (max-width: 770px) {
+    section.welcome-page {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        z-index: 1;
+    }
+
+    section.welcome-page.open {
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    section.login {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        z-index: 2;
+        backdrop-filter: blur(5px);
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+    }
+
+    section.login .back-btn {
+        top: 15px;
+        left: 20px;
+    }
+
+    section.login .key-numbers {
+        margin-top: 30px;
+        gap: 15px 30px;
+    }
+
 }

@@ -26,7 +26,6 @@ $("document").ready(function () {
     });
     // ------- Back Login Section To Choose Login Method
     $(".back-btn").on("click", function () {
-        $(".login-section").text("");
         $(this).parents("section.login").addClass("close");
         setTimeout(() => {
             $(".welcome-page").addClass("open");
