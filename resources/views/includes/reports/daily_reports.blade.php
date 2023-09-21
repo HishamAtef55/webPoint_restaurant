@@ -486,6 +486,7 @@
                                         <td>${data.orders[group].sub_group[subGroup].sold[sold].price}</td>
                                     </tr>`;
                                         subGroupTotal += +data.orders[group].sub_group[subGroup].sold[sold].price;
+                                        if(ex_de == ""){ex_de = "with_ex_de" }
                                         if(ex_de == 'Extra' || ex_de == 'with_ex_de'){
                                             if (data.orders[group].sub_group[subGroup].sold[sold].extra) {
                                                 html += `<tr>
