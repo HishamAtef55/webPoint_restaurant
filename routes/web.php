@@ -196,7 +196,7 @@ Route::group(['prefix' => 'admin'] ,function()
       Route::get('/Reset','reset_data')->name('reset_data');
       Route::get('/Del_subgroup/{subgroup_id}','Del_subgroup')->name('test.test');
       Route::post('/update_branch','update_branch')->name('update.branch');
-    });\
+    });
 
     ######################## Start Item Menu  ##################################
     Route::group(['controller'=>ItemController::class],function(){
