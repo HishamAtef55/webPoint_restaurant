@@ -54,7 +54,7 @@
                         icon: 'success',
                         title: 'Your Tables Is Empty Data',
                         showConfirmButton: false,
-                        timer: 2500
+                        timer: 2500000000000000
                     });
                 }
             },
