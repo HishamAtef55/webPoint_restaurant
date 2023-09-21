@@ -47,30 +47,7 @@ class LoginController extends Controller
             switch ($request->type)
             {
               case 'pos':
-                    //$this->deleteOrderRep();
-                    $user = Auth::user();
-                    //$this->orderLate();
-                    $this->removeActionTable();
-                    $data = array(
-                        'type' => 'login',
-                        'note' => 'User is login now',
-                    );
-                    $this->LogInfo($data);
-                    $this->CheckDay();
-                    $this->CheckLastOrder();
-                    $holes = Hole::where('branch_id',$user->branch_id)->get();
-                    $branch = $user->branch_id;
-                    $order_delivery = 1;
-                    $transfers = $this->checkTransfers();
-                    $to_noti_hold      = $this->TOGO_hold();
-                    $del_noti          = $this->Delivery();
-                    $del_noti_to_pilot = $this->Delivery_to_pilot();
-                    $del_noti_pilot    = $this->Delivery_pilot();
-                    $del_noti_hold     = $this->Delivery_hold();
-                    $printers = Printers::where(['active'=>'1'])->get();
-                    return view('menu.tables',compact([
-                        'transfers','printers','to_noti_hold','user','holes','branch',
-                        'order_delivery','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold']));
+                    return redirect()->route("home");
                 break;
                 case 'stock':
                   return view('stock.stock.home');

@@ -36,7 +36,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public static function index(Request $request)
+    public function index(Request $request)
     {
 //        $this->deleteOrderRep();
         $user = Auth::user();
