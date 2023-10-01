@@ -23,6 +23,10 @@ class CreateMaterialLogsTable extends Migration
             $table->text('store')->nullable();
             $table->text('order_id')->nullable();
             $table->text('section')->nullable();
+            $table->double('qty')->nullable()->default(0);
+            $table->text('unit')->nullable();
+            $table->integer('invoice_id')->nullable()->default(0);
+            $table->double('price')->nullable()->default(0);
             $table->timestamps();
         });
     }

@@ -8,7 +8,7 @@
     let supplier = $('#supplier');
     let dateFrom = $('#date_from');
     let dateTo = $('#date_to');
-    let showTransferReport = $('#showTransferReport');
+    let showTransferReport = $('.showTransferReport');
     $(document).ready(function() {
         $('select').select2({
             selectOnClose: true,
@@ -48,19 +48,21 @@
         });
         /*  ======================== End Change Branch ============================== */
         showTransferReport.on('click', function() {
-            let type = $('input[name="purchases_method"]:checked').val()
+            let type = $('input[name="purchases_method"]:checked').val();
+            let reportType = $(this).attr('data-request');
             $.ajax({
                 url: "{{route('reports.purchases.report')}}",
                 method: 'post',
                 data: {
                     _token,
                     type,
+                    reportType,
                     branch: branch.val(),
                     section: fromSection.val(),
                     store: fromStore.val(),
                     dateFrom: dateFrom.val(),
                     dateTo: dateTo.val(),
-                    supplier:supplier.val()
+                    supplier:supplier.val(),
 
                 },
                 success: function(data) {

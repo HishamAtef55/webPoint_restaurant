@@ -73,8 +73,9 @@
                         <label for="date" >التاريخ إلى</label>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <button class="btn btn-primary" id="showTransferReport">عرض المشتريات</button>
+                <div class="col">
+                    <button class="btn btn-primary showTransferReport" data-request="details">عرض المشتريات</button>
+                    <button class="btn btn-warning showTransferReport" data-request="total">عرض اجمالي المشتريات</button>
                 </div>
             </div>
             <hr />

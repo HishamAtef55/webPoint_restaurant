@@ -133,8 +133,36 @@
                             <a class="text-muted py-1 d-block" href="{{route('reports.transfer.index')}}"> تقرير التحويل </a>
                         </li>
 
-                        <li class="@if(Route::current()->getName() == 'reports.purchases.index') active @endif">
-                            <a class="text-muted py-1 d-block" href="{{route('reports.purchases.index')}}"> تقرير المشتريات </a>
+                        <li class="@if(Route::current()->getName() == 'reports.backStores.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.backStores.index')}}"> تقرير مرتجع مخازن </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.backSuppliers.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.backSuppliers.index')}}"> تقرير مرتج موردين </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.cardItem.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.cardItem.index')}}"> كارت صنف </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.halkItem.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.halkItem.index')}}"> تقرير هالك منتجات </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.halk.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.halk.index')}}"> تقرير الهالك </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.suppliers.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.suppliers.index')}}"> كشف حساب مورد </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.manufacturing.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.manufacturing.index')}}"> تقرير التصنيع </a>
+                        </li>
+
+                        <li class="@if(Route::current()->getName() == 'reports.operations.index') active @endif">
+                            <a class="text-muted py-1 d-block" href="{{route('reports.operations.index')}}"> تقرير التشغيل </a>
                         </li>
                     </ul>
             </div>

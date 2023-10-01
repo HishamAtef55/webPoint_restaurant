@@ -66,6 +66,15 @@ use App\Http\Controllers\StockReports\TransferReportController;
 use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\StockReports\PurchasesReportController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
+use App\Http\Controllers\StockReports\BackStoresReportsController;
+use App\Http\Controllers\StockReports\BackSuppliersReportsController;
+use App\Http\Controllers\StockReports\CardItemReportsController;
+use App\Http\Controllers\StockReports\HalkItemReportsController;
+use App\Http\Controllers\StockReports\HalkReportsController;
+use App\Http\Controllers\StockReports\ManufacturingReportsController;
+use App\Http\Controllers\StockReports\OperationsReportsController;
+use App\Http\Controllers\StockReports\SuppliersReportsController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -714,5 +723,53 @@ Route::group(['prefix'=>'reports/','middleware'=>'auth','as'=>'reports.'],functi
     Route::group(['prefix'=>'purchases','controller'=>PurchasesReportController::class,'as'=>'purchases.'],function (){
         Route::get('/','index')->name('index');
         Route::post('/report','report')->name('report');
+    });
+
+    // BackStoresReportsController Reports Controller
+    Route::group(['prefix'=>'backStores','controller'=>BackStoresReportsController::class,'as'=>'backStores.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+
+    // BackSuppliersReportsController Reports Controller
+    Route::group(['prefix'=>'backSuppliers','controller'=>BackSuppliersReportsController::class,'as'=>'backSuppliers.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+    
+    // CardItemReportsController Reports Controller
+    Route::group(['prefix'=>'cardItem','controller'=>CardItemReportsController::class,'as'=>'cardItem.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+    
+    // HalkItemReportsController Reports Controller
+    Route::group(['prefix'=>'halkItem','controller'=>HalkItemReportsController::class,'as'=>'halkItem.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+
+    // HalkReportsController Reports Controller
+    Route::group(['prefix'=>'halk','controller'=>HalkReportsController::class,'as'=>'halk.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+
+    // ManufacturingReportsController Reports Controller
+    Route::group(['prefix'=>'manufacturing','controller'=>ManufacturingReportsController::class,'as'=>'manufacturing.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+
+    // OperationsReportsController Reports Controller
+    Route::group(['prefix'=>'operations','controller'=>OperationsReportsController::class,'as'=>'operations.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
+    });
+
+    // SuppliersReportsController Reports Controller
+    Route::group(['prefix'=>'suppliers','controller'=>SuppliersReportsController::class,'as'=>'suppliers.'],function (){
+      Route::get('/','index')->name('index');
+      Route::post('/report','report')->name('report');
     });
 });

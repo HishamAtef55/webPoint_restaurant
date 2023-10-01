@@ -4,7 +4,7 @@ namespace App\Traits;
 use App\Models\ComponentsItems;
 use App\Models\detailsComponent;
 use App\Models\DetailsItem;
-use App\Models\Items;
+use App\Models\Item;
 use App\Models\MainComponents;
 use App\Models\mainDetailsComponent;
 use App\Models\mainMaterialRecipe;
@@ -35,7 +35,7 @@ Trait MainFunction {
                 $material->cost = $material->quantity * ($cost/$getSmallUnit);
                 $material->save();
                 $recipeItem = ComponentsItems::where(['branch'=>$material->branch,'item_id'=>$material->item_id])->sum('cost');
-                $itemPrice = Items::limit(1)->where('id',$material->item_id)->pluck('price')->first();
+                $itemPrice = Item::limit(1)->where('id',$material->item_id)->pluck('price')->first();
                 $updateMainRecipe = MainComponents::limit(1)->where(['branch'=>$material->branch,'item'=>$material->item_id])->first();
                 $updateMainRecipe->cost = $recipeItem;
                 $updateMainRecipe->percentage = ($recipeItem / $itemPrice) * 100;
