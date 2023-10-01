@@ -53,8 +53,9 @@
                         position: 'center-center',
                         icon: 'success',
                         title: 'Your Tables Is Empty Data',
-                        showConfirmButton: false,
-                        timer: 2500000000000000
+                        showConfirmButton: true,
+                        timer: false,
+                        focusConfirm : true
                     });
                 }
             },
@@ -66,6 +67,8 @@
         let _token = $('input[name="_token"]').val();
         let Branch = $('.select_Branch').val();
         let date = $('#select_menu').val();
+        $('#loading').addClass('show')
+
         $.ajax({
             url: "{{route('getDays.openDay')}}",
             method: 'post',
@@ -77,13 +80,15 @@
                     date,
                 },
             success: function (data) {
+                $('#loading').removeClass('show');
                 if(data.status == true)
                 {
                     Swal.fire({
                         position: 'center-center',
-                        icon: 'success',
+                        icon: 'question',
                         title: 'Your Day Is Open',
-                        showConfirmButton: true
+                        showConfirmButton: true,
+                        timer: false
                     });
                 }
                 else if(data.status == false)
@@ -92,8 +97,8 @@
                         position: 'center-center',
                         icon: 'error',
                         title: 'Check Orders This Table is not empty',
-                        showConfirmButton: false,
-                        timer: 2500
+                        showConfirmButton: true,
+                        timer: false
                     });
                 }
 

@@ -12,21 +12,35 @@ use App\Models\Extra_wait_order_m;
 use App\Models\Orders_d;
 use App\Models\Orders_m;
 use App\Models\Wait_order;
+use App\Models\Void_d;
+use App\Models\Void_m;
 use App\Models\Wait_order_m;
 use App\Traits\All_Functions;
+use App\Traits\All_Notifications_menu;
 use Illuminate\Http\Request;
 
 class OpenDayController extends Controller
 {
-  use All_Functions;
-  public function __construct()
-  {
-      $this->middleware('auth');
-      $this->middleware('permission:admin');
-  }
+    use All_Notifications_menu;
+    use All_Functions;
     public function index(){
         $branchs = Branch::get()->all();
-        return view('control.open_day',compact('branchs'));
+        $this->removeActionTable();
+        $this->CheckLastOrder();
+        $branch = $this->GetBranch();
+        $del_noti          = $this->Delivery();
+        $del_noti_to_pilot = $this->Delivery_to_pilot();
+        $del_noti_pilot    = $this->Delivery_pilot();
+        $del_noti_hold     = $this->Delivery_hold();
+        $to_noti_hold      = $this->TOGO_hold();
+        return view('control.open_day',compact([
+            'del_noti',
+            'del_noti_to_pilot',
+            'del_noti_pilot',
+            'del_noti_hold',
+            'to_noti_hold',
+            'branchs'
+        ]));
     }
 
     public function getDaysUsingBranch(Request $request){
@@ -38,6 +52,41 @@ class OpenDayController extends Controller
         if(Orders_d::count() > 0){
             return ['status'=>false];
         }
+
+        $voids = Void_m::where('date',$request->date)->get();
+        foreach ($voids as $void_d){
+            Void_d::create([
+                'order_id' => $void_d->order_id,
+                'state' => $void_d->state,
+                'item_id' => $void_d->item_id,
+                'op' => $void_d->op,
+                'table_id' => $void_d->table_id,
+                'sub_num_order' => $void_d->sub_num_order,
+                'moved' => $void_d->moved,
+                'name' => $void_d->name,
+                'quantity' => $void_d->quantity,
+                'price' => $void_d->price,
+                'total' => $void_d->total,
+                'total_extra' => $void_d->total_extra,
+                'price_details' => $void_d->price_details,
+                'discount_name' => $void_d->discount_name,
+                'discount_type' => $void_d->discount_type,
+                'discount' => $void_d->discount,
+                'total_discount' => $void_d->total_discount,
+                'comment' => $void_d->comment,
+                'without' => $void_d->without,
+                'pick_up' => $void_d->pick_up,
+                'user' => $void_d->user,
+                'user_id' => $void_d->user_id,
+                'branch_id' => $void_d->branch_id,
+                'subgroup_id' => $void_d->subgroup_id,
+                'subgroup_name' => $void_d->subgroup_name,
+                'status' => $void_d->status,
+                'date' => $void_d->date,
+            ]);
+            $del = Void_m::where('order_id',$void_d->order_id)->delete();
+        }
+
         $orders = Orders_m::with('WaitOrders','WaitOrders.Details','WaitOrders.Extra')->where(['d_order'=>$request->date])->get();
         if($orders->count() > 0){
             foreach ($orders as $order) {
@@ -151,6 +200,8 @@ class OpenDayController extends Controller
                 }
                 $del = Orders_m::where('order_id',$order->order_id)->delete();
             }
+
+
             $days = Days::where(['branch'=>$request->Branch,'active'=>1])->first();
             if($days){
                 $days->active = 0;

@@ -8,4 +8,8 @@ class Stores extends Model
 {
     protected  $table ='stores';
     protected $guarded = [];
+
+    public function storgecapacity(){
+      return $this->hasMany(storage_capacity::class,'store','id');
+    }
 }

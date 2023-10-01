@@ -61,6 +61,7 @@ class LoginController extends Controller
     public function logout()
     {
         $this->removeActionTable();
+        $this->CheckLastOrder();
         Auth::logout();
         return view('auth.login');
     }

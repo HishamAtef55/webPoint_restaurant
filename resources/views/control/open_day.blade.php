@@ -1,15 +1,34 @@
 @php
-    $title = 'Device';
+    $title = 'Open Day';
 @endphp
-
-@extends('layouts.app')
+@extends('layouts.menu')
 @section('content')
-@include('layouts.nav_left')
+    @include('includes.menu.sub_header')
 <section class='accordions-sec'>
     <div class="container">
-        <h2 class="section-title">Add Device</h2>
+    <div class="loading" id="loading">
+        <div class="loadingio-spinner-double-ring-sp9kmd43d3d">
+            <div class="ldio-9fnosy7o1v">
+                <div></div>
+                <div></div>
+                <div>
+                    <div></div>
+                </div>
+                <div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+        <h3>Loading...</h3>
+    </div>
+
+
+    <div class="modal report-loader fade" id="report-loader" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="loader" id="loader">Loading...</div>
+    </div>
+
         <div class="row">
-            <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
+            <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 text-wight">
                 <div class="select-box">
                     <select class="select_Branch" name="branch" id="select">
                         <option value=""></option>

@@ -35,6 +35,7 @@ class ReportsController extends Controller
         $date = $this->CheckDayOpen();
         $branch = $this->GetBranch();
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $orders = Orders_d::where(['state'=>'0','d_order'=>$date])->get();
         $shifts = Shift::where(['branch_id'=>$branch])->get();
         $users = User::where(['branch_id'=>$branch])->get();
@@ -60,6 +61,7 @@ class ReportsController extends Controller
         $date = $this->CheckDayOpen();
         $branch = $this->GetBranch();
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $orders = Orders_d::where(['state'=>'0','d_order'=>$date])->get();
         $shifts = Shift::where(['branch_id'=>$branch])->get();
         $users = User::where(['branch_id'=>$branch])->get();
@@ -85,6 +87,7 @@ class ReportsController extends Controller
         $date = $this->CheckDayOpen();
         $branch = $this->GetBranch();
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $orders = Orders_d::where(['state'=>'0','d_order'=>$date])->get();
         $shifts = Shift::where(['branch_id'=>$branch])->get();
         $users = User::where(['branch_id'=>$branch])->get();
@@ -110,6 +113,7 @@ class ReportsController extends Controller
         $date = $this->CheckDayOpen();
         $branch = $this->GetBranch();
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $orders = Orders_d::where(['state'=>'0','d_order'=>$date])->get();
         $shifts = Shift::where(['branch_id'=>$branch])->get();
         $devices = Device::where(['branch_id'=>$branch])->get();
@@ -132,6 +136,7 @@ class ReportsController extends Controller
     public function view_transfer_report(){
         $branch = $this->GetBranch();
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $devices = Device::where(['branch_id'=>$branch])->get();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
@@ -150,6 +155,7 @@ class ReportsController extends Controller
     public function view_discount_report(){
         $this->removeActionTable();
         $branch = $this->GetBranch();
+        $this->CheckLastOrder();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
         $del_noti_pilot    = $this->Delivery_pilot();
@@ -166,6 +172,7 @@ class ReportsController extends Controller
     public function view_void_report(){
         $this->removeActionTable();
         $branch = $this->GetBranch();
+        $this->CheckLastOrder();
         $users = User::where(['branch_id'=>$branch])->get();
 
         $del_noti          = $this->Delivery();
@@ -185,6 +192,7 @@ class ReportsController extends Controller
     public function view_item_report(){
         $this->removeActionTable();
         $branch = $this->GetBranch();
+        $this->CheckLastOrder();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
         $del_noti_pilot    = $this->Delivery_pilot();
@@ -200,6 +208,7 @@ class ReportsController extends Controller
     }
     public function view_cost_report(){
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $branch = $this->GetBranch();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
@@ -216,6 +225,7 @@ class ReportsController extends Controller
     }
     public function view_cost_sold_report(){
         $this->removeActionTable();
+        $this->CheckLastOrder();
         $branch = $this->GetBranch();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();

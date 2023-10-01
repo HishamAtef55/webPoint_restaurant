@@ -32,6 +32,7 @@ class CreateMaterialsTable extends Migration
             $table->integer('gard')->nullable();
             $table->integer('all_group')->nullable()->default(0);
             $table->integer('manfu')->nullable()->default(0);
+            $table->integer('packing')->nullable()->default(0);
             $table->timestamps();
         });
     }
