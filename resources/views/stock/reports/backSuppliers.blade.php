@@ -1,6 +1,77 @@
 @php $title='مرتجعات مورد';@endphp
 @extends('layouts.stock.app')
 @section('content')
-    <h1>مرتجعات مورد</h1>
+<section class="back_suppliers">
+    <h2 class="page-title">{{$title}}</h2>
+    <div class="container">
+        <div class="bg-light p-4 mb-2 rounded shadow">
+            @CSRF
+            <div class="row align-items-end" style="margin-top: -1rem;">
+                <div class="col-md-1">
+                    <div class="form-check">
+                        <input class="form-check-input purchases-method" type="radio" value="section" id="sections_method" name="purchases_method">
+                        <label class="form-check-label" for="sections_method">
+                            اقسام
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input purchases-method" type="radio" value="store" id="stores_method" name="purchases_method" checked>
+                        <label class="form-check-label" for="stores_method">
+                            مخازن
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="supplier" class="select-label">الموردين</label>
+                    <select class="form-select supplier" id="supplier">
+                        <option selected disabled>اختر المورد</option>
+
+                    </select>
+                </div>
+                <div class="col-md-3 stores">
+                    <label for="stores" class="select-label">المخزن</label>
+                    <select class="form-select" id="stores">
+                        <option selected disabled>اختر المخزن</option>
+
+                    </select>
+                </div>
+                <div class="col-md-2 branch-sec d-none">
+                    <label for="branch" class="select-label">الفرع</label>
+                    <select class="form-select" id="branch">
+                        <option selected disabled>اختر الفرع</option>
+
+                    </select>
+                </div>
+                <div class="col-md-2 branch-sec d-none">
+                    <label for="sections" class="select-label">القسم</label>
+                    <select class="form-select" id="sections">
+                        <option selected disabled>اختر المخزن</option>
+                    </select>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="custom-form">
+                        <input type="date" name="date_from" id="date_from" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>">
+                        <label for="date_from">التاريخ من</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="custom-form">
+                        <input type="date" name="date_to" id="date_to" value="<?php echo date('Y-m-d'); ?>" max="<?php echo date('Y-m-d'); ?>">
+                        <label for="date_to">التاريخ إلى</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <button class="btn btn-primary showTransferReport" data-request="details">عرض مرتجع</button>
+                    <button class="btn btn-warning showTransferReport" data-request="total">عرض اجمالي مرتجع</button>
+                </div>
+            </div>
+            <hr />
+            <div id="report_content"></div>
+        </div>
+    </div>
+</section>
 @include('includes.stock.reports_ajax.backSuppliers')
 @endsection
