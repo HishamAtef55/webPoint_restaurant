@@ -78,7 +78,8 @@ class PayController extends Controller
                     'visa'        =>$order[0]->visa,
                     'value_bank'  =>$order[0]->r_bank,
                     'type'        =>$type,
-                    'total'       =>$order[0]->total
+                    'total'       =>$order[0]->total,
+                    'tip'       =>$order[0]->tip
                 ]);
             }else{
                 foreach ($Orders  as $ser)
@@ -113,7 +114,8 @@ class PayController extends Controller
                     'visa'        =>$visa,
                     'value_bank'  =>$value_bank,
                     'type'        =>$type,
-                    'total'       =>$order[0]->total
+                    'total'       =>$order[0]->total,
+                    'tip'       =>$order[0]->tip
 
                 ]);
             }
@@ -310,10 +312,15 @@ class PayController extends Controller
                 $total = $request->total;
             }break;
             case 'credit':{
-                $cash = $sep - $request->price;
+                if($request->price > $sep){
+                    $visa = $sep;
+                    $tip += $request->price - $sep;
+                    $cash = 0;
+                }else{
+                    $cash = $sep - $request->price;
+                    $visa = $request->price;
+                }
                 if($cash < 1){$cash = 0;}
-                $visa = $request->price;
-
             }break;
             case 'hospitality':{
                 $cash = 0;

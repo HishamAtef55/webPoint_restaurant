@@ -1252,10 +1252,10 @@ $(document).on('click','#summary_check',function (e)
                 {
                     if (data.type == 'credit') {
                         $('#credit-tab').click();
-                        $('#visa-price').val(data.visa)
+                        $('#visa-price').val(data.visa + data.tip)
                     } else if (data.type == 'cash') {
                         $('#cash-tab').click();
-                        $('#cash-price').val(data.visa)
+                        $('#cash-price').val(data.total + data.tip)
                     } else if (data.type == 'hospitality') {
                         $('#hospitality-tab').click();
                     }

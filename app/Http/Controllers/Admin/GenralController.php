@@ -526,14 +526,15 @@ class GenralController extends Controller
                 'user'            =>0,
 
             ]);
+            return response()->json(['status'=>'true','msg'=>'Tables Saved']);
         }else{
-
             $last_table = $request->startNum + $request->no_of_tables ;
             $table      = $request->startNum;
             $max        = $request->maxHole;
-            for($i=$request->startNum ; $i<=$last_table ; $i++){
-                if($max < $table){
+            for($i=$request->startNum ; $i < $last_table ; $i++){
+                if($max <= $table){
                     break;
+                    return response()->json(['status'=>'false','msg'=>'Hole is Colded']);
                 }
                 $data = Table::create([
                     'state'           => '0' ,
@@ -550,8 +551,8 @@ class GenralController extends Controller
                 ]);
                 $table++;
             }
+            return response()->json(['status'=>'true','msg'=>'Tables Saved']);
         }
-        if($data){return response()->json(['status'=>'true','msg'=>'Tables Saved']);}
     }
     ###################################### END Control Add Tables ###############################
 
