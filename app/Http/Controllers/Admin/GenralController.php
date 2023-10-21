@@ -211,6 +211,7 @@ class GenralController extends Controller
             'group_id'=>$request->group,
             'menu_id'=>$request->menu,
             'branch_id'=>$request->branch,
+            'active'=>'Show'
         ]);
         if($data)
         {

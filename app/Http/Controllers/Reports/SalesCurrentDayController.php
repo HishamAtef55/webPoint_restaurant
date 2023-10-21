@@ -94,7 +94,8 @@ class SalesCurrentDayController extends Controller
                 foreach ($extract_data as $ex => $val){
                     if($order->hos == 1 && $hosVar == 0){
                         $order->total = 0;
-                        $order->sub_total = 0;
+                        $order->cash = 0;
+                        // $order->sub_total = 0;
                     }
                     $order[$ex]=$val;
                 }

@@ -1231,4 +1231,80 @@ Trait All_Functions
 //            Orders_m::where(['id'=>$row->id])->delete();
         }
     }
+    public function OrderNotTake(){
+      $orders = Orders_d::with("WaitOrders","WaitOrders.Details",'WaitOrders.Extra')->whereState(1)->whereSerialShift(0)->get();
+      foreach($orders as $order){
+          foreach($order->WaitOrders as $wait){
+              if($order->status_take == 0){
+                  if($wait->extra->count() > 0){
+                      Extra_wait_order::where(['wait_order_id'=>$wait->id])->delete();
+                  }
+                  if($wait->details->count() > 0){
+                      Details_Wait_Order::where(['wait_order_id'=>$wait->id])->delete();
+                  }
+                  Wait_order::where(['id'=>$wait->id])->delete();
+                  Orders_d::where(['id'=>$wait->id])->delete();
+              }
+          }
+          if($order->WaitOrders->count() == 0){
+              $order_test = Item::limit(1)->where(['name' => 'TEST'])->first();
+              $group = Group::limit(1)->where('branch_id', Auth::user()->branch_id)
+                  ->where('id', $order_test->group_id)
+                  ->first();
+              $data_test = Wait_order::create(
+                  [
+                      'item_id' => $order_test->id,
+                      'name' => $order_test->name,
+                      'price' => $order_test->price,
+                      'order_id' => $order->order_id,
+                      'table_id' => $order->table,
+                      'sub_num_order' => 1,
+                      'subgroup_id' => $group->id,
+                      'subgroup_name' => $group->name,
+                      'total' => $order_test->price,
+                      'quantity' => 1,
+                      'op' => $order->op,
+                      'state' => 0,
+                      'user' => $order->user,
+                      'user_id' => $order->user_id,
+                      'branch_id' => $order->branch_id,
+                  ]
+              );
+          }
+          $this->SerialShift($order->order_id);
+          $order->state = 0;
+          $order->devcashier = $order->dev_id;
+          $order->t_closeorder = $this->Get_Time();
+          $order->method = "cash";
+          $order->save();
+          $this->AddTotalOrder($order->op,$order->order_id);
+      }
+    }
+
+    public function reCalcOrder($orderId){
+        $order = Orders_d::with("WaitOrders","WaitOrders.Details",'WaitOrders.Extra')->whereOrderId($orderId)->first();
+        foreach($order->WaitOrders as $wait){
+            $extra = 0;
+            $details = 0;
+            $discount = 0;
+            $allTotal = 0;
+            if($wait->extra->count() > 0){
+                $extra = $wait->extra->sum('price') * $wait->quantity ;
+            }
+            if($wait->details->count() > 0){
+                $details = $wait->details->sum('price') * $wait->quantity ;
+            }
+            $wait->total = $wait->quantity * $wait->price;
+            $wait->total_extra = $extra;
+            $wait->price_details = $details;
+            $allTotal = $wait->total + $extra + $details;
+            if($wait->discount != 0 || $wait->discount_type != null){
+                if($wait->discount_type == "Ratio"){
+                    $wait->total_discount = $allTotal * $wait->discount / 100;
+                }
+            }
+            $wait->save();
+        }
+        $this->AddTotalOrder($order->op,$order->order_id);
+    }
 }

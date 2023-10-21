@@ -59,16 +59,22 @@ class ShiftController extends Controller
 //                    $new_shift = $first_shift;
                       $new_shift = $shift->shiftid;
                 }
+                $del_shift = Orders_d::where(['state' => '0','branch_id'=>$branch])->select(['order_id'])->get();
+                foreach($del_shift as $del){
+                    $this->reCalcOrder($del->order_id);
+                    SerialShift::limit(1)->where(['branch'=>$branch,'order_id'=>$del->order_id])->delete();
+                }
+                $this->OrderNotTake();
                 $this->ReportShift();
                 $update_shift = Shift::limit(1)->where(['branch_id'=>$branch,'shiftid'=>$shift->shiftid])->update(['status'=>0]);
                 $update_new_shift = Shift::limit(1)->where(['branch_id'=>$branch,'shiftid'=>$new_shift])->update(['status'=>1]);
                 $update = Days::limit(1)->where(['branch'=>$branch,'active'=>1])->update([
                     'last_shift'=>$new_shift,
                 ]);
-                $del_shift = Orders_d::where(['state' => '0','branch_id'=>$branch])->select(['order_id'])->get();
-                foreach($del_shift as $del){
-                    SerialShift::limit(1)->where(['branch'=>$branch,'order_id'=>$del->order_id])->delete();
-                }
+                // $del_shift = Orders_d::where(['state' => '0','branch_id'=>$branch])->select(['order_id'])->get();
+                // foreach($del_shift as $del){
+                //     SerialShift::limit(1)->where(['branch'=>$branch,'order_id'=>$del->order_id])->delete();
+                // }
                 if($update_new_shift && $update_shift){
                     $get_printer = Service_tables::where(['branch'=>$branch])->first();
                     $order_print = array('branch'=>$branch,'order_id'=>'0','type'=>9,'no_copies'=>1,'val_type'=>'0','printer'=>$get_printer->printer_shift);
