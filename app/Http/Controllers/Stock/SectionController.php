@@ -29,7 +29,7 @@ class SectionController extends Controller
         $new_section = $this->getNextUserId();
         $branchs = Branch::get()->all();
         $stores  = Stores::get()->all();
-        $sections = stocksection::with('sectionsBranch','sectionstore')->get()->all();
+        $sections = stocksection::with('sectionsBranch','sectionstore')->orderBy('id','DESC')->get();
         return view('stock.stock.sections',compact(['new_section','branchs','stores','sections']));
     }
     public function get_group(Request $request){
@@ -54,7 +54,8 @@ class SectionController extends Controller
                 'section_id'=>$section->id,
             ]);
             $new_section = $this->getNextUserId();
-            return response()->json(['status'=>'true','msg'=>'تم حفظ القسم بنجاح','new_section'=>$new_section]);
+            $sections = stocksection::with('sectionsBranch','sectionstore')->orderBy('id','DESC')->get();
+            return response()->json(['status'=>'true','msg'=>'تم حفظ القسم بنجاح','new_section'=>$new_section,'sections'=>$sections]);
         }
     }
     public function search_section(Request $request){
@@ -87,7 +88,8 @@ class SectionController extends Controller
                 'section_id'=>$request->id,
             ]);
             $new_section = $this->getNextUserId();
-            return response()->json(['status'=>'true','msg'=>'تم تعديل القسم بنجاح','new_section'=>$new_section]);
+            $sections = stocksection::with('sectionsBranch','sectionstore')->orderBy('id','DESC')->get();
+            return response()->json(['status'=>'true','msg'=>'تم تعديل القسم بنجاح','new_section'=>$new_section,'sections'=>$sections]);
         }
     }
 }

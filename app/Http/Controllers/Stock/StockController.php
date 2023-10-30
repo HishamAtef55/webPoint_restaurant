@@ -27,7 +27,7 @@ class StockController extends Controller
     }
     public function view_Store(){
         $new_store = $this->getNextUserId();
-        $stores = Stores::get()->all();
+        $stores = Stores::orderBy('id','DESC')->get();
         return view('stock.stock.stores',compact(['new_store','stores']));
     }
     public function save_store(StoreRequest $request){
@@ -42,6 +42,7 @@ class StockController extends Controller
                 'name'=>$permission,
                 'type'=>'stock'
             ]);
+            if($request->storages){
             foreach($request->storages as $method_cap){
                 $save_methods = storage_capacity::create([
                     'store' =>$save_store->id,
@@ -50,6 +51,8 @@ class StockController extends Controller
                     'capacity' =>$method_cap['capacity'],
                 ]);
             }
+            }
+
             foreach (material::select(['code','name','unit'])->get() as $material){
                 storeCost::create([
                     'store_id' =>$save_store->id,
@@ -59,7 +62,13 @@ class StockController extends Controller
                 ]);
             }
             $new_store = $this->getNextUserId();
-            return response()->json(['status'=>'true','msg'=>'تم حفظ البيانات','new_store'=>$new_store]);
+            $stores = Stores::orderBy('id','DESC')->get();
+            return response()->json([
+                'status'=>'true',
+                'msg'=>'تم حفظ البيانات',
+                'new_store'=>$new_store,
+                'stores'=>$stores,
+            ]);
         }
     }
     public function search_store(Request $request){
@@ -87,16 +96,25 @@ class StockController extends Controller
             $updatePermission->name = "stocks-".$request->name;
             $updatePermission->save();
             $del = storage_capacity::where(['store'=>$request->id,])->delete();
-            foreach($request->storages as $method_cap){
-                $save_methods = storage_capacity::create([
-                    'store'    =>$request->id,
-                    'type'     =>$method_cap['type'],
-                    'unit'     =>$method_cap['unit'],
-                    'capacity' =>$method_cap['capacity'],
-                ]);
+            if($request->storages){
+                foreach($request->storages as $method_cap){
+                    $save_methods = storage_capacity::create([
+                        'store'    =>$request->id,
+                        'type'     =>$method_cap['type'],
+                        'unit'     =>$method_cap['unit'],
+                        'capacity' =>$method_cap['capacity'],
+                    ]);
+                }
             }
+
             $new_store = $this->getNextUserId();
-            return response()->json(['status'=>'true','msg'=>'تم تعديل البيانات','new_store'=>$new_store]);
+            $stores = Stores::orderBy('id','DESC')->get();
+            return response()->json([
+                'status'=>'true',
+                'msg'=>'تم تعديل البيانات',
+                'new_store'=>$new_store,
+                'stores'=>$stores,
+            ]);
         }
     }
 }

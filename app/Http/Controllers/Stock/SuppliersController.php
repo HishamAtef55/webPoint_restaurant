@@ -25,7 +25,7 @@ class SuppliersController extends Controller
     }
     public function view_suppliers(){
         $new_supplier = $this->getNextUserId();
-        $supplires = Suppliers::get()->all();
+        $supplires = Suppliers::orderBy('id','DESC')->get();
         return view('stock.stock.suppliers',compact('new_supplier','supplires'));
     }
     public function save_suppliers(SupplierRequest $request){
@@ -35,7 +35,8 @@ class SuppliersController extends Controller
             'address'=>$request->address,
         ]);
         $new_supplier = $this->getNextUserId();
-        if($save){return response()->json(['status'=>'true','new_supplier'=>$new_supplier,'msg'=>'تم حفظ المورد بنجاح']);}
+        $supplires = Suppliers::orderBy('id','DESC')->get();
+        if($save){return response()->json(['status'=>'true','new_supplier'=>$new_supplier,'msg'=>'تم حفظ المورد بنجاح','suppliers'=>$supplires]);}
     }
     public function search_suppliers(Request $request){
         $query =  $request['query'];
@@ -54,7 +55,8 @@ class SuppliersController extends Controller
                 'address'=>$request->address,
             ]);
             $new_supplier = $this->getNextUserId();
-            if($save){return response()->json(['status'=>'true','new_supplier'=>$new_supplier,'msg'=>'تم تعديل المورد بنجاح']);}
+            $supplires = Suppliers::orderBy('id','DESC')->get();
+            if($save){return response()->json(['status'=>'true','new_supplier'=>$new_supplier,'msg'=>'تم تعديل المورد بنجاح','suppliers'=>$supplires]);}
         }
     }
 }

@@ -27,7 +27,7 @@ class MaterialController extends Controller
         $mainGroup = MainGroup::get()->all();
         $units = Units::select(['name'])->get();
         $branchs = Branch::get()->all();
-        $materials = material::with('group')->get()->all();
+        $materials = material::with('group')->orderBy('id','DESC')->get();
         return view('stock.stock.material',compact('mainGroup','units','branchs','materials'));
     }
     protected function getID($subGroupId){

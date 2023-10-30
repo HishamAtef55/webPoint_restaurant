@@ -191,6 +191,8 @@
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">name</th>
+                    <th scope="col">phone</th>
+                    <th scope="col">address</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -200,6 +202,8 @@
                     <tr>
                         <th scope="row">{{$store->id}}</th>
                         <td>{{$store->name}}</td>
+                        <td>{{$store->phone}}</td>
+                        <td>{{$store->address}}</td>
                     </tr>
                     @endforeach
                 @else

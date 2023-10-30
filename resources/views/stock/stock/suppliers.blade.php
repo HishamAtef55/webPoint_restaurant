@@ -39,6 +39,8 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">الاسم</th>
+                                <th scope="col">الهاتف</th>
+                                <th scope="col">العنوان</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,6 +49,8 @@
                             <tr>
                                 <th scope="row">{{$supplire->id}}</th>
                                 <td>{{$supplire->name}}</td>
+                                <td>{{$supplire->phone}}</td>
+                                <td>{{$supplire->address}}</td>
                             </tr>
                             @endforeach
                             @else
