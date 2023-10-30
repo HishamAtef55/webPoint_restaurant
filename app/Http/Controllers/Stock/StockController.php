@@ -11,7 +11,7 @@ use App\Models\Stores;
 use App\Models\storage_capacity;
 use App\Http\Requests\StoreRequest;
 use App\Traits\MainFunction;
-
+use Spatie\Permission\Models\Permission;
 
 class StockController extends Controller
 {
@@ -37,6 +37,11 @@ class StockController extends Controller
             'address'=>$request->address,
         ]);
         if($save_store){
+            $permission = "stocks-".$request->name;
+            Permission::create([
+                'name'=>$permission,
+                'type'=>'stock'
+            ]);
             foreach($request->storages as $method_cap){
                 $save_methods = storage_capacity::create([
                     'store' =>$save_store->id,
@@ -70,12 +75,17 @@ class StockController extends Controller
         }
     }
     public function update_store(Request $request){
+        $get_store = Stores::where(['id'=>$request->id])->first();
+        $permission = "stocks-".$get_store->name;
+        $updatePermission = Permission::whereName($permission)->first();
         $save_store = Stores::where(['id'=>$request->id])->update([
             'name'    =>$request->name,
             'phone'   =>$request->phone,
             'address' =>$request->address,
         ]);
         if($save_store){
+            $updatePermission->name = "stocks-".$request->name;
+            $updatePermission->save();
             $del = storage_capacity::where(['store'=>$request->id,])->delete();
             foreach($request->storages as $method_cap){
                 $save_methods = storage_capacity::create([

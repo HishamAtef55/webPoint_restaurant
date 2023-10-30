@@ -44,8 +44,6 @@ use App\Models\Wait_order_m;
 use App\Models\SerialCheck;
 use App\Models\SerialShift;
 use App\Models\Days;
-
-
 class GenralController extends Controller
 {
     public function __construct()
@@ -76,6 +74,11 @@ class GenralController extends Controller
 
         if($save)
         {
+            $permission = "branchs-".$request->name;
+            Permission::create([
+                'name'=>$permission,
+                'type'=>'stock'
+            ]);
             return response()->json([
                 'status'=>true,
             ]);
@@ -326,16 +329,23 @@ class GenralController extends Controller
         {
             if($request->action == 'edit')
             {
+                $oldName = Branch::whereId($request->id)->first();
+                $permission = "branchs-".$oldName->name;
+                $updatePermission = Permission::whereName($permission)->first();
                 $data = array(
                     'name'	=>	$request->name,
                 );
                 Branch::where('id', $request->id)
                     ->update($data);
+                $updatePermission->name = "branchs-" . $request->name;
+                $updatePermission->save();
             }
             if($request->action == 'delete')
             {
-                Branch::where('id', $request->id)
-                    ->delete();
+                $branch = Branch::whereId($request->id)->first();
+                $permission = "branchs-".$branch->name;    
+                Permission::limit(1)->whereName($permission)->delete();
+                $branch->delete();
             }
             return response()->json($request);
         }

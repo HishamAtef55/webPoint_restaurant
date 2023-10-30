@@ -79,7 +79,7 @@ class PermissionTableSeeder extends Seeder
             'Other-hole',
         ];
         foreach ($permissions as $permission) {
-             Permission::create(['name' => $permission]);
+            Permission::create(['name' => $permission , 'type'=>'pos']);
         }
     }
 }

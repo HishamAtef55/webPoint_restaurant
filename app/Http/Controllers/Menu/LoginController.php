@@ -55,6 +55,9 @@ class LoginController extends Controller
                 // code...
                 break;
             }
+        }else{
+            $users = User::select(['email'])->get()->all();
+            return view('auth.login',compact('users'))->withErrors(['message' => 'برجاء التأكد من بيانات الدخول']);
         }
     }
 

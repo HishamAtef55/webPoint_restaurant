@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
 
 
          DB::table('branchs')->insert([
-             'name'            => 'Branch 1',
+             'name'            => 'Main',
          ]);
 
          DB::table('shifts')->insert([

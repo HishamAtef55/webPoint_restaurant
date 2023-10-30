@@ -173,7 +173,7 @@ class RoleController extends Controller
 
         $role = Role::find($id);
 
-        $permission = Permission::get();
+        $permission = Permission::whereType('pos')->get();
 
         $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
 
