@@ -515,6 +515,7 @@ nav.navbar .sub-menu ul li.active a {
     border-collapse: separate;
     border-spacing: 10px;
     margin: auto;
+    width: 100%;
 }
 
 /* End Store Page Design */

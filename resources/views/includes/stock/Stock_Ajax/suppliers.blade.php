@@ -1,51 +1,41 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let id           = $('#supplier_id');
-    let name         = $('#supplier_name');
-    let phone        = $('#supplier_phone');
-    let address      = $('#supplier_address');
+    let id = $('#supplier_id');
+    let name = $('#supplier_name');
+    let phone = $('#supplier_phone');
+    let address = $('#supplier_address');
 
     $('#save_supplier').on('click', function() {
         $.ajax({
-            url:"{{route('save.suppliers')}}",
-            method:'post',
-            data:{
+            url: "{{route('save.suppliers')}}",
+            method: 'post',
+            data: {
                 _token,
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
             },
-            success:function(data)
-            {
-                if(data.status == 'true') {
+            success: function(data) {
+                if (data.status == 'true') {
                     id.val(data.new_supplier);
                     name.val('');
                     phone.val('');
                     address.val('');
-                    Swal.fire({
-                        icon: 'success',
-                        title: data.msg,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
+                    successMsg(data.msg);
                 }
             },
-            error: function (reject) {
-                let response  = $.parseJSON(reject.responseText);
-                $.each(response.errors , function (key, val) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'خطأ.....',
-                        text: val[0],
-                    });
+            error: function(reject) {
+                let response = $.parseJSON(reject.responseText);
+                $.each(response.errors, function(key, val) {
+                    errorMsg(val[0]);
                 });
             }
         });
     });
 
-    $('#supplier_name').on('keyup', function () {
+    $('#supplier_name').on('keyup', function() {
         let query = $(this).val()
-        searchDb('search_suppliers' , query, $(this));
+        searchDb('search_suppliers', query, $(this));
     });
 
     $(document).on('click', '.search-result li', function(e) {
@@ -63,42 +53,30 @@
 
     $('#update_supplier').on('click', function() {
         $.ajax({
-            url:"{{route('update.suppliers')}}",
-            method:'post',
-            data:{
+            url: "{{route('update.suppliers')}}",
+            method: 'post',
+            data: {
                 _token,
-                id:id.val(),
+                id: id.val(),
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
             },
-            success:function(data)
-            {
-                if(data.status == 'true') {
+            success: function(data) {
+                if (data.status == 'true') {
                     $('#store_id').val(data.new_supplier);
                     name.val('');
                     phone.val('');
                     address.val('');
-                    Swal.fire({
-                        icon: 'success',
-                        title: data.msg,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
+                    successMsg(data.msg);
                 }
             },
-            error: function (reject) {
-                let response  = $.parseJSON(reject.responseText);
-                $.each(response.errors , function (key, val) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: val[0],
-                    });
+            error: function(reject) {
+                let response = $.parseJSON(reject.responseText);
+                $.each(response.errors, function(key, val) {
+                    errorMsg(val[0]);
                 });
             }
         });
     });
-
-
 </script>
