@@ -27,7 +27,7 @@ class ComponentDetailsItemController extends Controller
         return view('stock.stock.componentDetailsItems',compact('branchs','groups'));
     }
     public function getItemDetails(Request $request){
-        $items = Item::whereHas('details')->where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
+        $items = Item::whereHas('getdetails')->where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
         if($items){
             return response()->json([
                 'status'=>true,

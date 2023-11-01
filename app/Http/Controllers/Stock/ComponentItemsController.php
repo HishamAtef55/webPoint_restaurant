@@ -176,7 +176,7 @@ class ComponentItemsController extends Controller
         $conGroups = [];
         if($request->branch){
             if($request->details == 1){
-                $data = Item::with('custom_materials.Materials','details.details','details.materials','details.materials.materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
+                $data = Item::with('custom_materials.Materials','getdetails.details','getdetails.materials','getdetails.materials.materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
             }else{
                 $data = Item::with('custom_materials.Materials')->where(['branch_id'=>$request->branch])->select(['id','name','group_id','cost_price'])->get();
             }
