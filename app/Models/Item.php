@@ -72,6 +72,10 @@ class Item extends Model
         });
     }
 
+    public function getdetails(){
+        return $this->hasMany(DetailsItem::class,'item_id','id');
+    }
+
     public function details_components(){
         return $this->hasMany(mainDetailsComponent::class,'item','id');
     }

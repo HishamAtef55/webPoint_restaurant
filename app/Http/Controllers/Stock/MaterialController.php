@@ -102,7 +102,8 @@ class MaterialController extends Controller
                 ]);
             }
             if($insert){
-                return response()->json(['status'=>'true','msg'=>'تم اضافة الخامة بنجاح','code'=>$this->getID($request->subGroup)]);
+                $materials = material::with('group')->orderBy('id','DESC')->get();
+                return response()->json(['status'=>'true','msg'=>'تم اضافة الخامة بنجاح','code'=>$this->getID($request->subGroup),'materials'=>$materials]);
             }
         }
 
@@ -162,7 +163,8 @@ class MaterialController extends Controller
                 }
             }
             if($insert){
-                return response()->json(['status'=>'true','msg'=>'تم تعديل الخامة بنجاح']);
+                $materials = material::with('group')->orderBy('id','DESC')->get();
+                return response()->json(['status'=>'true','msg'=>'تم تعديل الخامة بنجاح','materials'=>$materials]);
             }
         }
     }
