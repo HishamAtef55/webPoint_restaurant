@@ -2,7 +2,7 @@
     let _token           = $('input[name="_token"]').val();
     $(document).on('click','#daily_report',function (e) {
         e.preventDefault();
-
+        $('#loading').addClass('show')
 
 
         const toDataURL = url => fetch(url)
@@ -13,15 +13,7 @@
             reader.onerror = reject
             reader.readAsDataURL(blob)
         }));
-
-
         let logo = null;
-
-
-
-
-
-
         let type     = $(this).attr('id');
         let trans    = []
         let transLabel = []
@@ -121,6 +113,7 @@
                             <th>Service</th>
                             <th>Tax</th>
                             <th>Disc</th>
+                            <th>Hosp</th>
                             <th>Min.ch</th>`;
                         if(from == to){
                             html += `<th>Bay Way</th> `;
@@ -139,6 +132,7 @@
                 let totalServices = 0;
                 let totalTax = 0;
                 let totalDiscount = 0;
+                let totalHospitality = 0;
                 let totalCharge = 0;
                 let totalCash = 0;
                 let totalVisa = 0;
@@ -165,12 +159,15 @@
                     });
                     html += `<td>${parseFloat(data.orders[order].sub_total).toFixed(2)}</td>`
                     totalSub +=data.orders[order].sub_total
+
                     html += `<td>${parseFloat(data.orders[order].services).toFixed(2)}</td>`
                     totalServices +=data.orders[order].services
                     html += `<td>${parseFloat(data.orders[order].tax).toFixed(2)}</td>`
                     totalTax +=data.orders[order].tax
                     html += `<td>${parseFloat(data.orders[order].total_discount).toFixed(2) || 0 }</td>`
                     totalDiscount +=data.orders[order].total_discount || 0
+                    html += `<td>${parseFloat(data.orders[order].hosp_total).toFixed(2) || 0 }</td>`
+                    totalHospitality +=data.orders[order].hosp_total
                     html += `<td>${data.orders[order].min_charge}</td>`
                     totalCharge +=data.orders[order].min_charge
                     if(from == to){
@@ -209,6 +206,7 @@
                     <td>${parseFloat(totalServices).toFixed(2)}</td>
                     <td>${parseFloat(totalTax).toFixed(2)}</td>
                     <td>${parseFloat(totalDiscount).toFixed(2)}</td>
+                    <td>${parseFloat(totalHospitality).toFixed(2)}</td>
                     <td>${parseFloat(totalCharge).toFixed(2)}</td>`;
                     if(from == to){
                         html += `
@@ -370,13 +368,16 @@
                     ]
                 });
             },
+            complete: function(data) {
+                $('#loading').removeClass('show');
+            }
         });
     });
 
     $(document).on('click','#sold_items',function (e) {
         e.preventDefault();
-        $('#report-filter').modal('toggle');
-        // $('#report-loader').modal('show');
+        $('#loading').addClass('show')
+
         let type     = $(this).attr('id');
         let trans    = []
         let transLabel = []
@@ -442,7 +443,7 @@
                     to,
                 },
             success: function (data) {
-                $('.report-loader').modal('hide');
+                $('.report-filter').modal('hide');
                 let html = '';
                 html += `<table class="reports table text-center mb-5 mt-3 table-report">
                 <thead  class="thead-light">
@@ -619,6 +620,17 @@
                     ]
                 });
             },
+            error: function(data) {
+                Swal.fire({
+                    position: 'center-center',
+                    icon: 'error',
+                    title: data.responseJSON.message,
+                    showConfirmButton: true,
+                });
+            },
+            complete: function(data) {
+                $('#loading').removeClass('show');
+            }
         });
     });
 </script>

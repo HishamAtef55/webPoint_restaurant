@@ -100,7 +100,7 @@ class DailyReportsController extends Controller
                     if($order->hos == 1 && $hosVar == 0){
                         $order->total = 0;
                         $order->cash = 0;
-                        // $order->sub_total = 0;
+                        //$order->sub_total = 0;
                     }
                     $order[$ex]=$val;
                 }
@@ -109,6 +109,8 @@ class DailyReportsController extends Controller
             $order['sub_total'] += $all_discount_items;
             $extract_data = [];
             $all_discount_items = 0;
+            $order->hos == 1 ? $order->hosp_total = $order->sub_total : $order->hosp_total = 0;
+
         }
         if($request->from != $request->to){
             foreach($orders as $order){
@@ -126,6 +128,7 @@ class DailyReportsController extends Controller
                             }
                             $period[$i]['tax']+=$order['tax'];
                             $period[$i]['sub_total']+=$order['sub_total'];
+                            $period[$i]['hosp_total']+=$order['hosp_total'];
                             $period[$i]['services']+=$order['services'];
                             $period[$i]['total']+=$order['total'];
                             $period[$i]['cash']+=$order['cash'];
@@ -180,6 +183,7 @@ class DailyReportsController extends Controller
         $cont_fake  = 0;
         $count_ex  = 0;
         $system_data  = System::limit(1)->first();
+
         if($system_data->image != null || $system_data->image == ""){
             $system_data->image = 'global/image/logo.png';
         }else{
