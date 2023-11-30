@@ -8,20 +8,19 @@
         });
     });
 
-    function searchDb(url , query , inputSearch , branch){
+    function searchDb(url, query, inputSearch, branch) {
         let searchList = inputSearch.siblings('.search-result');
-        if(query != ''){
+        if (query != '') {
             $.ajax({
-                url:url,
-                method:'post',
-                data:{
+                url: url,
+                method: 'post',
+                data: {
                     _token,
                     query,
                     branch,
                 },
-                success:function(request)
-                {
-                    if(request.status == 'true') {
+                success: function(request) {
+                    if (request.status == 'true') {
                         let searchItems = ''
                         searchList.html('')
                         request.data.forEach(item => {
@@ -31,22 +30,23 @@
                     }
                 }
             });
-        }else{
+        } else {
             searchList.html('')
         }
     }
 
     function getData(url, id, getFun) {
         $.ajax({
-            url:url,
-            method:'post',
-            data:{
+            url: url,
+            method: 'post',
+            data: {
                 _token,
                 id
             },
-            success:function(request) {
-                if(request.status == 'true') {
+            success: function(request) {
+                if (request.status == 'true') {
                     getFun(request.data)
+                    checkForm();
                 }
             }
         });
@@ -55,14 +55,14 @@
     function checkForm() {
         $('.custom-form').each(function() {
             $(this).find('input, textarea').on('change', function() {
-                if($(this).val() != '') {
-                $(this).parents('.custom-form').addClass('invalid')
+                if ($(this).val() != '') {
+                    $(this).parents('.custom-form').addClass('invalid')
                 } else {
                     $(this).parents('.custom-form').removeClass('invalid')
                 }
             });
 
-            if($(this).find('input').val() != '' && $(this).find('textarea').val() != '') {
+            if ($(this).find('input').val() != '' && $(this).find('textarea').val() != '') {
                 $(this).addClass('invalid')
             } else {
                 $(this).removeClass('invalid')
@@ -77,7 +77,23 @@
         showConfirmButton: false,
         timer: 3000,
         timerProgressBar: true,
-    })
+    });
+
+
+    function successMsg(msg) {
+        Toast.fire({
+            icon: 'success',
+            title: msg,
+        });
+    }
+
+    function errorMsg(msg) {
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ.....',
+            text: msg,
+        });
+    }
 
 
     checkForm();
