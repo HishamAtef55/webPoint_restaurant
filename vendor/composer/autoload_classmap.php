@@ -368,6 +368,7 @@ return array(
     'Database\\Seeders\\JobSeeder' => $baseDir . '/database/seeders/JobSeeder.php',
     'Database\\Seeders\\PermissionTableSeeder' => $baseDir . '/database/seeders/PermissionTableSeeder.php',
     'Database\\Seeders\\SettingSystem' => $baseDir . '/database/seeders/SettingSystem.php',
+    'Database\\Seeders\\StockPermissionsSeeder' => $baseDir . '/database/seeders/StockPermissionsSeeder.php',
     'Database\\Seeders\\UnitSeeder' => $baseDir . '/database/seeders/UnitSeeder.php',
     'Database\\Seeders\\UserSeeder' => $baseDir . '/database/seeders/UserSeeder.php',
     'DeepCopy\\DeepCopy' => $vendorDir . '/myclabs/deep-copy/src/DeepCopy/DeepCopy.php',

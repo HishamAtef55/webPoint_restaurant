@@ -39,6 +39,7 @@ class ComposerStaticInitffad16b6933071f09aa52b07674d957e
         'ce9671a430e4846b44e1c68c7611f9f5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '377b22b161c09ed6e5152de788ca020a' => __DIR__ . '/..' . '/spatie/laravel-permission/src/helpers.php',
+        'b4e3f29b106af37a2bb239f73cdf68c7' => __DIR__ . '/../..' . '/app/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -886,6 +887,7 @@ class ComposerStaticInitffad16b6933071f09aa52b07674d957e
         'Database\\Seeders\\JobSeeder' => __DIR__ . '/../..' . '/database/seeders/JobSeeder.php',
         'Database\\Seeders\\PermissionTableSeeder' => __DIR__ . '/../..' . '/database/seeders/PermissionTableSeeder.php',
         'Database\\Seeders\\SettingSystem' => __DIR__ . '/../..' . '/database/seeders/SettingSystem.php',
+        'Database\\Seeders\\StockPermissionsSeeder' => __DIR__ . '/../..' . '/database/seeders/StockPermissionsSeeder.php',
         'Database\\Seeders\\UnitSeeder' => __DIR__ . '/../..' . '/database/seeders/UnitSeeder.php',
         'Database\\Seeders\\UserSeeder' => __DIR__ . '/../..' . '/database/seeders/UserSeeder.php',
         'DeepCopy\\DeepCopy' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/DeepCopy.php',

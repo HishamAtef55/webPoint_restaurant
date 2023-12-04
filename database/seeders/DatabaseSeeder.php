@@ -16,7 +16,8 @@ class DatabaseSeeder extends Seeder
         PermissionTableSeeder::class,
         JobSeeder::class,
         UserSeeder::class,
-        SettingSystem::class
+        SettingSystem::class,
+        UnitSeeder::class
       ]);
       // $this->call(JobSeeder::class);
       // $this->call(UserSeeder::class);

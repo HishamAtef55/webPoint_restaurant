@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
              'job_id'          => '1',
              'dialy_salary'    => '1',
              'email'           => 'admin',
-             'roles_name'      => 'admin',
+             'roles_name'      => 'admin-pos',
              'access_system'   => '["pos","stock"]',
              'password' => Hash::make('0011'),
          ]);
@@ -53,7 +53,7 @@ class UserSeeder extends Seeder
              'max'             => '10000000',
          ]);
 
-         $role = Role::create(['name' => 'admin']);
+         $role = Role::create(['name' => 'admin-pos' , 'type'=>'pos']);
          $permissions = Permission::pluck('id','id')->all();
          $role->syncPermissions($permissions);
          $user->assignRole([$role->id]);

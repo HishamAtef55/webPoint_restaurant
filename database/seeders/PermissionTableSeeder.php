@@ -15,6 +15,7 @@ class PermissionTableSeeder extends Seeder
     public function run()
     {
        $permissions = [
+           'branchs-Main',
            'options',
                 'menu',
                 'copy check',
