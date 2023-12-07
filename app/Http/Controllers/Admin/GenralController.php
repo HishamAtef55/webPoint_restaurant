@@ -661,7 +661,7 @@ class GenralController extends Controller
                 'min'          =>$request->min,
                 'max'          =>$request->max,
             ]);
-            Permission::create(['name' => $request->holeName . '-hole']);
+            Permission::create(['name' => $request->holeName . '-hole','type'=>'pos']);
             return response()->json(['status'=>'true','msg'=>'Saved Hole']);
         }
     }
