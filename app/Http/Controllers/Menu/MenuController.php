@@ -18,6 +18,7 @@ use App\Models\Service_tables;
 use App\Models\Delavery;
 use App\Models\Orders_d;
 use App\Models\Hole;
+use App\Models\ComponentsItems;
 use App\Models\Sub_group;
 use App\Models\SerialCheck;
 use App\Models\SerialShift;
@@ -877,22 +878,34 @@ class MenuController extends Controller
             ->select(['id','group_id'])
             ->get();
         $count = sizeof($data[0]->extra);
+        $materilas = ComponentsItems::where(['branch'=>Auth::user()->branch_id,'item_id'=>$request->item])->get();
         if($count == '0')
         {
             $data= extra::where(['group_id'=>$data[0]->group_id])->get();
             return response() ->json([
                 'status' =>false,
-                'data'   =>$data
+                'data'   =>$data,
+                'materilas' => $materilas
             ]);
         }else{
             return response() ->json([
                 'status' =>true,
-                'data'   =>$data
+                'data'   =>$data,
+                'materilas' => $materilas
             ]);
         }
 
     }
     ######################## end get extra in Items #####################################
+
+    ######################## start get Materilas in Items #####################################
+    public function find_materials_item(Request $request)
+    {
+        return "alaa";
+    }
+    ######################## end get Materilas in Items #####################################
+
+
     ########################## export_Extra in menu ######################################
     public function export_Extra(Request $request)
     {

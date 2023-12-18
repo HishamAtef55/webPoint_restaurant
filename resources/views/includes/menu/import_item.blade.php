@@ -955,6 +955,7 @@ $('#item-menu-model').on('show.bs.modal', function (event) {
         data: {item:item, _token: _token},
         success: function (data) {
             let html = '';
+            let without = '';
             if(data.status == true)
             {
                 for(var count = 0 ; count < data.data[0].extra.length ; count ++)
@@ -982,6 +983,18 @@ $('#item-menu-model').on('show.bs.modal', function (event) {
             }
             html +='<button id="save_extra" number_order="'+itemId+'" class="btn btn-block bg-success text-white">Save</button>';
             $('#extra-container').html(html);
+            for(var count = 0 ; count < data.materilas.length ; count ++)
+            {
+                without+='<div class="form-group" item="'+item+'" without="'+data.materilas[count].material_id+'">';
+                    without+='<input type="checkbox" id_extra="'+data.materilas[count].id+'"   id="without_'+data.materilas[count].material_id+'">';
+                    without+='<label for="extra_'+data.materilas[count].material_id+'">';
+                        without+='<span>'+data.materilas[count].material_name+'</span>';
+                        // html+='<span>'+data.materilas[count].price+'</span>';
+                        without+='</label>';
+                        without+='</div>';
+            }
+            without +='<button id="save_without" number_order="'+itemId+'" class="btn btn-block bg-success text-white">Save</button>';
+            $('#without-container').html(without);
         },
 
     });
@@ -1044,8 +1057,6 @@ $('body').on('click', '#save_extra', function() {
     });
 
     $('#item-menu-model').modal('hide');
-
-
 });
 
 function createExtra(parent, number, array) {

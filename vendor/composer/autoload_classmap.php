@@ -196,6 +196,8 @@ return array(
     'App\\Models\\WaitOrdersDel' => $baseDir . '/app/Models/WaitOrdersDel.php',
     'App\\Models\\Wait_order' => $baseDir . '/app/Models/Wait_order.php',
     'App\\Models\\Wait_order_m' => $baseDir . '/app/Models/Wait_order_m.php',
+    'App\\Models\\WithoutMaterialsD' => $baseDir . '/app/Models/WithoutMaterialsD.php',
+    'App\\Models\\WithoutMaterialsM' => $baseDir . '/app/Models/WithoutMaterialsM.php',
     'App\\Models\\backToStoreDetails' => $baseDir . '/app/Models/backToStoreDetails.php',
     'App\\Models\\backToStoreMain' => $baseDir . '/app/Models/backToStoreMain.php',
     'App\\Models\\backToSuppliersDetails' => $baseDir . '/app/Models/backToSuppliersDetails.php',

@@ -715,6 +715,8 @@ class ComposerStaticInitffad16b6933071f09aa52b07674d957e
         'App\\Models\\WaitOrdersDel' => __DIR__ . '/../..' . '/app/Models/WaitOrdersDel.php',
         'App\\Models\\Wait_order' => __DIR__ . '/../..' . '/app/Models/Wait_order.php',
         'App\\Models\\Wait_order_m' => __DIR__ . '/../..' . '/app/Models/Wait_order_m.php',
+        'App\\Models\\WithoutMaterialsD' => __DIR__ . '/../..' . '/app/Models/WithoutMaterialsD.php',
+        'App\\Models\\WithoutMaterialsM' => __DIR__ . '/../..' . '/app/Models/WithoutMaterialsM.php',
         'App\\Models\\backToStoreDetails' => __DIR__ . '/../..' . '/app/Models/backToStoreDetails.php',
         'App\\Models\\backToStoreMain' => __DIR__ . '/../..' . '/app/Models/backToStoreMain.php',
         'App\\Models\\backToSuppliersDetails' => __DIR__ . '/../..' . '/app/Models/backToSuppliersDetails.php',

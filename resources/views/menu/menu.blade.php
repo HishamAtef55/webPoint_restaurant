@@ -334,8 +334,7 @@
                         <div id='extra-container' class='d-flex align-items-center flex-wrap'></div>
                     </div>
                     <div class="tab-pane fade" id="nav-without" role="tabpanel" aria-labelledby="nav-without-tab">
-                        <textarea class="form-control mb-2" id="text_area_without" rows="6" placeholder="Type Without"></textarea>
-                        <button id="save_without" number_order="" class='btn btn-block bg-success text-white'>Save</button>
+                        <div id='without-container' class='d-flex align-items-center flex-wrap'></div>
                     </div>
                     <div class="tab-pane fade" id="nav-discount" role="tabpanel" aria-labelledby="nav-discount-tab">
                         <div class="radios mb-5">

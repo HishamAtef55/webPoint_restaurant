@@ -38,7 +38,7 @@ Trait MainFunction {
                 $itemPrice = Item::limit(1)->where('id',$material->item_id)->pluck('price')->first();
                 $updateMainRecipe = MainComponents::limit(1)->where(['branch'=>$material->branch,'item'=>$material->item_id])->first();
                 $updateMainRecipe->cost = $recipeItem;
-                $updateMainRecipe->percentage = ($recipeItem / $itemPrice) * 100;
+                $updateMainRecipe->percentage = ($recipeItem / $itemPrice) * 100 ?? 0;
                 $updateMainRecipe->save();
             }
             // Update Recipe For Details Item

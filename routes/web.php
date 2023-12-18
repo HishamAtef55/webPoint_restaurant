@@ -330,6 +330,7 @@ Route::group(['prefix'=>'menu'],function()
       Route::post('/delete_discount'  ,'delete_discount')->name('delete.discount');
       Route::post('/add_details_wait' ,'add_details_wait')->name('add.details.wait');
       Route::post('/find_extra_item'  ,'find_extra_item')->name('find.extra.item');
+      Route::post('/find_materials_item','find_materials_item')->name('find.materials.item');
       Route::post('/export_Extra_menu','export_Extra')->name('export.Extra.menu');
       Route::post('/Change_Menu'      ,'change_menu')->name('change.menu');
       Route::post('/getnewsub'        ,'getnewsub')->name('getnewsub.menu');

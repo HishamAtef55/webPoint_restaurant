@@ -126,10 +126,12 @@ class DailyReportsController extends Controller
                             }else{
                                 $period[$i]['orders'] = 2;
                             }
-                            $period[$i]['tax']+=$order['tax'];
+                            $order['hos'] == 1 ? $period[$i]['tax']  += 0 : $period[$i]['tax']+=$order['tax'];
+                            $order['hos'] == 1 ? $period[$i]['services']  += 0 : $period[$i]['services']+=$order['services'];
+                            // $period[$i]['tax']+=$order['tax'];
                             $period[$i]['sub_total']+=$order['sub_total'];
                             $period[$i]['hosp_total']+=$order['hosp_total'];
-                            $period[$i]['services']+=$order['services'];
+                            // $period[$i]['services']+=$order['services'];
                             $period[$i]['total']+=$order['total'];
                             $period[$i]['cash']+=$order['cash'];
                             $period[$i]['visa']+=$order['visa'];

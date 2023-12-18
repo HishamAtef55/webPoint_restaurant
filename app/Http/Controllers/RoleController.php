@@ -111,7 +111,7 @@ class RoleController extends Controller
 
 
 
-        $role = Role::create(['name' => $request->input('name')]);
+        $role = Role::create(['name' => $request->input('name') . '-pos','type'=>'pos']);
 
         $role->syncPermissions($request->input('permission'));
 
