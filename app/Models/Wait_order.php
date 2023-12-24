@@ -6,6 +6,7 @@ use App\Models\Table;
 use App\Models\Details_Wait_Order;
 use App\Models\Extra_wait_order;
 use App\Models\ItemPrinters;
+use App\Models\WithoutMaterialsD;
 
 class Wait_order extends Model
 {
@@ -31,4 +32,9 @@ class Wait_order extends Model
     {
         return $this->hasMany(ItemPrinters::class,'item_id','item_id');
     }
+    public function Without_m()
+    {
+        return $this->hasMany(WithoutMaterialsD::class,'wait_order_id','id');
+    }
+    
 }

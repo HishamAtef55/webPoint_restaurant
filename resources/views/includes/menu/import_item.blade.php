@@ -599,23 +599,66 @@ $('body').on('click','#save_comment',function () {
 {{--###################### End Comment Order  ####################################### --}}
 
 {{--###################### Start Without Order  ####################################### --}}
+function createWithout(parent, number, array) {
+    let num = parent.find('input.num').val();
+    parent.find('.without').each(function(){
+        $(this).remove();
+    })
+    for (let i = 0; i < number; i++) {
+        let withoutParent = $(`<div class='without'></div>`),
+            withoutName = $(`<div class='without-name'><span>Without</span><span>${array[i].name}</span></div>`);
+
+        withoutParent.appendTo(parent);
+        withoutName.appendTo(withoutParent);
+    }
+}
+
 $('body').on('click','#save_without',function () {
 
-        // let Order_Number = $('#new_order').attr('value');
-        let Order_ID     = $(this).parents('#item-menu-model').attr('id_order');
-        let text         = $('#text_area_without').val();
-        let Order_Number     = $('#new_order').attr('value');
+    let Order_ID     = $(this).parents('#item-menu-model').attr('id_order');
+    let Order_Number     = $('#new_order').attr('value');
+    let extraParent  = $(`.item-parent[item_id = ${$(this).attr('number_order')}]`);
+    let Item = extraParent.attr('item');
+    let withoutChecked = Array.from($(this).parents('#nav-without').find('input[type="checkbox"]:checked'));
+    let subgroup_id    = $('.nav-sub .nav-link.active').attr('value');
+    let new_quant = Quantity_item.val();
+    let without_material = [];
+    withoutChecked.forEach(without => {
+        without_material.push({
+            id: $(without).attr('id_without'),
+            material_id: $(without).parent().attr('without'),
+            name: $(without).next('label').find('span').text()
+        })
+    });
 
+    let quantOld = extraParent.find('.num');
+    let quantNew = $(this).parents('#item-menu-model').find('#num_quant');
+
+    function increaseQuant(big, small) {
+        if (big.val() != small.val()) {
+            big.val(big.val() - small.val());
+            createWithout(cloneNewItem(extraParent, small.val()), withoutChecked.length, without_material);
+            clacTotalItem(extraParent);
+        } else {
+            createWithout(extraParent, withoutChecked.length, without_material);
+            clacTotalItem(extraParent);
+        }
+
+    }
+
+    increaseQuant(quantOld, quantNew);
 
     $.ajax({
-            url: "{{route('without.order')}}",
-            method: 'post',
-            enctype: "multipart/form-data",
-            data: {Order_ID:Order_ID,Order_Number:Order_Number,text:text, _token: _token},
-            success: function (data) {
-
+        url: "{{route('without.order')}}",
+        method: 'post',
+        enctype: "multipart/form-data",
+        data: {Order_ID,Order_Number, _token, without_material,Item,subgroup_id,new_quant},
+        success: function (data) {
+            if(data.status === true) {
+                $('#item-menu-model').modal('hide');
             }
-        });
+        }
+    });
 });
 {{--###################### End Without Order  ####################################### --}}
 
@@ -948,6 +991,7 @@ $('#item-menu-model').on('show.bs.modal', function (event) {
     let item             = button.parents('.item-parent').attr('item');
     let itemId           = button.parents('.item-parent').attr('item_id');
     $('#extra-container').empty();
+    $('#without-container').empty();
     $.ajax({
         url: "{{route('find.extra.item')}}",
         method: 'post',
@@ -983,15 +1027,14 @@ $('#item-menu-model').on('show.bs.modal', function (event) {
             }
             html +='<button id="save_extra" number_order="'+itemId+'" class="btn btn-block bg-success text-white">Save</button>';
             $('#extra-container').html(html);
-            for(var count = 0 ; count < data.materilas.length ; count ++)
+            for(var count = 0 ; count < data.materilas.length ; count++)
             {
                 without+='<div class="form-group" item="'+item+'" without="'+data.materilas[count].material_id+'">';
-                    without+='<input type="checkbox" id_extra="'+data.materilas[count].id+'"   id="without_'+data.materilas[count].material_id+'">';
-                    without+='<label for="extra_'+data.materilas[count].material_id+'">';
+                    without+='<input type="checkbox" id_without="'+data.materilas[count].id+'" id="without_'+data.materilas[count].material_id+'">';
+                    without+='<label for="without_'+data.materilas[count].material_id+'">';
                         without+='<span>'+data.materilas[count].material_name+'</span>';
-                        // html+='<span>'+data.materilas[count].price+'</span>';
-                        without+='</label>';
-                        without+='</div>';
+                    without+='</label>';
+                without+='</div>';
             }
             without +='<button id="save_without" number_order="'+itemId+'" class="btn btn-block bg-success text-white">Save</button>';
             $('#without-container').html(without);
@@ -1000,7 +1043,6 @@ $('#item-menu-model').on('show.bs.modal', function (event) {
     });
 });
 {{--######################  End get Extra   ####################################### --}}
-
 $('body').on('click', '#save_extra', function() {
     let extraPrice   = [];
     let ExtraName    = [];
@@ -1036,7 +1078,6 @@ $('body').on('click', '#save_extra', function() {
     increaseQuant(quantOld, quantNew);
 
     let new_quant = Quantity_item.val();
-    console.log(new_quant);
     $.ajax({
         url    :"{{Route('export.Extra.menu')}}",
         method :'post',

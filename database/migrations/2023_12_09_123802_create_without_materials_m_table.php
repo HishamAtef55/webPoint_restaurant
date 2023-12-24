@@ -18,8 +18,11 @@ class CreateWithoutMaterialsMTable extends Migration
             $table->string('wait_order_id')->default(0);
             $table->string('number_of_order')->default(0);
             $table->integer('material_id')->default(0);
+            $table->string('date')->nullable();
             $table->integer('item_id')->default(0);
+            $table->double('qty_item',10,2)->default(0);
             $table->double('qty',10,3)->default(0);
+            $table->double('price',10,3)->default(0);
             $table->string('name')->default(0);
         });
     }

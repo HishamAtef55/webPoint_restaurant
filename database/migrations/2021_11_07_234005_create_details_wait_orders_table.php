@@ -21,6 +21,7 @@ class CreateDetailsWaitOrdersTable extends Migration
             $table->string('name')->default(0);
             $table->string('wait_order_id')->default(0);
             $table->integer('item_id')->default(0);
+            $table->integer('pickup')->nullable()->default(0);
             $table->timestamps();
         });
     }

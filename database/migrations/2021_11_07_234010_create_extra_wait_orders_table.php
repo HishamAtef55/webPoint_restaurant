@@ -21,6 +21,7 @@ class CreateExtraWaitOrdersTable extends Migration
             $table->string('number_of_order')->default(0);
             $table->double('price', 8, 2)->default(0);
             $table->string('name')->default(0);
+            $table->integer('pickup')->nullable()->default(0);
             $table->timestamps();
         });
     }

@@ -19,8 +19,11 @@ class CreateWithoutMaterialsDTable extends Migration
             $table->string('number_of_order')->default(0);
             $table->integer('material_id')->default(0);
             $table->integer('item_id')->default(0);
+            $table->double('qty_item',10,2)->default(0);
             $table->double('qty',10,3)->default(0);
+            $table->double('price',10,3)->default(0);
             $table->string('name')->default(0);
+            $table->integer('pickup')->nullable()->default(0);
             $table->timestamps();
         });
     }
