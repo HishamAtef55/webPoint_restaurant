@@ -424,6 +424,7 @@ input[type="number"] {
 .discount-list .discount-item,
 .extra,
 .details,
+.without,
 .discount {
     padding: 10px 5px;
     font-size: 0.75rem;
@@ -472,6 +473,7 @@ input[type="number"] {
 
 .check .table-check .table-item div:not(.product-name):not(.total):not(.item-menu),
 .extra div:not(:first-of-type),
+.without div:not(:first-of-type),
 .discount div:not(:first-of-type),
 .details div:not(:first-of-type) {
     width: 15%;
@@ -541,6 +543,7 @@ input[type="number"] {
 .extra,
 .discount,
 .details,
+.without,
 .comment {
     padding: 5px 0;
     margin-top: -10px;
@@ -548,6 +551,7 @@ input[type="number"] {
 }
 
 .extra .extra-name,
+.without .without-name,
 .details .details_name,
 .discount .discount-name,
 .comment .comment-name {
@@ -557,6 +561,7 @@ input[type="number"] {
 }
 
 .extra .extra-name span:first-of-type,
+.without .without-name span:first-of-type,
 .details .details_name span:first-of-type,
 .discount .discount-name span:first-of-type,
 .comment .comment-name span:first-of-type {
@@ -574,6 +579,7 @@ input[type="number"] {
 .discount .discount-name span:first-of-type {
     letter-spacing: 0px;
 }
+
 
 .discount .discount-name span:first-of-type {
     background: var(--danger);
@@ -2355,6 +2361,7 @@ input:checked + .slider:before {
 .moveTo ul li > div,
 .moveTo ul li .discount-name,
 .moveTo ul li .extra-name,
+.without ul li .without-name,
 .moveTo ul li .details_name,
 .checkCopy ul.view li .details_name {
     flex-grow: 1;

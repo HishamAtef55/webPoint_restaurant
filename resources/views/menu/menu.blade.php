@@ -930,6 +930,18 @@
                                                     <div class='extra-price' >{{$extra->price * $order->quantity}}</div>
                                                 </div>
                                             @endforeach
+
+                                            @foreach($order->without_m as $without)
+                                                <div class='without' id="{{$without -> material_id}}">
+                                                    <div class='without-name'>
+                                                        <span>without</span>
+                                                        <span>{{$without->name}}</span>
+                                                    </div>
+                                                    {{-- <div class='extra-price' >{{$extra->price}}</div> --}}
+                                                    <div class='without-price' >-</div>
+                                                </div>
+                                            @endforeach
+
                                             @if($order->comment != null)
                                                 <div class='comment'>
                                                     <div class='comment-name'>

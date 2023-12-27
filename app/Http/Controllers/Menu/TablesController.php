@@ -216,7 +216,7 @@ class TablesController extends Controller
                 // ->where('menu_id',$id_active_menu)
                 // ->get();
                 // Select All Wait Order In This table
-                $Orders   = Wait_order::with(['Details','Extra'])
+                $Orders   = Wait_order::with(['Details','Extra','Without_m'])
                     ->where('branch_id',$branch->branch_id)
                     ->where('table_id',$table)
                     ->where('state',1)
