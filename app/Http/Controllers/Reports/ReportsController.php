@@ -250,15 +250,15 @@ class ReportsController extends Controller
         // Check Of Report in one Day Or Period
         if($date == $request->from && $date == $request->to){
             $orders = Orders_d::select([
-                'op','method','user_id','user','gust','total','order_id'])->get();
+                'op','method','user_id','user','gust','total','order_id','tip'])->get();
         }
         else if($request->from == $request->to || $request->to == null){ // is Filter by Using One Day
             $orders = Orders_m::where(['branch_id'=>$branch ,'d_order'=>$request->from])->select([
-                'op','method','user_id','user','gust','total','order_id'])->get();
+                'op','method','user_id','user','gust','total','order_id','tip'])->get();
         }else{
             $orders = Orders_m::where(['branch_id'=>$branch])
                 ->whereBetween('d_order',[$request->from,$request->to])
-                ->select(['op','method','user_id','user','gust','total','order_id'])->get();
+                ->select(['op','method','user_id','user','gust','total','order_id','tip'])->get();
         }
 
         // Filter By Transaction
@@ -281,6 +281,7 @@ class ReportsController extends Controller
                 'orders'   =>$row->count('order_id'),
                 'total'    =>$row->sum('total'),
                 'guest'    =>$row->sum('gust'),
+                'tip'    =>$row->sum('tip'),
                 'avg'      =>$row->sum('total') / $row->sum('gust'),
             ];
         });

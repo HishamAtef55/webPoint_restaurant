@@ -45,6 +45,7 @@
                             <th>Waiter name</th>
                             <th>Order No</th>
                             <th>Total</th>
+                            <th>Tip</th>
                             <th>Guests No</th>
                             <th>Ave/Guest</th>
                         </tr>
@@ -52,11 +53,14 @@
                     <tbody>`;
                 let allTotal = 0;
                 let allAvgTotal = 0;
+                let allTip = 0;
                 for (const info in data.waiters) {
                     html += `<tr class="table-light">
                         <td>${data.waiters[info].waiter}</td>
                         <td>${data.waiters[info].orders}</td>
-                        <td>${parseFloat(data.waiters[info].total).toFixed(2)}</td>`
+                        <td>${parseFloat(data.waiters[info].total).toFixed(2)}</td>
+                        <td>${parseFloat(data.waiters[info].tip).toFixed(2)}</td>`
+                        allTip += data.waiters[info].tip
                         allTotal += data.waiters[info].total
                         html += `<td>${data.waiters[info].guest}</td>
                         <td>${parseFloat(data.waiters[info].avg).toFixed(2)}</td>`
@@ -69,7 +73,7 @@
                             <td>Total</td>
                             <td>-</td>
                             <td>${parseFloat(allTotal).toFixed(2)}</td>
-                            <td>-</td>
+                            <td>${parseFloat(allTip).toFixed(2)}</td>
                             <td>${parseFloat(allAvgTotal).toFixed(2)}</td>
                         </tr>
                     </tfoot>
