@@ -61,7 +61,7 @@ class SalesCurrentDayController extends Controller
         }
         // Filter By Users
         if(isset($request->user)){
-            $orders = $orders->whereIn('cashier',$request->user);
+            $orders = $orders->whereIn('user_id',$request->user);
         }
         // Filter By Devices
         if(isset($request->device)){
