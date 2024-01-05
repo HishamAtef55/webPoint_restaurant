@@ -15,14 +15,16 @@ class CreateWithoutMaterialsDTable extends Migration
     {
         Schema::create('without_materials_d', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('wait_order_id')->default(0);
-            $table->string('number_of_order')->default(0);
+            $table->integer('wait_order_id');
+            $table->integer('number_of_order')->default(0);
             $table->integer('material_id')->default(0);
             $table->integer('item_id')->default(0);
             $table->double('qty_item',10,2)->default(0);
+            $table->string('name')->default(0);
             $table->double('qty',10,3)->default(0);
             $table->double('price',10,3)->default(0);
-            $table->string('name')->default(0);
+            $table->string('unit')->default(0);
+            $table->double('total',10,3)->default(0);
             $table->integer('pickup')->nullable()->default(0);
             $table->timestamps();
         });

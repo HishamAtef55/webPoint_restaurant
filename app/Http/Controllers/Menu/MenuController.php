@@ -27,7 +27,9 @@ use App\Models\Void_d;
 use App\Models\Wait_order;
 use App\Traits\All_Notifications_menu;
 use App\Models\User;
+use App\Models\Units;
 use App\Models\WithoutMaterialsD;
+use App\Models\material;
 use Illuminate\Http\Request;
 use App\Traits\All_Functions;
 use Illuminate\Support\Facades\Auth;
@@ -480,7 +482,7 @@ class MenuController extends Controller
         $delete_details = Extra_wait_order::where(['number_of_order'=>$request->Order_Number,'wait_order_id'=>$getWaitOrderId->id])->delete();
         DB::statement('ALTER TABLE extra_wait_orders AUTO_INCREMENT = '.(count(Extra_wait_order::all())+1).';');
         $this->AddTotalOrder($request->tr,$request->Order_Number);
-
+        WithoutMaterialsD::where(['wait_order_id'=>$getWaitOrderId->id])->delete();
         if(Wait_order::where(['branch_id'=>$branch,'order_id'=>$request->Order_Number])->count() == 0 )
         {
             $checkAddOrder = Orders_d::limit(1)->where('order_id',$request->Order_Number)->select(['take_order'])->first();
@@ -578,21 +580,25 @@ class MenuController extends Controller
         $old_extra         = 0 ;
         if($request->new_quant == $get_wait_order->quantity)
         {
-            // loop for  materilas opject    
+            // loop for  materilas opject
             foreach($request->without_material as $row)
             {
                 $materialRow = ComponentsItems::find($row['id']);
+                $material = material::where(['code'=>$row['material_id']])->first();
+                $unit = Units::whereName($material->unit)->first();
                 $insert_extra = WithoutMaterialsD::create([
                     'number_of_order' => $request->Order_Number,
-                    'material_id'     => $row['id'],
+                    'material_id'     => $row['material_id'],
                     'price'           => $materialRow->cost,
                     'qty'             => $materialRow->quantity,
                     'qty_item'        => $request->new_quant,
                     'name'            => $materialRow->material_name,
                     'wait_order_id'   => $get_wait_order->id,
-                    'item_id'         =>$request->Item,
+                    'item_id'         => $request->Item,
+                    'total'           => $materialRow->quantity * $materialRow->cost * $request->new_quant,
+                    'unit'            => $unit->sub_unit->name,
                     'pickup'          => 0
-                    
+
                 ]);
             }
         }else{
@@ -606,7 +612,7 @@ class MenuController extends Controller
                 ->get()
                 ->first();
             // New REcord same Items
-        
+
             $new_recored = Wait_order :: create([
                 'item_id'            => $get_wait_order->item_id,
                 'table_id'           => $get_wait_order->table_id,
@@ -674,11 +680,13 @@ class MenuController extends Controller
                     'name'            => $without->name,
                     'wait_order_id'   => $get_new_wait_order->id,
                     'item_id'         => $without->item_id,
-                    'pickup'          => 0
+                    'total'           => $without->qty * $without->price * $request->new_quant,
+                    'unit'            => $without->unit,
+                    'pickup'          => $without->pickup
                 ]);
             }
 
-            // add material with out 
+            // add material with out
             // foreach($request->extraArray as $extra)
             // {
             //     $insert_extra = Extra_wait_order::create([
@@ -691,28 +699,31 @@ class MenuController extends Controller
             //     $new_extra = $new_extra + $extra['price'];
             // }
 
-            // loop for  materilas opject    
+            // loop for  materilas opject
             foreach($request->without_material as $row)
             {
                 $materialRow = ComponentsItems::find($row['id']);
+                $material = material::where(['code'=>$row['material_id']])->first();
+                $unit = Units::whereName($material->unit)->first();
                 $insert_extra = WithoutMaterialsD::create([
                     'number_of_order' => $request->Order_Number,
-                    'material_id'     => $row['id'],
+                    'material_id'     => $row['material_id'],
                     'price'           => $materialRow->cost,
                     'qty'             => $materialRow->quantity,
                     'qty_item'        => $request->new_quant,
                     'name'            => $materialRow->material_name,
                     'wait_order_id'   => $get_new_wait_order->id,
                     'item_id'         => $request->Item,
+                    'total'           =>$materialRow->quantity * $materialRow->cost * $request->new_quant,
+                    'unit'            => $unit->sub_unit->name,
                     'pickup'          => 0
                 ]);
             }
 
-
             $total_extra          = ($old_extra * $request->new_quant);
             $Quantity_old_item    = ($get_wait_order-> quantity) - ($request->new_quant);
             $total_extra_old_item = $Quantity_old_item * $old_extra;
-            
+
             // variable Discount
             $type                 = $get_wait_order->discount_type ;
             $discount             = $get_wait_order->discount ;

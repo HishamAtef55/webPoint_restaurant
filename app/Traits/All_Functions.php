@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\DB;
 use App\Traits\All_Functions;
 use App\Traits\All_Notifications_menu;
 use App\Models\Details_Wait_Order_m;
+use App\Models\WithoutMaterialsD;
+use App\Models\WithoutMaterialsM;
 use App\Models\Extra_wait_order;
 use App\Models\Extra_wait_order_m;
 use App\Models\Orders_m;
@@ -273,7 +275,7 @@ Trait All_Functions
                 ->where(['order_id'=>$order_id])
                 ->select(['total_discount','discount','discount_type','service_ratio','tax_ratio','discount_tax_service','delivery'])
                 ->first();
-            $dis_update           = $order->total_discount;
+            //$dis_update  = $order->total_discount;
             if(Orders_d::limit(1)->where(['order_id'=>$order_id])->count() > 0){
                 $flag = 1;
                 $delivery = $order->delivery;
@@ -573,6 +575,22 @@ Trait All_Functions
                         'wait_order_id'=>$ins->id,
                     ]);
                     $del = Details_Wait_Order::where('id',$det->id)->delete();
+                }
+                foreach ($wa->Without_m as $without){
+                    WithoutMaterialsM::create([
+                        'wait_order_id'=>$without->wait_order_id,
+                        'number_of_order'=>$without->number_of_order,
+                        'material_id'=>$without->material_id,
+                        'date'=>$order->d_order,
+                        'item_id'=>$without->item_id,
+                        'qty_item'=>$without->qty_item,
+                        'name'=>$without->name,
+                        'qty'=>$without->qty,
+                        'price'=>$without->price,
+                        'unit'=>$without->unit,
+                        'total'=>$without->total,
+                    ]);
+                    $del = WithoutMaterialsD::where('id',$without->id)->delete();
                 }
                 foreach ($wa->Extra as $ex){
                     $new_order = Extra_wait_order_m::create([
