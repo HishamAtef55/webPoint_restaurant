@@ -31,7 +31,7 @@ class DiscountController extends Controller
         );
         if($data)
         {
-            Permission::create(['name' => $request->name . '-discount']);
+            Permission::create(['name' => $request->name . '-discount','type'=>'pos']);
             return response()->json(
                 [
                     'status' => true,
