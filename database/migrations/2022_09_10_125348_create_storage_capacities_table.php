@@ -13,7 +13,7 @@ class CreateStorageCapacitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('storage_capacities', function (Blueprint $table) {
+        Schema::create('stock_storage_capacities', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('store');
             $table->string('type');

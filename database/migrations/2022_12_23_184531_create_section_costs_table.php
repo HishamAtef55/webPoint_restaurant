@@ -13,7 +13,7 @@ class CreateSectionCostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('section_costs', function (Blueprint $table) {
+        Schema::create('stock_section_costs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('branch_id');
             $table->integer('section_id');

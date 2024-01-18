@@ -13,7 +13,7 @@ class CreateStorePurchasesDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('store_purchases_details', function (Blueprint $table) {
+        Schema::create('stock_store_purchases_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('order_id');
             $table->integer('code');

@@ -13,7 +13,7 @@ class CreateMainComponentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('main_components', function (Blueprint $table) {
+        Schema::create('stock_main_components', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->double('cost',10,3);
             $table->double('percentage',10,3);

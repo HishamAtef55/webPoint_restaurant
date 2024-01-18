@@ -13,7 +13,7 @@ class CreateBackToSuppliersDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('back_to_suppliers_details', function (Blueprint $table) {
+        Schema::create('stock_back_to_suppliers_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('order_id');
             $table->string('code',50);

@@ -13,7 +13,7 @@ class CreateComponentsItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('components_items', function (Blueprint $table) {
+        Schema::create('stock_components_items', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('branch');
             $table->integer('item_id');

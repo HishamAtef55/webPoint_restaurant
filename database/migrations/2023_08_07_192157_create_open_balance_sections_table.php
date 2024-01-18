@@ -13,7 +13,7 @@ class CreateOpenBalanceSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('open_balance_sections', function (Blueprint $table) {
+        Schema::create('stock_open_balance_sections', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('material_id');
             $table->string('date',30);

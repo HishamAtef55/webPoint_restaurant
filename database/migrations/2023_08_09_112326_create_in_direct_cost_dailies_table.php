@@ -13,7 +13,7 @@ class CreateInDirectCostDailiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('in_direct_cost_dailies', function (Blueprint $table) {
+        Schema::create('stock_in_direct_cost_dailies', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('cost_id')->references('id')->on('in_direct_costs')->cascadeOnDelete();
             $table->integer('user_id');

@@ -13,7 +13,7 @@ class CreateSectionPurchasesTable extends Migration
      */
     public function up()
     {
-        Schema::create('section_purchases', function (Blueprint $table) {
+        Schema::create('stock_section_purchases', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('serial')->nullable();
             $table->text('note')->nullable();

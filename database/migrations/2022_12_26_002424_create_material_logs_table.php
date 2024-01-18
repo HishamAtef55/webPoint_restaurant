@@ -13,7 +13,7 @@ class CreateMaterialLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('material_logs', function (Blueprint $table) {
+        Schema::create('stock_material_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->text('code');
             $table->text('user');

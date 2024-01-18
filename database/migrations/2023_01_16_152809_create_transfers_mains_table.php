@@ -13,7 +13,7 @@ class CreateTransfersMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('transfers_mains', function (Blueprint $table) {
+        Schema::create('stock_transfers_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('serial_id',100)->nullable();
             $table->string('date',150);

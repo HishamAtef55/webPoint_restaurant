@@ -13,7 +13,7 @@ class CreateDetailsWaitOrdersDelsTable extends Migration
      */
     public function up()
     {
-        Schema::create('details_wait_orders_dels', function (Blueprint $table) {
+        Schema::create('stock_details_wait_orders_dels', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('number_of_order')->default(0);
             $table->integer('detail_id')->default(0);

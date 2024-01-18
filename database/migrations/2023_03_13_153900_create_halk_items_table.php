@@ -13,7 +13,7 @@ class CreateHalkItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('halk_items', function (Blueprint $table) {
+        Schema::create('stock_halk_items', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('branch');
             $table->integer('section_id');

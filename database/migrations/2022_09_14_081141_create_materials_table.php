@@ -13,7 +13,7 @@ class CreateMaterialsTable extends Migration
      */
     public function up()
     {
-        Schema::create('materials', function (Blueprint $table) {
+        Schema::create('stock_materials', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('main_group');
             $table->integer('sub_group');

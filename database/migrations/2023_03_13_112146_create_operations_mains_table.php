@@ -13,7 +13,7 @@ class CreateOperationsMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('operations_mains', function (Blueprint $table) {
+        Schema::create('stock_operations_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('type',50);
             $table->integer('branch_id')->default('0');

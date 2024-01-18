@@ -13,7 +13,7 @@ class CreateInDirectCostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('in_direct_costs', function (Blueprint $table) {
+        Schema::create('stock_in_direct_costs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->timestamps();

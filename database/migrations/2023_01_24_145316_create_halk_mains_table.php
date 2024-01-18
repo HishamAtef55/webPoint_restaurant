@@ -13,7 +13,7 @@ class CreateHalkMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('halk_mains', function (Blueprint $table) {
+        Schema::create('stock_halk_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('serial_id',100)->nullable();
             $table->string('date',150);

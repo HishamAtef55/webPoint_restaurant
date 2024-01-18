@@ -13,7 +13,7 @@ class CreateOperationsDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('operations_details', function (Blueprint $table) {
+        Schema::create('stock_operations_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('order_id')->references('id')->on('operations_mains')
                 ->cascadeOnDelete();

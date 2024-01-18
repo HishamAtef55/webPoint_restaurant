@@ -13,7 +13,7 @@ class CreateBackToSuppliersMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('back_to_suppliers_mains', function (Blueprint $table) {
+        Schema::create('stock_back_to_suppliers_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('serial_id',100)->nullable();
             $table->string('date',150);

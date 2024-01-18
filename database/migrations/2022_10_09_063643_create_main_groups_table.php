@@ -13,7 +13,7 @@ class CreateMainGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('main_groups', function (Blueprint $table) {
+        Schema::create('stock_main_groups', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->timestamps();

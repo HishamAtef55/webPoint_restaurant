@@ -13,7 +13,7 @@ class CreateSectionStoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('section_stores', function (Blueprint $table) {
+        Schema::create('stock_section_stores', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('store_id');
             $table->integer('section_id');

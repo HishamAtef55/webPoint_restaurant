@@ -13,7 +13,7 @@ class CreateStoreCostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('store_costs', function (Blueprint $table) {
+        Schema::create('stock_store_costs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('store_id');
             $table->integer('code');

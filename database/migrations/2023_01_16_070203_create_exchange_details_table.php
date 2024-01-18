@@ -13,7 +13,7 @@ class CreateExchangeDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('exchange_details', function (Blueprint $table) {
+        Schema::create('stock_exchange_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('order_id');
             $table->string('code',50);

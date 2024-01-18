@@ -13,7 +13,7 @@ class CreateSectionGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('section_groups', function (Blueprint $table) {
+        Schema::create('stock_section_groups', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('section_id');
             $table->integer('group_id');

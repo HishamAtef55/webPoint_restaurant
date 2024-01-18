@@ -13,7 +13,7 @@ class MaterialSections extends Migration
      */
     public function up()
     {
-        Schema::create('material_sections', function (Blueprint $table) {
+        Schema::create('stock_material_sections', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('branch');
             $table->integer('section');

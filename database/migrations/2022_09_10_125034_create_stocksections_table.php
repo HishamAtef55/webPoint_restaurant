@@ -13,7 +13,7 @@ class CreateStocksectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stocksections', function (Blueprint $table) {
+        Schema::create('stock_stocksections', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('branch');
             $table->string('name');

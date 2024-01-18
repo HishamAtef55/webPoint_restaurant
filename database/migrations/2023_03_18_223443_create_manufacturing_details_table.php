@@ -13,7 +13,7 @@ class CreateManufacturingDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('manufacturing_details', function (Blueprint $table) {
+        Schema::create('stock_manufacturing_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('order_id')->references('id')->on('manufacturing_mains')->cascadeOnDelete();
             $table->string('type',50)->default('static');

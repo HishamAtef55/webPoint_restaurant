@@ -13,7 +13,7 @@ class CreateBackToStoreMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('back_to_store_mains', function (Blueprint $table) {
+        Schema::create('stock_back_to_store_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('serial_id',150)->nullable();
             $table->string('order_id',150)->nullable();

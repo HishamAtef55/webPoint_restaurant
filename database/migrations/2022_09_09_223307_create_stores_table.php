@@ -13,7 +13,7 @@ class CreateStoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('stores', function (Blueprint $table) {
+        Schema::create('stock_stores', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('phone')->nullable();

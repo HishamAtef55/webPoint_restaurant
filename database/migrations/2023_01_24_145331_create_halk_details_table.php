@@ -13,7 +13,7 @@ class CreateHalkDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('halk_details', function (Blueprint $table) {
+        Schema::create('stock_halk_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('order_id');
             $table->string('code',50);

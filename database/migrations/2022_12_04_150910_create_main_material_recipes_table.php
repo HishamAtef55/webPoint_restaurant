@@ -13,7 +13,7 @@ class CreateMainMaterialRecipesTable extends Migration
      */
     public function up()
     {
-        Schema::create('main_material_recipes', function (Blueprint $table) {
+        Schema::create('stock_main_material_recipes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('material');
             $table->double('quantity',10,3);

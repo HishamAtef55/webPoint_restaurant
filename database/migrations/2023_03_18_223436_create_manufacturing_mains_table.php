@@ -13,7 +13,7 @@ class CreateManufacturingMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('manufacturing_mains', function (Blueprint $table) {
+        Schema::create('stock_manufacturing_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->text('date')->nullable();
             $table->text('type',50)->nullable();
