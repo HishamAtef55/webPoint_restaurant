@@ -306,7 +306,7 @@ class TablesController extends Controller
         $branch = Auth::user()->branch_id;
         $order = Orders_d::limit(1)->where(['branch_id'=>$branch,'table'=>$request->tableNumber,'state'=>'1'])
             ->select(['total','user','gust','order_id'])->first();
-        $this->AddTotalOrder("Table",$order->order_id);
+        $this->reCalcOrder($order->order_id);
         $order = Orders_d::limit(1)->where(['branch_id'=>$branch,'table'=>$request->tableNumber,'state'=>'1'])
             ->select(['total','user','gust','order_id'])->first();
         return response()->json(['total'=>$order->total,'order'=>$order->order_id ,'captain'=>$order->user, 'gust'=>$order->gust]);
@@ -373,9 +373,6 @@ class TablesController extends Controller
 
     public function transfer_users(Request $request){
         $user = Auth::user()->id;
-//        if(Table::where(['table_id'=>$request->table,'user_id'=>$user])->count() == 0){
-//            return response()->json(['msg'=>'No operations can be performed on this table']);
-//        }
         date_default_timezone_set('Africa/Cairo');
         $time_now = date('H-i');
         $day_now = $this->CheckDayOpen();

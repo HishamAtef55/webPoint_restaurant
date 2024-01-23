@@ -46,7 +46,7 @@ class MenuController extends Controller
     use All_Functions;
     public function view_menu()
     {
-        $this->CheckLastOrder();
+        return $this->CheckLastOrder();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
         $del_noti_pilot    = $this->Delivery_pilot();

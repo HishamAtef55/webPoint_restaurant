@@ -228,8 +228,15 @@ Trait All_Functions
             if(SerialCheck::limit(1)->where(['branch_id'=>$branch ,'branch_dev'=>$branch_dev])->count() > 0)
             {
                 $last = SerialCheck::where(['branch_id'=>$branch ,'branch_dev'=>$branch_dev])->max('serial');
-                $serial = $last + 1;
-                $new_serial = $branch . $dev . $serial;
+                $serial = $last;
+                do{
+                    $serial ++;
+                    $new_serial = $branch . $dev . $serial;
+                    $result = Orders_d::where(['order_id'=>$new_serial])->first();
+                    if($result){
+                        $result = Wait_order::where(['order_id'=>$new_serial])->first();
+                    }
+                }while($result);
                 SerialCheck::create([
                     'branch_id'  =>$branch,
                     'serial'     =>$serial,
@@ -641,7 +648,6 @@ Trait All_Functions
             $del = Void_d::where('order_id',$void_d->order_id)->delete();
         }
 
-
         $shift       = Shift::limit(1)->where(['branch_id'=>$branch,'status'=>1])->update(['status'=>0]);
         $first_shift = Shift::where(['branch_id'=>$branch])->min('shiftid');
         $update      = Shift::where(['branch_id'=>$branch,'shiftid'=>$first_shift])->update(['status'=>1]);
@@ -788,7 +794,7 @@ Trait All_Functions
             'total_discount'  => $discount,
             'sub_total'       => $data[0]['total'],
             'total'           => $total,
-            'cash'           => $cash,
+            'cash'            => $cash,
             'service_ratio'   => $data[0]['service_ratio'],
             'services'        => $data[0]['service'],
             'tax'             => $data[0]['tax'],
@@ -805,7 +811,7 @@ Trait All_Functions
         ])->get();
         foreach($Wait as $or){
             $up = Wait_order::limit(1)->where('id',$or->id)->update([
-                'all_total'=>$or->total + $or->total_extra + $or->price_details - $or->total_discount,
+                'all_total'=> $or->total + $or->total_extra + $or->price_details - $or->total_discount,
             ]);
         }
     }
@@ -910,7 +916,6 @@ Trait All_Functions
         $all_orders = Orders_d::where(['shift_status'=>'1','state' => '0','branch_id'=>$branch])->select(['order_id'])->get();
         foreach($all_orders as $order)
         {
-
             $wait = Wait_order::where(['order_id'=>$order->order_id])->select(['subgroup_id','all_total','quantity','total_discount'])->get();
             foreach($wait as $w){
                 $discount_item += $w->total_discount;
@@ -928,21 +933,19 @@ Trait All_Functions
 
         // Calculate The Pr
         $all_total_groups = $groups->sum('total');
-//        for($x = 0 ; $x < $groups->count() ; $x++){
-//            if($groups[$x]['id'] == $w->subgroup_id){
-//                $groups[$x]['total_pre'] += ($all_total_groups * 100) / $groups[$x]['total'];
-//            }
-//        }
         $saveData = array('date'=>$date,'cash'=>$data['cash'],'visa'=>$data['visa'],'hos'=>$data['hos'],'total'=>$data['cash'] + $data['visa'],'shift'=>$shift,'user'=>Auth::user()->id);
         CloseShiftDaily::create($saveData);
         $insert_data = CloseShift::create($data);
+        CloseShiftGroup::truncate();
         foreach($groups as $gr){
+            $total_pre = 0;
+            $total_pre = $gr->total / $data['total_cash']  * 100;
             CloseShiftGroup::create([
                 'close_shift'=>$insert_data->id,
                 'name'=>$gr->name,
                 'total'=>$gr->total,
                 'quantity'=>$gr->quantity,
-                'total_pre'=>$gr->total_pre,
+                'total_pre'=> $total_pre ,
             ]);
         }
     }
@@ -1076,7 +1079,7 @@ Trait All_Functions
         }
     }
 
-    public function orderLate(){
+    public function orderLate(){ 
         $user = Auth::user();
         $devCounter = 0;
         $serialLate = [];
@@ -1234,68 +1237,68 @@ Trait All_Functions
                     }
             }
 
-//            foreach ($row->WaitOrders as $wait){
-//
-//                if($wait->discount_name == null){
-//                    if($wait->extra->count() > 0){
-//                        Extra_wait_order_m::where(['wait_order_id'=>$wait->id])->delete();
-//                    }
-//                    if($wait->details->count() > 0){
-//                        Details_Wait_Order::where(['wait_order_id'=>$wait->id])->delete();
-//                    }
-//                    Wait_order_m::where(['id'=>$wait->id])->delete();
-//                }
-//            }
-//            Orders_m::where(['id'=>$row->id])->delete();
+        //            foreach ($row->WaitOrders as $wait){
+        //
+        //                if($wait->discount_name == null){
+        //                    if($wait->extra->count() > 0){
+        //                        Extra_wait_order_m::where(['wait_order_id'=>$wait->id])->delete();
+        //                    }
+        //                    if($wait->details->count() > 0){
+        //                        Details_Wait_Order::where(['wait_order_id'=>$wait->id])->delete();
+        //                    }
+        //                    Wait_order_m::where(['id'=>$wait->id])->delete();
+        //                }
+        //            }
+        //            Orders_m::where(['id'=>$row->id])->delete();
         }
     }
     public function OrderNotTake(){
       $orders = Orders_d::with("WaitOrders","WaitOrders.Details",'WaitOrders.Extra')->whereState(1)->whereSerialShift(0)->get();
       foreach($orders as $order){
-          foreach($order->WaitOrders as $wait){
-              if($order->status_take == 0){
-                  if($wait->extra->count() > 0){
-                      Extra_wait_order::where(['wait_order_id'=>$wait->id])->delete();
-                  }
-                  if($wait->details->count() > 0){
-                      Details_Wait_Order::where(['wait_order_id'=>$wait->id])->delete();
-                  }
-                  Wait_order::where(['id'=>$wait->id])->delete();
-                  Orders_d::where(['id'=>$wait->id])->delete();
-              }
-          }
-          if($order->WaitOrders->count() == 0){
-              $order_test = Item::limit(1)->where(['name' => 'TEST'])->first();
-              $group = Group::limit(1)->where('branch_id', Auth::user()->branch_id)
-                  ->where('id', $order_test->group_id)
-                  ->first();
-              $data_test = Wait_order::create(
-                  [
-                      'item_id' => $order_test->id,
-                      'name' => $order_test->name,
-                      'price' => $order_test->price,
-                      'order_id' => $order->order_id,
-                      'table_id' => $order->table,
-                      'sub_num_order' => 1,
-                      'subgroup_id' => $group->id,
-                      'subgroup_name' => $group->name,
-                      'total' => $order_test->price,
-                      'quantity' => 1,
-                      'op' => $order->op,
-                      'state' => 0,
-                      'user' => $order->user,
-                      'user_id' => $order->user_id,
-                      'branch_id' => $order->branch_id,
-                  ]
-              );
-          }
-          $this->SerialShift($order->order_id);
-          $order->state = 0;
-          $order->devcashier = $order->dev_id;
-          $order->t_closeorder = $this->Get_Time();
-          $order->method = "cash";
-          $order->save();
-          $this->AddTotalOrder($order->op,$order->order_id);
+        foreach($order->WaitOrders as $wait){
+            if($order->status_take == 0){
+                if($wait->extra->count() > 0){
+                    Extra_wait_order::where(['wait_order_id'=>$wait->id])->delete();
+                }
+                if($wait->details->count() > 0){
+                    Details_Wait_Order::where(['wait_order_id'=>$wait->id])->delete();
+                }
+                Wait_order::where(['id'=>$wait->id])->delete();
+                Orders_d::where(['id'=>$wait->id])->delete();
+            }
+        }
+        if($order->WaitOrders->count() == 0){
+            $order_test = Item::limit(1)->where(['name' => 'TEST'])->first();
+            $group = Group::limit(1)->where('branch_id', Auth::user()->branch_id)
+                ->where('id', $order_test->group_id)
+                ->first();
+            $data_test = Wait_order::create(
+                [
+                    'item_id' => $order_test->id,
+                    'name' => $order_test->name,
+                    'price' => $order_test->price,
+                    'order_id' => $order->order_id,
+                    'table_id' => $order->table,
+                    'sub_num_order' => 1,
+                    'subgroup_id' => $group->id,
+                    'subgroup_name' => $group->name,
+                    'total' => $order_test->price,
+                    'quantity' => 1,
+                    'op' => $order->op,
+                    'state' => 0,
+                    'user' => $order->user,
+                    'user_id' => $order->user_id,
+                    'branch_id' => $order->branch_id,
+                ]
+            );
+        }
+        $this->SerialShift($order->order_id);
+        $order->state = 0;
+        $order->devcashier = $order->dev_id;
+        $order->t_closeorder = $this->Get_Time();
+        $order->method = "cash";
+        $order->save();
+        $this->AddTotalOrder($order->op,$order->order_id);
       }
     }
 
@@ -1310,7 +1313,7 @@ Trait All_Functions
                 $extra = $wait->extra->sum('price') * $wait->quantity ;
             }
             if($wait->details->count() > 0){
-                $details = $wait->details->sum('price') * $wait->quantity ;
+                $details = $wait->details->sum('price') * $wait->quantity;
             }
             $wait->total = $wait->quantity * $wait->price;
             $wait->total_extra = $extra;

@@ -185,11 +185,18 @@ class PayController extends Controller
         }
         $details = 0;
         $extras  = 0;
-        $w_orders = Wait_order::where(['order_id'=>$request->order])->get();
+        $w_orders = Wait_order::with(['Extra','Details'])->where(['order_id'=>$request->order])->get();
 
         foreach ($w_orders as $order){
-            $details += $order->price_details;
-            $extras += $order->total_extra;
+            //Extra
+            $extraWait = $order->extra->sum('price') * $order->quantity ;
+            $order->total_extra =  $extraWait;
+            $extras += $extraWait;
+            //Details
+            $detailsaWait = $order->details->sum('price') * $order->quantity ;
+            $order->price_details =  $detailsaWait;
+            $details += $detailsaWait;
+            $order->save();
         }
         $dateReal = $this->CheckDayOpen();
         /* Update Order And pay */
@@ -291,11 +298,18 @@ class PayController extends Controller
         }
         $details = 0;
         $extras  = 0;
-        $w_orders = Wait_order::where(['order_id'=>$request->order])->get();
+        $w_orders = Wait_order::with(['Extra','Details'])->where(['order_id'=>$request->order])->get();
 
         foreach ($w_orders as $order){
-            $details += $order->price_details;
-            $extras += $order->total_extra;
+            //Extra
+            $extraWait = $order->extra->sum('price') * $order->quantity ;
+            $order->total_extra =  $extraWait;
+            $extras += $extraWait;
+            //Details
+            $detailsaWait = $order->details->sum('price') * $order->quantity ;
+            $order->price_details =  $detailsaWait;
+            $details += $detailsaWait;
+            $order->save();
         }
         /* check of Method */
         $hos = 0 ;   // Default of Hosbatility

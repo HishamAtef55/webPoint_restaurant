@@ -190,13 +190,16 @@ class CopyCloseShift extends Controller
             $data = $this->getData($request->date,$request->shift);
             $branch   = $this->GetBranch();
             $insert_data = CloseShift::create($data['data']);
-            foreach($data['groups'] as $gr){
+            CloseShiftGroup::truncate();
+            foreach($groups as $gr){
+                $total_pre = 0;
+                $total_pre = $gr->total / $data['total_cash']  * 100;
                 CloseShiftGroup::create([
                     'close_shift'=>$insert_data->id,
                     'name'=>$gr->name,
                     'total'=>$gr->total,
                     'quantity'=>$gr->quantity,
-                    'total_pre'=>$gr->total_pre,
+                    'total_pre'=> $total_pre ,
                 ]);
             }
             $get_printer = Service_tables::where(['branch'=>$branch])->first();

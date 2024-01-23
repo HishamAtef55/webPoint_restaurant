@@ -56,7 +56,6 @@ class ShiftController extends Controller
                 if($shift->shiftid >= $first_shift && $shift->shiftid < $last_shift){
                     $new_shift += $shift->shiftid;
                 }elseif($shift->shiftid == $last_shift){
-//                    $new_shift = $first_shift;
                       $new_shift = $shift->shiftid;
                 }
                 $del_shift = Orders_d::where(['state' => '0','branch_id'=>$branch])->select(['order_id'])->get();
