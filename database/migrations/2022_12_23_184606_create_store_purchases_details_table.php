@@ -37,6 +37,6 @@ class CreateStorePurchasesDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('store_purchases_details');
+        Schema::dropIfExists('stock_store_purchases_details');
     }
 }

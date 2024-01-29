@@ -33,6 +33,6 @@ class CreateHalkDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('halk_details');
+        Schema::dropIfExists('stock_halk_details');
     }
 }

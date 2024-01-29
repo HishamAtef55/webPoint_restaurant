@@ -33,6 +33,6 @@ class CreateOpenBalanceStoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('open_balance_stores');
+        Schema::dropIfExists('stock_open_balance_stores');
     }
 }

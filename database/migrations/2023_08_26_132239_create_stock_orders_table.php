@@ -13,7 +13,7 @@ class CreateStockOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('stock_stock_orders', function (Blueprint $table) {
+        Schema::create('stock_orders', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('date')->nullable();
             $table->integer('sto_sec_id');

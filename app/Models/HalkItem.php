@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class HalkItem extends Model
 {
     use HasFactory;
-    protected $table = 'halk_items';
+    protected $table = 'stock_halk_items';
     protected $guarded = [];
     public function getbranch(){
         return $this->belongsTo(Branch::class,'branch','id');

@@ -36,6 +36,6 @@ class CreateManufacturingMainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('manufacturing_mains');
+        Schema::dropIfExists('stock_manufacturing_mains');
     }
 }

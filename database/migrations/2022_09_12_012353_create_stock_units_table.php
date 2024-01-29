@@ -28,6 +28,6 @@ class CreateStockUnitsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stock_units');
+        Schema::dropIfExists('stock_stock_units');
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class operationsDetails extends Model
 {
     use HasFactory;
-    protected $table = 'operations_details';
+    protected $table = 'stock_operations_details';
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
     public function op(){

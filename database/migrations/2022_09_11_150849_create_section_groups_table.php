@@ -29,6 +29,6 @@ class CreateSectionGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('section_groups');
+        Schema::dropIfExists('stock_section_groups');
     }
 }

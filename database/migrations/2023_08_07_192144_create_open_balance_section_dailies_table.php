@@ -34,6 +34,6 @@ class CreateOpenBalanceSectionDailiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('open_balance_section_dailies');
+        Schema::dropIfExists('stock_open_balance_section_dailies');
     }
 }

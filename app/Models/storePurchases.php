@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class storePurchases extends Model
 {
     use HasFactory;
-    protected  $table ='store_purchases';
+    protected  $table ='stock_store_purchases';
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
     public function store(){
@@ -24,4 +24,3 @@ class storePurchases extends Model
         return $this->hasMany(storePurchasesDetails::class,'order_id','id');
     }
 }
-

@@ -34,6 +34,6 @@ class CreateOperationsMainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('operations_mains');
+        Schema::dropIfExists('stock_operations_mains');
     }
 }

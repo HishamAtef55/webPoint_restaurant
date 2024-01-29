@@ -30,6 +30,6 @@ class CreateMaterialGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('material_groups');
+        Schema::dropIfExists('stock_material_groups');
     }
 }

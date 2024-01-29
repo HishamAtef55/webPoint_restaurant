@@ -15,7 +15,7 @@ class CreateOperationsDetailsTable extends Migration
     {
         Schema::create('stock_operations_details', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('order_id')->references('id')->on('operations_mains')
+            $table->foreignId('order_id')->references('id')->on('stock_operations_mains')
                 ->cascadeOnDelete();
             $table->integer('code');
             $table->string('material');
@@ -33,6 +33,6 @@ class CreateOperationsDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('operations_details');
+        Schema::dropIfExists('stock_operations_details');
     }
 }

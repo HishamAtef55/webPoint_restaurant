@@ -15,7 +15,7 @@ class CreateManufacturingDetailsTable extends Migration
     {
         Schema::create('stock_manufacturing_details', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('order_id')->references('id')->on('manufacturing_mains')->cascadeOnDelete();
+            $table->foreignId('order_id')->references('id')->on('stock_manufacturing_mains')->cascadeOnDelete();
             $table->string('type',50)->default('static');
             $table->integer('code');
             $table->string('material');
@@ -33,6 +33,6 @@ class CreateManufacturingDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('manufacturing_details');
+        Schema::dropIfExists('stock_manufacturing_details');
     }
 }

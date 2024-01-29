@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ComponentsItems extends Model
 {
     use HasFactory;
-    protected $table = 'components_items';
+    protected $table = 'stock_components_items';
     protected $guarded =[];
     protected $hidden = ['created_at','updated_at'];
     public function item(){

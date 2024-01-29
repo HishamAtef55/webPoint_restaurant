@@ -31,6 +31,6 @@ class CreateMainComponentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('main_components');
+        Schema::dropIfExists('stock_main_components');
     }
 }

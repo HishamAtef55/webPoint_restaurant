@@ -27,6 +27,6 @@ class CreateMainGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('main_groups');
+        Schema::dropIfExists('stock_main_groups');
     }
 }

@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class materialLog extends Model
 {
     use HasFactory;
-    protected $table = 'material_logs';
+    protected $table = 'stock_material_logs';
     protected $guarded = [];
 }

@@ -29,6 +29,6 @@ class MaterialSections extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('material_sections');
+        Schema::dropIfExists('stock_material_sections');
     }
 }

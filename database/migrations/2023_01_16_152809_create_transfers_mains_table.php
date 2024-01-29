@@ -36,6 +36,6 @@ class CreateTransfersMainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('transfers_mains');
+        Schema::dropIfExists('stock_transfers_mains');
     }
 }

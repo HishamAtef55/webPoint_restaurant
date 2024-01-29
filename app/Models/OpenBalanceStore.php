@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OpenBalanceStore extends Model
 {
     use HasFactory;
-    protected $table = 'open_balance_stores';
+    protected $table = 'stock_open_balance_stores';
     protected $guarded = [];
     public function material(){
         $this->belongsTo(material::class,'material_id','id');

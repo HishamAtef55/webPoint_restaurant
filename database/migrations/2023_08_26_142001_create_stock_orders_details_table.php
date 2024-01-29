@@ -13,7 +13,7 @@ class CreateStockOrdersDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stock_stock_orders_details', function (Blueprint $table) {
+        Schema::create('stock_orders_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignId('order_id')->references('id')->on('stock_orders')->cascadeOnDelete();
             $table->integer('code');

@@ -70,10 +70,7 @@ class CopyCloseShift extends Controller
             $groups[$i]['quantity'] = 0;
             $groups[$i]['total_pre'] = 0;
         }
-        if(Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->count() == 0){
-
-        }else{
-
+        if(Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->count() > 0){
             // Cal Order_No
             $data['order_no'] = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->count();
             // Cal Order_Min
@@ -166,11 +163,7 @@ class CopyCloseShift extends Controller
             // Calculate The Pr
             $all_total_groups = $groups->sum('total');
             for($x = 0 ; $x < $groups->count() ; $x++){
-                foreach($wait as $w) {
-                    if ($groups[$x]['id'] == $w->subgroup_id) {
-                        $groups[$x]['total_pre'] += ($all_total_groups * 100) / $groups[$x]['total'];
-                    }
-                }
+                $groups[$x]['total_pre'] += $groups[$x]['total'] / $data['sub_total'] * 100;
             }
         }
         return ['data'=>$data,'groups'=>$groups,'status'=>true];
@@ -191,18 +184,15 @@ class CopyCloseShift extends Controller
             $branch   = $this->GetBranch();
             $insert_data = CloseShift::create($data['data']);
             CloseShiftGroup::truncate();
-            foreach($groups as $gr){
-                $total_pre = 0;
-                $total_pre = $gr->total / $data['total_cash']  * 100;
+            foreach($data['groups'] as $gr){
                 CloseShiftGroup::create([
                     'close_shift'=>$insert_data->id,
                     'name'=>$gr->name,
                     'total'=>$gr->total,
                     'quantity'=>$gr->quantity,
-                    'total_pre'=> $total_pre ,
+                    'total_pre'=> $gr->total_pre,
                 ]);
             }
-            $get_printer = Service_tables::where(['branch'=>$branch])->first();
             $device_print = Device::limit(1)->where(['branch_id'=>$branch,'id_device'=>$request->devId])->first();
             $order_print = array('branch'=>$branch,'order_id'=>'0','type'=>9,'no_copies'=>1,'val_type'=>'0','printer'=>$device_print->printer_invoice);
             $this->OrderPrint($order_print);

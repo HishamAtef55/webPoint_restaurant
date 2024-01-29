@@ -33,6 +33,6 @@ class CreateExchangeDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('exchange_details');
+        Schema::dropIfExists('stock_exchange_details');
     }
 }

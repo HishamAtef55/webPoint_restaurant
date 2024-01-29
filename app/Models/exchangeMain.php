@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class exchangeMain extends Model
 {
     use HasFactory;
-    protected  $table ='exchange_mains';
+    protected  $table ='stock_exchange_mains';
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
 
@@ -20,4 +20,3 @@ class exchangeMain extends Model
         return $this->belongsTo(stocksection::class,'section_id','id');
     }
 }
-

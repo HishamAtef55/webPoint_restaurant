@@ -38,6 +38,6 @@ class CreateMaterialLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('material_logs');
+        Schema::dropIfExists('stock_material_logs');
     }
 }

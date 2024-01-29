@@ -35,6 +35,6 @@ class CreateHalkMainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('halk_mains');
+        Schema::dropIfExists('stock_halk_mains');
     }
 }

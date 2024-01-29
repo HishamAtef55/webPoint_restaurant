@@ -34,6 +34,6 @@ class CreateDetailsComponentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('details_components');
+        Schema::dropIfExists('stock_details_components');
     }
 }

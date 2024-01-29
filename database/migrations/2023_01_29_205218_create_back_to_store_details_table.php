@@ -33,6 +33,6 @@ class CreateBackToStoreDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('back_to_store_details');
+        Schema::dropIfExists('stock_back_to_store_details');
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Suppliers extends Model
 {
     use HasFactory;
-    protected  $table ='suppliers';
+    protected  $table ='stock_suppliers';
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class material extends Model
 {
     use HasFactory;
-    protected $table = "materials";
+    protected $table = "stock_materials";
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
     public function Sections()

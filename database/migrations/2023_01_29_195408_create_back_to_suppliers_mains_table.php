@@ -36,6 +36,6 @@ class CreateBackToSuppliersMainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('back_to_suppliers_mains');
+        Schema::dropIfExists('stock_back_to_suppliers_mains');
     }
 }

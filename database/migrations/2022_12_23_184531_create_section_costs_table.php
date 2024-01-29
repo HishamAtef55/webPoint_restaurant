@@ -35,6 +35,6 @@ class CreateSectionCostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('section_costs');
+        Schema::dropIfExists('stock_section_costs');
     }
 }

@@ -30,6 +30,6 @@ class CreateStorageCapacitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('storage_capacities');
+        Schema::dropIfExists('stock_storage_capacities');
     }
 }

@@ -15,7 +15,7 @@ class CreateInDirectCostDailiesTable extends Migration
     {
         Schema::create('stock_in_direct_cost_dailies', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('cost_id')->references('id')->on('in_direct_costs')->cascadeOnDelete();
+            $table->foreignId('cost_id')->references('id')->on('stock_in_direct_costs')->cascadeOnDelete();
             $table->integer('user_id');
             $table->string('date');
             $table->string('month');
@@ -31,6 +31,6 @@ class CreateInDirectCostDailiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('in_direct_cost_dailies');
+        Schema::dropIfExists('stock_in_direct_cost_dailies');
     }
 }

@@ -31,6 +31,6 @@ class CreateMaterialRecipesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('material_recipes');
+        Schema::dropIfExists('stock_material_recipes');
     }
 }

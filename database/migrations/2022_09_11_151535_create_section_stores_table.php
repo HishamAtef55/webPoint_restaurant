@@ -28,6 +28,6 @@ class CreateSectionStoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('section_stores');
+        Schema::dropIfExists('stock_section_stores');
     }
 }

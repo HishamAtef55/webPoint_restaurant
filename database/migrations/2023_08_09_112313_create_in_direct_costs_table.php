@@ -27,6 +27,6 @@ class CreateInDirectCostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('in_direct_costs');
+        Schema::dropIfExists('stock_in_direct_costs');
     }
 }
