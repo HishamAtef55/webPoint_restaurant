@@ -22,6 +22,9 @@
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("guests")): ?>
         <a href='#' class="options-item" data-target="#min_charge_modal_menu" data-toggle="modal" >Guests</a>
         <?php endif; ?>
+        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("Expenses")): ?>
+        <a href="<?php echo e(Route('DailyExpenses')); ?>" class="options-item" >Expenses</a>
+        <?php endif; ?>
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("close shift")): ?>
         <a href="#" type="Close Shift" value='close_shift' class="close_shift_day options-item">Close Shift</a>
         <?php endif; ?>

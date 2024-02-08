@@ -735,10 +735,6 @@
         let from     = $('#from').val();
         let to       = $('#to').val();
         let userLabel= []
-        // $('#user').find('input:checked').each(function() {
-        //     user.push($(this).val())
-        //     userLabel.push($(this).siblings('label').text())
-        // });
         $.ajax({
             url:"<?php echo e(route('costReport')); ?>",
             method: 'post',
@@ -1089,6 +1085,134 @@
         });
     });
 
+    // ================================================ search_expenses_report Reports =============================
+    $(document).on('click','#expenses_report',function (e) {
+        e.preventDefault();
+        let from     = $('#from').val();
+        let to       = $('#to').val();
+        let type     = $('#type').val();
+        let user     = []
+        let userLabel     = []
+        $('#user').find('input:checked').each(function() {
+            user.push($(this).val())
+            userLabel.push($(this).siblings('label').text())
+        });
+        $.ajax({
+            url:"<?php echo e(route('search_expenses_report')); ?>",
+            method: 'post',
+            enctype: "multipart/form-data",
+            data:
+                {
+                    _token,
+                    user,
+                    from,
+                    to,
+                    type
+                },
+            success: function (data) {
+                let html = '';
+                html += `<table class="reports table text-center mb-5 mt-3 table-report">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Order</th>
+                            <th>Date</th>
+                            <th>Item</th>
+                            <th>Qyt</th>
+                            <th>total</th>
+                            <th>user</th>
+                            <th>status</th>
+                        </tr>
+                    </thead>
+                <tbody>`;
+                let allTotal = 0;
+                let allQyt = 0;
+                for(var count = 0 ; count < data.voids.length ; count ++){
+                    html += `<tr class="table-light">
+                        <td>${data.voids[count].order_id}</td>
+                        <td>${data.voids[count].date}</td>
+                        <td>${data.voids[count].name}</td>
+                        <td>${data.voids[count].quantity}</td>`
+                        allQyt += data.voids[count].quantity
+                        html += `<td>${data.voids[count].total}</td>`
+                        allTotal += data.voids[count].total
+                        html += `<td>${data.voids[count].user}</td>
+                        <td>${data.voids[count].status}</td>
+                    </tr>`
+                }
+                html += `</tbody>
+                    <tfoot class="table-dark">
+                        <tr>
+                            <td>Total</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>${parseFloat(allQyt).toFixed(2)}</td>
+                            <td>${parseFloat(allTotal).toFixed(2)}</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </tr>
+                    </tfoot>
+                </table>`;
+                $('#report-output').html(html);
+                $('.report-filter').modal('hide');
+                $('.filter').addClass('d-none');
+                $('.table-report').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            text: 'Filter',
+                            className: 'btn-filter',
+                            action: function ( e, dt, node, conf ) {
+                                $('.filter').click();
+                            }
+                        },
+                        'copy',
+                        'csv',
+                        'excel',
+                        {
+                            extend: 'pdfHtml5',
+                            download: 'open',
+                            alignment: "center",
+                            footer: true,
+                            messageTop: function() {
+                                let pdfMsg = `Restaurant Name : ${data.res_nmae}
+                                    From : ${from}
+                                    To : ${to}
+                                    Type : ${type}
+                                `
+                                userLabel.length > 0 ? pdfMsg += `User : ${userLabel.join(' , ')}
+                                ` : ''
+                                return pdfMsg;
+                            },
+                            customize: function (doc) {
+                                doc.defaultStyle.font = 'Cairo';
+                                doc.styles.tableBodyEven.alignment = "center";
+                                doc.styles.tableBodyOdd.alignment = "center";
+                                doc.styles.tableBodyEven.lineHeight = "1.5";
+                                doc.styles.tableBodyOdd.lineHeight = "1.5";
+                                doc.styles.tableFooter.alignment = "center";
+                                doc.styles.tableHeader.alignment = "center";
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            footer: true,
+                            customize: function ( win ) {
+                                let message = `<div> <p class='m-0'>Restaurant Name : ${data.res_nmae}</p>`
+                                message += `<div class="d-flex align-items-center justify-content-between flex-wrap"><span class="d-block w-50">From : ${from}</span>`
+                                message += `<span class="d-block w-50">To : ${to}</span>`
+                                message += `<span class="d-block w-50">Type : ${type}</span>`
+                                userLabel.length > 0 ? message += `<span class="d-block w-50">User : ${userLabel.join(' , ')}</span>` : ''
+                                message += '</div>'
+                                $(message).insertBefore($(win.document.body).find( 'table' ))
+                            }
+                        },
+                        'pageLength',
+                    ]
+                });
+            }
+        });
+    });
+
     // ===================== Collapse Reports Filter ================
     $('#transaction, #bay_way, #shift, #user, #device, #addition, #ex_de').on('hide.bs.collapse', function () {
         let checkedBoxLength = $(this).find('input:checked').length;
@@ -1106,6 +1230,249 @@
     $('input[type="reset"]').on('click', function() {
         $('h5.closed').each(function() {
             $(this).removeClass('closed')
+        });
+    });
+
+    // ============================================ Log Report ========================================================
+    $(document).on('click','#logReport',function (e) {
+        e.preventDefault();
+        let from     = $('#from').val();
+        let to       = $('#to').val();
+        let userLabel= []
+        $.ajax({
+            url:"<?php echo e(route('logReport')); ?>",
+            method: 'post',
+            enctype: "multipart/form-data",
+            data:
+                {
+                    _token,
+                    from,
+                    to,
+                },
+            success: function (data) {
+                let html = '';
+                html += `<table class="reports table text-center mb-5 mt-3 table-report">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Order</th>
+                            <th>OP</th>
+                            <th>Table</th>
+                            <th>User</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                <tbody>`;
+                let total = 0;
+                let cost = 0;
+                let profit = 0;
+                let realcount = 1;
+                for(var count = 0 ; count < data.orders.length ; count ++){
+                    html += `<tr class="table-light">
+                        <td>${realcount++}</td>
+                        <td>${data.orders[count].d_order}</td>
+                        <td>${data.orders[count].t_order}</td>
+                        <td>${data.orders[count].order_id}</td>
+                        <td>${data.orders[count].op}</td>
+                        <td>${data.orders[count].table}</td>
+                        <td>${data.orders[count].user}</td>
+                        <td><i class="far fa-eye viewLog" idRow="${data.orders[count].order_id}"></i></td>`
+                    html += `</tr>`
+                }
+                // html += `</tbody>
+                //     <tfoot class="table-dark">
+                //         <tr>
+                //             <td>Total</td>
+                //             <td>-</td>
+                //             <td>${parseFloat(total).toFixed(2)}</td>
+                //             <td>${parseFloat(cost).toFixed(2)}</td>
+                //             <td>${parseFloat(profit).toFixed(2)}</td>
+                //         </tr>
+                //     </tfoot>
+                // </table>`;
+                $('#report-output').html(html);
+                $('.report-filter').modal('hide');
+                $('.filter').addClass('d-none');
+                $('.table-report').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            text: 'Filter',
+                            className: 'btn-filter',
+                            action: function ( e, dt, node, conf ) {
+                                $('.filter').click();
+                            }
+                        },
+                        'copy',
+                        'csv',
+                        'excel',
+                        {
+                            extend: 'pdfHtml5',
+                            download: 'open',
+                            alignment: "center",
+                            footer: true,
+                            messageTop: function() {
+                                let pdfMsg = `Restaurant Name : ${data.res_nmae}
+                                    From : ${from}
+                                    To : ${to}
+                                    Type : ${type}
+                                `
+                                userLabel.length > 0 ? pdfMsg += `User : ${userLabel.join(' , ')}
+                                ` : ''
+                                return pdfMsg;
+                            },
+                            customize: function (doc) {
+                                doc.defaultStyle.font = 'Cairo';
+                                doc.styles.tableBodyEven.alignment = "center";
+                                doc.styles.tableBodyOdd.alignment = "center";
+                                doc.styles.tableBodyEven.lineHeight = "1.5";
+                                doc.styles.tableBodyOdd.lineHeight = "1.5";
+                                doc.styles.tableFooter.alignment = "center";
+                                doc.styles.tableHeader.alignment = "center";
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            footer: true,
+                            customize: function ( win ) {
+                                let message = `<div> <p class='m-0'>Restaurant Name : ${data.res_nmae}</p>`
+                                message += `<div class="d-flex align-items-center justify-content-between flex-wrap"><span class="d-block w-50">From : ${from}</span>`
+                                message += `<span class="d-block w-50">To : ${to}</span>`
+                                message += `<span class="d-block w-50">Type : ${type}</span>`
+                                userLabel.length > 0 ? message += `<span class="d-block w-50">User : ${userLabel.join(' , ')}</span>` : ''
+                                message += '</div>'
+                                $(message).insertBefore($(win.document.body).find( 'table' ))
+                            }
+                        },
+                        'pageLength',
+                    ]
+                });
+            }
+        });
+    });
+
+
+
+    $(document).on('click','.viewLog',function (e) {
+        e.preventDefault();
+        let order = $(this).attr('idRow');
+        $.ajax({
+            url:"<?php echo e(route('viewLog')); ?>",
+            method: 'post',
+            enctype: "multipart/form-data",
+            data:
+                {
+                    _token,
+                    order
+                },
+            success: function (data) {
+                let html = '';
+                html += `<table class="reports table text-center mb-5 mt-3 table-report">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>OP</th>
+                            <th>Table</th>
+                            <th>Order</th>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                <tbody>`;
+                let total = 0;
+                let cost = 0;
+                let profit = 0;
+                let realcount = 1;
+                for(var count = 0 ; count < data.logs.length ; count ++){
+                    html += `<tr class="table-light">
+                        <td>${realcount++}</td>
+                        <td>${data.logs[count].date}</td>
+                        <td>${data.logs[count].time}</td>
+                        <td>${data.logs[count].op}</td>
+                        <td>${data.logs[count].Table}</td>
+                        <td>${data.logs[count].order}</td>
+                        <td>${data.logs[count].user}</td>
+                        <td>${data.logs[count].type}</td>
+                        <td>${data.logs[count].item}</td>
+                        <td>${data.logs[count].qty}</td>
+                        <td>${data.logs[count].note}</td>`
+                    html += `</tr>`
+                }
+                // html += `</tbody>
+                //     <tfoot class="table-dark">
+                //         <tr>
+                //             <td>Total</td>
+                //             <td>-</td>
+                //             <td>${parseFloat(total).toFixed(2)}</td>
+                //             <td>${parseFloat(cost).toFixed(2)}</td>
+                //             <td>${parseFloat(profit).toFixed(2)}</td>
+                //         </tr>
+                //     </tfoot>
+                // </table>`;
+                $('#repViewLog').html(html);
+                $('#report-log').modal('show');
+                $('.table-report').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            text: 'Filter',
+                            className: 'btn-filter',
+                            action: function ( e, dt, node, conf ) {
+                                $('.filter').click();
+                            }
+                        },
+                        'copy',
+                        'csv',
+                        'excel',
+                        {
+                            extend: 'pdfHtml5',
+                            download: 'open',
+                            alignment: "center",
+                            footer: true,
+                            messageTop: function() {
+                                let pdfMsg = `Restaurant Name : ${data.res_nmae}
+                                    From : ${from}
+                                    To : ${to}
+                                    Type : ${type}
+                                `
+                                userLabel.length > 0 ? pdfMsg += `User : ${userLabel.join(' , ')}
+                                ` : ''
+                                return pdfMsg;
+                            },
+                            customize: function (doc) {
+                                doc.defaultStyle.font = 'Cairo';
+                                doc.styles.tableBodyEven.alignment = "center";
+                                doc.styles.tableBodyOdd.alignment = "center";
+                                doc.styles.tableBodyEven.lineHeight = "1.5";
+                                doc.styles.tableBodyOdd.lineHeight = "1.5";
+                                doc.styles.tableFooter.alignment = "center";
+                                doc.styles.tableHeader.alignment = "center";
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            footer: true,
+                            customize: function ( win ) {
+                                let message = `<div> <p class='m-0'>Restaurant Name : ${data.res_nmae}</p>`
+                                message += `<div class="d-flex align-items-center justify-content-between flex-wrap"><span class="d-block w-50">From : ${from}</span>`
+                                message += `<span class="d-block w-50">To : ${to}</span>`
+                                message += `<span class="d-block w-50">Type : ${type}</span>`
+                                userLabel.length > 0 ? message += `<span class="d-block w-50">User : ${userLabel.join(' , ')}</span>` : ''
+                                message += '</div>'
+                                $(message).insertBefore($(win.document.body).find( 'table' ))
+                            }
+                        },
+                        'pageLength',
+                    ]
+                });
+            }
         });
     });
 </script>

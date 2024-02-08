@@ -15,7 +15,7 @@
                         <li> <a href="<?php echo e(Route('View.AddDetails')); ?>">    Item Details     </a> </li>
                         <li> <a href="<?php echo e(Route('View.ItemsDetails')); ?>">    Extra     </a> </li>
                         <li> <a href="<?php echo e(Route('View.Add.shift')); ?>">    Shift     </a> </li>
-
+                        <li> <a href="<?php echo e(Route('expenses.index')); ?>">    Expenses     </a> </li>
                         <li> <a href="<?php echo e(Route('view.update.discount')); ?>">    Discount     </a> </li>
                         <li> <a href="<?php echo e(Route('View.Add.Tables')); ?>">    Tables     </a> </li>
                         <li> <a href="<?php echo e(Route('view.del')); ?>">    Delivery     </a> </li>

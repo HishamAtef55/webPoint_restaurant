@@ -63,8 +63,6 @@
                             </div>
                         </div>
                         <button type="submit" id="add_device" class="btn btn-block btn-success mt-3"> Add </button>
-
-                
             </div>
 
         </div>

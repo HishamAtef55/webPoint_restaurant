@@ -17,6 +17,7 @@ use App\Http\Controllers\Menu\CopyCloseShift;
 use App\Http\Controllers\Menu\LoginController;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Menu\PayController;
+use App\Http\Controllers\Menu\DailyExpensesController;
 
 
 use App\Http\Controllers\Admin\Device;
@@ -32,6 +33,8 @@ use App\Http\Controllers\Admin\ToGoController;
 use App\Http\Controllers\Admin\OthersController;
 use App\Http\Controllers\Admin\CarServicesController;
 use App\Http\Controllers\Admin\MinchargeController;
+use App\Http\Controllers\Admin\ExpensesCategoryController;
+
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\TablesController as AdminTablesController;
 
@@ -129,8 +132,6 @@ Route::group(['prefix' => 'admin'] ,function()
       Route::post('/save_location','save_location')->name('save.location');
       Route::post('/update_location','update_location')->name('update.location');
       Route::post('/Search_location','Search_location')->name('Search.location');
-      Route::post('/AddBranch','add_branch')->name('add.branch');
-      Route::post('/AddBranch','add_branch')->name('add.branch');
       Route::get('/View_branch','View_update_branch')->name('View.update.branch');
       Route::post('/AddMenu','add_menu')->name('add.menu');
       Route::get('/update_menu','view_ubdate_menu')->name('view.update.menu');
@@ -307,6 +308,15 @@ Route::group(['prefix' => 'admin'] ,function()
       Route::post('/Save_one_min'  ,'Save_one_min')  ->name('Save.one.min');
       Route::post('/change_charge' ,'change_charge') ->name('change.charge');
     });
+
+    ################################ ExpensesCategoryController ######################
+    Route::group(['controller'=>ExpensesCategoryController::class],function(){
+      Route::get('/expenses'  ,'index')->name('expenses.index');
+      Route::post('/expenses/search'  ,'search')->name('expenses.search');
+      Route::post('/expenses/save'    ,'save')->name('expenses.save');
+      Route::post('/expenses/action'    ,'save')->name('expenses.action');
+      
+    });
 });
 
 ############################ Start Routes in Menu Control #####################
@@ -404,11 +414,18 @@ Route::group(['prefix'=>'menu'],function()
    });
     ############################  End Routes Delivery    ###########################
 
-    ############################  End Routes CopyClose Shift    #####################
+    ############################  Start Routes CopyClose Shift    #####################
     Route::group(['controller'=>CopyCloseShift::class],function(){
       Route::get('/Copy_close_shift','index')->name('copy.close_shift');
       Route::post('/View_copy_close_check','view_close_check')->name('view.copy_close_check');
       Route::post('/print_copy_close_check','print_close_shift')->name('print.copy_close_check');
+    });
+    ############################  End Routes Delivery    ###########################
+
+    ############################  Start Routes ExpensesCategory    #####################
+    Route::group(['controller'=>DailyExpensesController::class],function(){
+      Route::get('/DailyExpenses','index')->name('DailyExpenses');
+      Route::post('/SaveExpenses' ,'save')->name('DailyExpenses.save');
     });
     ############################  End Routes Delivery    ###########################
 });
@@ -443,6 +460,10 @@ Route::group(['prefix' => 'Reports'] ,function()
       Route::get('/view_void_report','view_void_report')->name('view_void_report');
       Route::post('/search_void_report','search_void_report')->name('search_void_report');
 
+      ################################ Void Reports         ####################
+      Route::get('/view_expenses_report','view_expenses_report')->name('view_expenses_report');
+      Route::post('/search_expenses_report','search_expenses_report')->name('search_expenses_report');
+
       ################################## SAles Item Report #####################
       Route::get('/view_item_report','view_item_report')->name('view_item_report');
       Route::post('/search_item_report','search_item_report')->name('search_item_report');
@@ -450,6 +471,11 @@ Route::group(['prefix' => 'Reports'] ,function()
       ######################### Cost Report ####################################
       Route::get('/view_cost_report','view_cost_report')->name('view_cost_report');
       Route::post('/costReport','costReport')->name('costReport');
+
+      ######################### Log Report ####################################
+      Route::get('/view_log_report','view_log_report')->name('view_log_report');
+      Route::post('/logReport','logReport')->name('logReport');
+      Route::post('/viewLog','viewLog')->name('viewLog');
 
       ############################## view_cost_sold_report #####################
       Route::get('/view_cost_sold_report','view_cost_sold_report')->name('view_cost_sold_report');

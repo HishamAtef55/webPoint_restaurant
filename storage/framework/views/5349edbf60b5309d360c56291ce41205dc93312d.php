@@ -154,6 +154,8 @@
                         <a href="<?php echo e(route('view_item_report')); ?>" class='link-report'>Item Not Sales Reports</a>
                         <a href="<?php echo e(route('view_cost_report')); ?>" class='link-report'>Cost Reports</a>
                         <a href="<?php echo e(route('view_cost_sold_report')); ?>" class='link-report'>Cost Sold Items</a>
+                        <a href="<?php echo e(route('view_log_report')); ?>" class='link-report'>Log Report</a>
+                        <a href="<?php echo e(route('view_expenses_report')); ?>" class='link-report'>Expenses Report</a>
                         <a href="<?php echo e(Route('View.getDays')); ?>" class='link-report'>Open Day</a>
                     </div>
                 </div>

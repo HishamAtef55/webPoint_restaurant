@@ -112,11 +112,6 @@ class TablesController extends Controller
                     $customer = 0;
                     $gust     = 0;
                     $taxandservice = $this->calculate_taxandservice($op_cal , $new_order);
-                    $data = array(
-                        'type' => 'new order',
-                        'table'=>$operation
-                    );
-                    $this->LogInfo($data);
                     $printers = Printers::where(['active'=>'1'])->get();
                     return view('menu.menu',compact(['printers','no_print','to_noti_hold','gust','mincharge','capten','customer','delivery','state_tax','state_ser','taxandservice','locations','dis','dis_type','dis_val','dis_name','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold','operation','menus','subgroup','discount_value','discount_ratio']));
                 }
@@ -159,11 +154,6 @@ class TablesController extends Controller
                     $customer = 0;
                     $gust     = 0;
                     $taxandservice = $this->calculate_taxandservice($op_cal , $new_order);
-                    $data = array(
-                        'type' => 'new order',
-                        'table'=>$operation
-                    );
-                    $this->LogInfo($data);
                     $printers = Printers::where(['active'=>'1'])->get();
                     return view('menu.menu',compact(['printers','no_print','to_noti_hold','gust','mincharge','capten','customer','state_tax','state_ser','taxandservice','dis','dis_type','dis_val','dis_name','locations','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold','operation','menus','subgroup','discount_value','discount_ratio']));
                 }
@@ -232,11 +222,6 @@ class TablesController extends Controller
                 $no_print    = 0;
                 if($Orders->count() == 0)
                 {
-                    $data = array(
-                        'type' => 'new order',
-                        'table'=>$op_log
-                    );
-                    $this->LogInfo($data);
                     $new_order = '';
                     $state_ser = 0;
                     $state_tax = 0;
@@ -245,13 +230,6 @@ class TablesController extends Controller
 
                 }else{
                     $new_order = $Orders[0]->order_id;
-                    $data = array(
-                        'type' => 'open order',
-                        'table'=>$op_log,
-                        'order'=>$Orders[0]->order_id
-                    );
-                    $this->LogInfo($data);
-
                     $order_dis = Orders_d::limit(1)->where(['branch_id'=>$branch->branch_id,'order_id'=>$new_order])
                         ->select(['no_print','gust','min_charge','user','customer_name','discount','discount_name','discount_type','state_service','state_tax','total_discount','created_at'])->first();
                     $dis_name = $order_dis->discount_name;

@@ -11,5 +11,4 @@ class stock_subunit extends Model
     protected  $table ='stock_subunits';
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
-
 }

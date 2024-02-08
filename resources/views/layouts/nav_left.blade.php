@@ -15,7 +15,7 @@
                         <li> <a href="{{Route('View.AddDetails')}}">    Item Details     </a> </li>
                         <li> <a href="{{Route('View.ItemsDetails')}}">    Extra     </a> </li>
                         <li> <a href="{{Route('View.Add.shift')}}">    Shift     </a> </li>
-
+                        <li> <a href="{{Route('expenses.index')}}">    Expenses     </a> </li>
                         <li> <a href="{{Route('view.update.discount')}}">    Discount     </a> </li>
                         <li> <a href="{{Route('View.Add.Tables')}}">    Tables     </a> </li>
                         <li> <a href="{{Route('view.del')}}">    Delivery     </a> </li>

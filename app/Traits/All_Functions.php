@@ -939,7 +939,9 @@ Trait All_Functions
         CloseShiftGroup::truncate();
         foreach($groups as $gr){
             $total_pre = 0;
-            $total_pre = $gr->total / $data['total_cash']  * 100;
+            if($data['total_cash'] > 0){
+                $total_pre = $gr->total / $data['total_cash']  * 100;
+            }
             CloseShiftGroup::create([
                 'close_shift'=>$insert_data->id,
                 'name'=>$gr->name,
@@ -1012,19 +1014,46 @@ Trait All_Functions
         $type  = 0;
         $note  = 0;
         $item  = 0;
+        $op    = 0;
+        $qty   = 0;
+        $time  = null;
+        $date  = null;
+        $item_id = 0;
+        $extra = null;
+        $details = null;
+        $without = null;
+        $comment = null;
         if(isset($data['order'])){ $order = $data['order'];}
         if(isset($data['table'])){ $table = $data['table'];}
         if(isset($data['type'])){ $type = $data['type'];}
         if(isset($data['note'])){ $note = $data['note'];}
         if(isset($data['item'])){ $item = $data['item'];}
+        if(isset($data['op'])){ $op = $data['op'];}
+        if(isset($data['time'])){ $time = $data['time'];}
+        if(isset($data['date'])){ $date = $data['date'];}
+        if(isset($data['qty'])){ $qty = $data['qty'];}
+        if(isset($data['item_id'])){ $item_id = $data['item_id'];}
+        if(isset($data['extra'])){ $extra = $data['extra'];}
+        if(isset($data['details'])){ $details = $data['details'];}
+        if(isset($data['without'])){ $without = $data['without'];}
+        if(isset($data['comment'])){ $comment = $data['comment'];}
         LogInfo::create([
-            'branch'=>$branch,
-            'user'=>$user,
-            'order'=>$order,
-            'table'=>$table,
-            'type'=>$type,
-            'note'=>$note,
-            'item'=>$item,
+            'branch'    => $branch,
+            'user'      => $user,
+            'order'     => $order,
+            'table'     => $table,
+            'type'      => $type,
+            'note'      => $note,
+            'item'      => $item,
+            'op'        => $op,
+            'time'      => $time,
+            'date'      => $date,
+            'qty'       => $qty,
+            'item_id'   => $item_id,
+            'extra'     => $extra,
+            'without'   => $without,
+            'details'   => $details,
+            'comment'   => $comment,
         ]);
     }
     public function checkTableStatus(){
@@ -1078,8 +1107,7 @@ Trait All_Functions
             $this->AddTotalOrder($order->op,$order->order_id);
         }
     }
-
-    public function orderLate(){ 
+    public function orderLate(){
         $user = Auth::user();
         $devCounter = 0;
         $serialLate = [];
@@ -1213,7 +1241,6 @@ Trait All_Functions
             }
         }
     }
-
     public function deleteOrderRep(){
         $orders = Orders_m::with("WaitOrders","WaitOrders.Details",'WaitOrders.Extra')->where(['d_order'=>"2023-09-04"])->orderBy('order_id','asc')->get();
         $flag = 1;
@@ -1301,7 +1328,6 @@ Trait All_Functions
         $this->AddTotalOrder($order->op,$order->order_id);
       }
     }
-
     public function reCalcOrder($orderId){
         $order = Orders_d::with("WaitOrders","WaitOrders.Details",'WaitOrders.Extra')->whereOrderId($orderId)->first();
         foreach($order->WaitOrders as $wait){

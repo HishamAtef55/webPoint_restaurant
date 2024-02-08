@@ -18,6 +18,7 @@ use App\Models\Service_tables;
 use App\Models\Delavery;
 use App\Models\Orders_d;
 use App\Models\Hole;
+use App\Models\LogInfo;
 use App\Models\ComponentsItems;
 use App\Models\Sub_group;
 use App\Models\SerialCheck;
@@ -154,33 +155,31 @@ class MenuController extends Controller
                 }
             }
         }
-        $loginfo = array(
-            'type' => 'wait item',
-            'table'=>$request->Table_ID,
-            'order'=>$request->Order_Number,
-            'item' =>$request->Item_Name
-        );
-        $this->LogInfo($loginfo);
         $branch_main = Auth::user()->branch_id;
-      // get New Order
-      $new_serial = 0;
-      date_default_timezone_set('Africa/Cairo');
-      $time_now = date(' H-i');
-      $day_now = $this->CheckDayOpen();
-      $new_serial = $this->get_new_serial($branch_main,$request->Order_Number,$request->Order_Number_dev);
-      //Increase Sub Order
-      $new_order = $this->Increase_Sub_Order($new_serial ,$branch_main);
-      $shift = $this->Shift();
-      $idCount = $this->incId() + 1;
+         // get New Order
+        $new_serial = 0;
+        date_default_timezone_set('Africa/Cairo');
+        $time_now = date(' H-i');
+        $day_now = $this->CheckDayOpen();
+        $new_serial = $this->get_new_serial($branch_main,$request->Order_Number,$request->Order_Number_dev);
+        //Increase Sub Order
+        $new_order = $this->Increase_Sub_Order($new_serial ,$branch_main);
+        $shift = $this->Shift();
+        $idCount = $this->incId() + 1;
+        $Quantity = 0;
+        if(empty($request->Quantity))
+        {
+            $Quantity = 1;
+        }else{
+            $Quantity = $request->Quantity;
+        }
         switch ($request->operation)
         {
             case "TO_GO":
             {
-                 // Generate New Device Order
-                if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() > 0)
+                    // Generate New Device Order
+                if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() == 0)
                 {
-                    //
-                }else{
                     $check = ToGo::limit(1)
                     ->where('branch',$branch_main)
                     ->select(['discount_tax_service','tax','service_ratio'])
@@ -210,13 +209,6 @@ class MenuController extends Controller
                         'total_extra'   =>0,
                     ]);
                 }
-                $Quantity = 0;
-                if(empty($request->Quantity))
-                {
-                    $Quantity = 1;
-                }else{
-                    $Quantity = $request->Quantity;
-                }
                 $group = Group::limit(1)->where('branch_id',Auth::user()->branch_id)
                     ->where('id',$request->subgroup_id)
                     ->get()
@@ -243,10 +235,8 @@ class MenuController extends Controller
             }break;
             case"Delivery":
             {
-              if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() > 0)
-              {
-                  //
-              }else{
+                if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() == 0)
+                {
                 $check = Delavery::limit(1)
                     ->where('branch',$branch_main)
                     ->select(['discount_tax_service','tax','ser_ratio'])
@@ -254,64 +244,55 @@ class MenuController extends Controller
                 $discount_tax_service = $check->discount_tax_service;
                 $tax                  = $check->tax;
                 $service_ratio        = $check->ser_ratio;
-                  $save_order = Orders_d::create([
-                      'id'              =>$idCount,
-                      'order_id'        => $new_serial,
-                      'dev_id'          => $request->Order_Number_dev,
-                      'table'           => 0,
-                      'op'              => $request->operation,
-                      'user'            => Auth::user()->name,
-                      'user_id'         => Auth::user()->id,
-                      'branch_id'       => Auth::user()->branch_id,
-                      't_order'         => $time_now,
-                      'd_order'         => $day_now,
-                      'state'           => 1,
-                      'shift'           =>$shift,
-                      'tax_ratio'       => $tax,
-                      'service_ratio'   => $service_ratio,
-                      'discount_tax_service' =>$discount_tax_service,
-                      'hold_list'        =>0,
-                       'gust'            =>1,
+                    $save_order = Orders_d::create([
+                        'id'              =>$idCount,
+                        'order_id'        => $new_serial,
+                        'dev_id'          => $request->Order_Number_dev,
+                        'table'           => 0,
+                        'op'              => $request->operation,
+                        'user'            => Auth::user()->name,
+                        'user_id'         => Auth::user()->id,
+                        'branch_id'       => Auth::user()->branch_id,
+                        't_order'         => $time_now,
+                        'd_order'         => $day_now,
+                        'state'           => 1,
+                        'shift'           =>$shift,
+                        'tax_ratio'       => $tax,
+                        'service_ratio'   => $service_ratio,
+                        'discount_tax_service' =>$discount_tax_service,
+                        'hold_list'        =>0,
+                        'gust'            =>1,
 
-                  ]);
+                    ]);
                 }
-                    $Quantity = 0;
-                    if(empty($request->Quantity))
-                    {
-                        $Quantity = 1;
-                    }else{
-                        $Quantity = $request->Quantity;
-                    }
                     $group = Group::limit(1)->where('branch_id',Auth::user()->branch_id)
                         ->where('id',$request->subgroup_id)
                         ->get()
                         ->first();
                     $data = Wait_order::create(
                         [
-                          'item_id'            => $request->Item_ID,
-                          'name'               => $request->Item_Name,
-                          'price'              => $request->Item_Price,
-                          'order_id'           => $new_serial,
-                          'sub_num_order'      => $new_order,
-                          'subgroup_id'        => $group->id,
-                          'subgroup_name'      => $group->name,
-                          'total'              => $request->Item_Price * $Quantity,
-                          'quantity'           => $Quantity,
-                          'op'                 => $request->operation,
-                          'state'              => 1,
-                          'user'               => Auth::user()->name,
-                          'user_id'            => Auth::user()->id,
-                          'branch_id'          => Auth::user()->branch_id,
+                            'item_id'            => $request->Item_ID,
+                            'name'               => $request->Item_Name,
+                            'price'              => $request->Item_Price,
+                            'order_id'           => $new_serial,
+                            'sub_num_order'      => $new_order,
+                            'subgroup_id'        => $group->id,
+                            'subgroup_name'      => $group->name,
+                            'total'              => $request->Item_Price * $Quantity,
+                            'quantity'           => $Quantity,
+                            'op'                 => $request->operation,
+                            'state'              => 1,
+                            'user'               => Auth::user()->name,
+                            'user_id'            => Auth::user()->id,
+                            'branch_id'          => Auth::user()->branch_id,
                         ]
                     );
                 return response() ->json(['order'=>$new_serial,'item_id'=>$request->Item_ID]);
             }break;
             default:
             {
-              if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() > 0)
-              {
-                  //
-              }else{
+                if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() == 0)
+                {
                 // $print_table = 0;
                 // $check_other = Table::limit(1)->where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->select('hole')->first();
                 // $hole_name   = Hole::limit(1)->where(['branch_id'=>$branch_main,'number_holes'=>$check_other->hole])->select(['name'])->first();
@@ -351,7 +332,7 @@ class MenuController extends Controller
                     'hold_list' =>0,
                     'gust'            =>1,
                 ]);
-              }
+                }
                 $state_table = Table::where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->limit(1)->select(['state','min_charge','guest'])->first();
                 if($state_table->state == 0)
                 {
@@ -365,35 +346,27 @@ class MenuController extends Controller
                             'table_open' => $time_now,
                         ]);
                 }
-
-                $Quantity = 0;
-                if(empty($request->Quantity))
-                {
-                    $Quantity = 1;
-                }else{
-                    $Quantity = $request->Quantity;
-                }
                 $group = Group::limit(1)->where('branch_id',Auth::user()->branch_id)
                     ->where('id',$request->subgroup_id)
                     ->get()
                     ->first();
                 $data = Wait_order::create(
                     [
-                      'item_id'            => $request->Item_ID,
-                      'name'               => $request->Item_Name,
-                      'table_id'           => $request->Table_ID,
-                      'price'              => $request->Item_Price,
-                      'order_id'           => $new_serial,
-                      'sub_num_order'      => $new_order,
-                      'subgroup_id'        => $group->id,
-                      'subgroup_name'      => $group->name,
-                      'total'              => $request->Item_Price * $Quantity,
-                      'quantity'           => $Quantity,
-                      'op'                 => 'Table',
-                      'state'              => 1,
-                      'user'               => Auth::user()->name,
-                      'user_id'            => Auth::user()->id,
-                      'branch_id'          => Auth::user()->branch_id,
+                        'item_id'            => $request->Item_ID,
+                        'name'               => $request->Item_Name,
+                        'table_id'           => $request->Table_ID,
+                        'price'              => $request->Item_Price,
+                        'order_id'           => $new_serial,
+                        'sub_num_order'      => $new_order,
+                        'subgroup_id'        => $group->id,
+                        'subgroup_name'      => $group->name,
+                        'total'              => $request->Item_Price * $Quantity,
+                        'quantity'           => $Quantity,
+                        'op'                 => 'Table',
+                        'state'              => 1,
+                        'user'               => Auth::user()->name,
+                        'user_id'            => Auth::user()->id,
+                        'branch_id'          => Auth::user()->branch_id,
                     ]
                 );
                 return response() ->json(['order'=>$new_serial,'item_id'=>$request->Item_ID]);
@@ -405,12 +378,6 @@ class MenuController extends Controller
     {
         $userId = Auth::user()->id;
         $userName = Auth::user()->name;
-        $loginfo = array(
-            'type' => 'delete item',
-            'table'=>$request->table_id,
-            'order'=>$request->Order_Number,
-        );
-        $this->LogInfo($loginfo);
         $branch = $this->GetBranch();
         $date = $this->Get_Date();
 
@@ -421,7 +388,7 @@ class MenuController extends Controller
             $this->OrderPrint($order_print);
 
             $status_void = 'befor';
-            $check_print = Orders_d::limit(1)->where('order_id',$request->Order_Number)->select(['no_print','serial_shift','d_order','t_order'])->first();
+            $check_print = Orders_d::limit(1)->where('order_id',$request->Order_Number)->select(['no_print','serial_shift','d_order','t_order','table'])->first();
             $send_first_rep = array(
                 'branch'    =>$branch,
                 'val_type'  =>'Cancled',
@@ -469,6 +436,19 @@ class MenuController extends Controller
                 'subgroup_name'     =>$check_Order->subgroup_name,
                 'status'            =>$status_void,
             ]);
+            $loginfo = array(
+                'order'      => $check_Order->order_id,
+                'table'      => $check_print->table,
+                'type'       => 'void item',
+                'note'       => 'void item from table number ' . $check_print->table ." in order " . $check_Order->order_id ." ". $status_void .  " print",
+                'item'       => $check_Order->name,
+                'item_id'    => $check_Order->item_id,
+                'op'         => $check_Order->op,
+                'time'       => $this->Get_Time(),
+                'date'       => $check_print->d_order,
+                'qty'        => $check_Order->quantity,
+              );
+            $this->LogInfo($loginfo);
         }
 
         $getWaitOrderId = Wait_order::limit(1)->where(['branch_id'=>$branch,'order_id'=>$request->Order_Number,'sub_num_order'=>$request->Order_ID])->select(['id'])->first();
@@ -485,14 +465,17 @@ class MenuController extends Controller
         WithoutMaterialsD::where(['wait_order_id'=>$getWaitOrderId->id])->delete();
         if(Wait_order::where(['branch_id'=>$branch,'order_id'=>$request->Order_Number])->count() == 0 )
         {
-            $checkAddOrder = Orders_d::limit(1)->where('order_id',$request->Order_Number)->select(['take_order'])->first();
+            $checkAddOrder = Orders_d::limit(1)->where('order_id',$request->Order_Number)->select(['take_order','order_id','table','op','d_order'])->first();
             if($checkAddOrder->take_order == 1){
                 $last_order = SerialCheck::where(['branch_id'=>$branch])->select(['order'])->orderBy('id', 'desc')->first();
+                $typeLog = '';
                 if($last_order->order == $request->Order_Number){
                     $del          = Orders_d::where(['branch_id'=>$branch,'order_id'=>$request->Order_Number])->delete();
                     $del_serial   = SerialCheck::where(['branch_id'=>$branch,'order'=>$request->Order_Number])->delete();
                     $del_sershift = SerialShift::limit(1)->where(['branch'=>$branch,'order_id'=>$request->Order_Number])->delete();
+                    $typeLog = 'void order';
                 }else{
+                    $typeLog = 'test order';
                     $order_test = Item::limit(1)->where(['name'=>'TEST'])->first();
                     $group = Group::limit(1)->where('branch_id',Auth::user()->branch_id)
                         ->where('id',$order_test->group_id)
@@ -532,6 +515,16 @@ class MenuController extends Controller
                         't_closeorder'=>$time_now,
                     ]);
                 }
+                $loginfo = array(
+                    'order'      => $checkAddOrder->order_id,
+                    'table'      => $checkAddOrder->table,
+                    'type'       => $typeLog,
+                    'note'       => $typeLog . ' from table number ' . $checkAddOrder->table ." in order " . $checkAddOrder->order_id,
+                    'op'         => $checkAddOrder->op,
+                    'time'       => $this->Get_Time(),
+                    'date'       => $checkAddOrder->d_order,
+                  );
+                $this->LogInfo($loginfo);
                 $update_state = Table::where(['branch_id'=>$branch,'number_table'=>$request->table_id])
                     ->update([
                         'state'      => 0,
@@ -558,11 +551,6 @@ class MenuController extends Controller
     ############################## Delete Items Wait OrdersM #############################
     public function Comment_Order(Request $request)
     {
-        $loginfo = array(
-            'type' => 'comment item',
-            'order'=>$request->Order_Number,
-        );
-        $this->LogInfo($loginfo);
         $update_Order = Wait_order::where('order_id',$request -> Order_Number)
             ->where('sub_num_order',$request -> Order_ID)
             -> update([
@@ -772,18 +760,11 @@ class MenuController extends Controller
     ######################## Start Discount Items #####################################
     public function Discount_items(Request $request)
     {
-        $loginfo = array(
-            'type' => 'discount item',
-            'order'=>$request->Order_Number,
-            'note'=>$request->Name_Dis,
-        );
-        $this->LogInfo($loginfo);
         // Variable get in ajax
         $id            = $request -> ID_Discount;
         $value         = $request -> Val_Discount;
         $type          = $request -> Type_Discount;
         $input_val     = $request -> Input_value;
-        $Order_ID      = $request -> Order_ID;
         $no_order      = $request -> Order_Number;
         $Name_Dis      = $request -> Name_Dis;
         $quantity      = $request -> new_quant;
@@ -794,7 +775,8 @@ class MenuController extends Controller
         $new_sub_num_order = 0 ;
         $total_discount_back = 0;
         $check = Others::first()->allow_void;
-
+        $NewIdSub = $Order_ID;
+        $getDetails = 0;
         // Get Item
         $order = Wait_order::with(['Extra','Details'])
             ->where('order_id',$no_order )
@@ -802,6 +784,7 @@ class MenuController extends Controller
             ->where('sub_num_order',$Order_ID)
             ->get()
             ->first();
+       
         // $order_NO = $order -> Order_Number_dev ;
         // if type of discount Ratio
         function Ratio($type , $value , $Order_ID , $no_order , $Name_Dis , $total_discount)
@@ -838,8 +821,6 @@ class MenuController extends Controller
             $update_total->all_total = $update_total->total + $update_total->price_details + $update_total->total_extra -  $discount;
             $update_total->save();
         }
-        $getDetails  = 0 ;
-
         if($request->new_quant == $order-> quantity)
         {
             if($check == 1){
@@ -898,6 +879,7 @@ class MenuController extends Controller
                 ->where('id',$request->subgroup_id)
                 ->get()
                 ->first();
+            $NewIdSub =  $new_sub_num_order ;
             $new_recored = Wait_order :: create([
                 'item_id'            => $order   ->item_id,
                 'table_id'           => $order   ->table_id,
@@ -989,6 +971,21 @@ class MenuController extends Controller
                 Value($type , $Order_ID , $no_order , $discount , $Name_Dis);
             }
         }
+        $orderMain = Orders_d::limit(1)->where(['order_id'=>$no_order])->first();
+
+        $loginfo = array(
+            'type'    => 'discount item',
+            'note'    => 'discount '. $total_discount_back .' EGP item for table number ' . $orderMain->table ." in order " . $orderMain->order_id,
+            'item'    => $order->name,
+            'item_id' => $order->item_id,
+            'qty'     => $request->new_quant,
+            'op'      => $orderMain->op,
+            'order'   => $orderMain->order_id,
+            'date'    => $orderMain->d_order,
+            'time'    => $this->Get_Time(),
+            'table'   => $orderMain->table,
+        );
+        $this->LogInfo($loginfo);
         $this->AddTotalOrder($request->op,$request->Order_Number);
         return response()->json(['discount'=>$total_discount_back]);
      }
@@ -996,11 +993,11 @@ class MenuController extends Controller
     ######################## Strat Delete Discount Items #####################################
      public function delete_discount(Request $request)
      {
-         $loginfo = array(
-             'type' => 'delete discount item',
-             'order'=>$request->Order_Number_,
-             'note'=>$request->Discount,
-         );
+        $loginfo = array(
+            'type' => 'delete discount item',
+            'order'=>$request->Order_Number_,
+            'note'=>$request->Discount,
+        );
          $this->LogInfo($loginfo);
          $update_total = Wait_order::limit(1)->where('order_id',$request->Order_Number_)
              -> where('sub_num_order',$request->Order_ID)->first();
@@ -1025,12 +1022,6 @@ class MenuController extends Controller
             ->last();
         // insert details in table
         $price_details = 0;
-        $loginfo = array(
-            'type' => 'details item',
-            'order'=>$request->Order_Number,
-            'item'=>$wait_order->item_id,
-        );
-        $this->LogInfo($loginfo);
         if(!isset($request->detailsArray)){
             return "No Details";
         }
@@ -1062,7 +1053,8 @@ class MenuController extends Controller
             ->select(['id','group_id'])
             ->get();
         $count = sizeof($data[0]->extra);
-        $materilas = ComponentsItems::where(['branch'=>Auth::user()->branch_id,'item_id'=>$request->item])->get();
+        $materilas  = [];
+        //$materilas = ComponentsItems::where(['branch'=>Auth::user()->branch_id,'item_id'=>$request->item])->get();
         if($count == '0')
         {
             $data= extra::where(['group_id'=>$data[0]->group_id])->get();
@@ -1096,12 +1088,6 @@ class MenuController extends Controller
             ->where('item_id',$request->Item)
             ->where('sub_num_order',$request->idItem)
             ->get();
-        $loginfo = array(
-            'type' => 'extra item',
-            'order'=>$request->Order_Number,
-            'item'=>$request->Item,
-        );
-        $this->LogInfo($loginfo);
         if($request->new_quant == $get_wait_order[0]-> quantity)
         {
             foreach($request->extraArray as $extra)
@@ -1292,7 +1278,6 @@ class MenuController extends Controller
                     $order = Orders_d::where(['branch_id'=>$branch,'order_id'=>$request->order])->limit(1)
                         ->update([
                             'to_pilot'=>1,
-                            'take_order'=>1,
                             'hold_list'=>0,
                             'sub_total'=>$calop[0]['total'],
                             'tax'=>$calop[0]['tax'],
@@ -1303,39 +1288,29 @@ class MenuController extends Controller
                             'shift'=>$shift,
                             "t_order"=>$time_now,
                         ]);
-                        $wait = Wait_order::where(['branch_id'=>$branch,'order_id'=>$request->order])
-                            ->update([
-                                'status_take' => 1
-                            ]);
                     }
                 break;
                 case 'TO_GO':
                 {
-                        $order = Orders_d::where(['branch_id'=>$branch,'order_id'=>$request->order])->limit(1)
-                            ->update([
-                            'delivery_order'=>1,
-                            'take_order'=>1,
-                            'table'=>'#' . $request->togo_table,
-                            'sub_total'=>$calop[0]['total'],
-                            'tax'=>$calop[0]['tax'],
-                            'tax_ratio'=>$calop[0]['tax_ratio'],
-                            'services'=>$calop[0]['service'],
-                            'service_ratio'=>$calop[0]['service_ratio'],
-                            'total'=>$alltotal,
-                             'shift'=>$shift,
-                             "t_order"=>$time_now,
-                            ]);
-                        $wait = Wait_order::where(['branch_id'=>$branch,'order_id'=>$request->order])
-                            ->update([
-                                'status_take' => 1
-                            ]);
-                }break;
-                default:
-                {
-
                     $order = Orders_d::where(['branch_id'=>$branch,'order_id'=>$request->order])->limit(1)
                         ->update([
-                            'take_order'=>1,
+                        'delivery_order'=>1,
+                        'table'=>'#' . $request->togo_table,
+                        'sub_total'=>$calop[0]['total'],
+                        'tax'=>$calop[0]['tax'],
+                        'tax_ratio'=>$calop[0]['tax_ratio'],
+                        'services'=>$calop[0]['service'],
+                        'service_ratio'=>$calop[0]['service_ratio'],
+                        'total'=>$alltotal,
+                        'shift'=>$shift,
+                        "t_order"=>$time_now,
+                    ]);
+                }
+                break;
+                default:
+                {
+                    $order = Orders_d::where(['branch_id'=>$branch,'order_id'=>$request->order])->limit(1)
+                        ->update([
                             'sub_total'=>$calop[0]['total'],
                             'tax'=>$calop[0]['tax'],
                             'tax_ratio'=>$calop[0]['tax_ratio'],
@@ -1346,25 +1321,59 @@ class MenuController extends Controller
                             "t_order"=>$time_now,
                         ]);
                     $order_t = Orders_d::limit(1)->where(['branch_id'=>$branch,'order_id'=>$request->order])->select(['table'])->first();
-
-                    $log_table = $order_t->table;
-
-                        $wait = Wait_order::where(['branch_id'=>$branch,'order_id'=>$request->order])
-                            ->update([
-                                'status_take' => 1
-                            ]);
                 } break;
             }
+            $order = Orders_d::where(['branch_id'=>$branch,'order_id'=>$request->order])->first();
+            $firtsLog = 0;
+            foreach(Wait_order::with(['Details','Extra','Without_m'])->where(['branch_id'=>$branch,'order_id'=>$request->order,'status_take'=>0])->get() as $wait){
+                if($order->take_order == 0 && $firtsLog == 0){
+                    $loginfo = array(
+                        'type' => 'new order',
+                        'table'=> $wait->table_id,
+                        'note' => 'New Order to table number ' . $order->table ." in order " . $request->order,
+                        'order'=> $order->order_id,
+                        'op'   => $order->op,
+                        'time' => $order->t_order,
+                        'date' => $order->d_order,
+                      );
+                    $this->LogInfo($loginfo);
+                    $firtsLog = 1;
+                }
+                $loginfo = array(
+                    'order'      => $order->order_id,
+                    'table'      => $order->table,
+                    'type'       => 'add item',
+                    'note'       => 'Adding an item to table number ' . $order->table ." in order " . $request->order,
+                    'item'       => $wait->name,
+                    'item_id'    => $wait->item_id,
+                    'op'         => $order->op,
+                    'time'       => $order->t_order,
+                    'date'       => $order->d_order,
+                    'qty'        => $wait->quantity,
+                    'comment'    => $wait->comment,
+                    'Without'    => json_encode($wait->without_m),
+                    'extra'      => json_encode($wait->extra),
+                    'details'    => json_encode($wait->details),
+                  );
+                $this->LogInfo($loginfo);
+            }
+            $wait = Wait_order::where(['branch_id'=>$branch,'order_id'=>$request->order])->update(['status_take' => 1]);
+            $order->take_order = 1;
+            $order->save();
             $this->OrderPrint($order_print);
             $this->SerialShift($request->order);
             $this->CheckPrintWait($request->order);
             $this->AddTotalWait($request->order);
             $this->AddTotalOrder($request->op,$request->order);
+            $firtsLog = 0;
             $loginfo = array(
-                'type' => 'take order',
-                'order'=>$request->order,
-                'table'=>$log_table,
-                'note'=>$request->op,
+                'type'  => 'take order',
+                'note'  => 'Take order for table number ' . $order->table ." in order " . $request->order,
+                'op'    => $order->op,
+                'order' => $request->order,
+                'date'  => $order->d_order,
+                'time'  => $this->Get_Time(),
+                'table' => $order->table,
             );
             $this->LogInfo($loginfo);
             return response()->json(['status'=>'true']);
@@ -1389,9 +1398,8 @@ class MenuController extends Controller
             $Name_Dis      = $request -> Name_Dis;
             $val_me_all    = $request->val_me_all;
             function Ratio($no_order ,$type , $value , $Name_Dis , $input_val , $branch , $val_me_all){
+                $order = Orders_d::limit(1)->where(['branch_id'=>$branch,'order_id'=>$no_order])->first();
                 if($type == 'Ratio'){
-                    $order = Orders_d::limit(1)
-                        ->where(['branch_id'=>$branch,'order_id'=>$no_order])->first();
                     if($input_val == ''){
                         $order->discount = $value;
                         $order->discount_name = $Name_Dis;
@@ -1406,8 +1414,6 @@ class MenuController extends Controller
                     }
                     $order->save();
                 }else{
-                    $order = Orders_d::limit(1)
-                        ->where(['branch_id'=>$branch,'order_id'=>$no_order])->first();
                     $order->discount = $input_val;
                     $order->discount_name = 'Discount';
                     $order->discount_type = $type;
@@ -1415,18 +1421,23 @@ class MenuController extends Controller
                     $order->total  -= $input_val;
                     $order->save();
                 }
-                return $no_order;
+                return $order->total_discount;
             }
             $data = Ratio($no_order ,$type , $value , $Name_Dis , $input_val , $branch , $val_me_all);
             $this->AddTotalOrder($request->op,$request->Order_Number);
 
             if($data)
             {
+                $order = Orders_d::limit(1)->where(['branch_id'=>$branch,'order_id'=>$no_order])->first();
                 $loginfo = array(
                     'type' => 'discount order',
-                    'order'=>$request->Order_Number,
-                    'note'=>$request->Name_Dis,
-                );
+                    'table'=> $order->table,
+                    'note' => 'discount '. $data .' EGP in Order to table number ' . $order->table ." in order " . $order->order_id,
+                    'order'=> $order->order_id,
+                    'op'   => $order->op,
+                    'time' => $this->Get_Time(),
+                    'date' => $order->d_order,
+                  );
                 $this->LogInfo($loginfo);
                 return response()->json(['status'=>'true']);
             }

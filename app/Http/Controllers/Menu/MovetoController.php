@@ -45,7 +45,7 @@ class MovetoController extends Controller
         $del_noti_to_pilot = $this->Delivery_to_pilot();
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
-        $to_noti_hold     = $this->TOGO_hold();
+        $to_noti_hold      = $this->TOGO_hold();
         $master_tables = [];
         $tables        = [];
 
@@ -99,18 +99,28 @@ class MovetoController extends Controller
         if(!isset($request->Data)){
             return ['status'=>false,'msg'=>'Not Data Found'];
         }else{
-            $order_in = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->maintable,'state'=>1])->select(['order_id','user','user_id'])->first();
+            $order_in = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->maintable,'state'=>1])->select(['order_id','user','user_id','op','d_order'])->first();
             $count_wait = Wait_order::where(['order_id'=>$order_in->order_id])->count();
             if($count_wait == $request->size_data && $request->rightLength == 0){
-                $order_in_to = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->table_id,'state'=>1])->select(['order_id','user','user_id'])->first();
+                $order_in_to = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->table_id,'state'=>1])->select(['order_id','user','user_id','op','d_order'])->first();
                 if(Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->table_id,'state'=>1])->count() > 0){
-                    $wait_in_all = Wait_order::where(['order_id'=>$order_in->order_id])->update(['table_id'=>$request->table_id,'order_id'=>$order_in_to->order_id]);
-                    $wait_in_all_ex = Extra_wait_order::where(['number_of_order'=>$order_in->order_id])->update(['number_of_order'=>$order_in_to->order_id]);
-                    $wait_in_all_de = Details_Wait_Order::where(['number_of_order'=>$order_in->order_id])->update(['number_of_order'=>$order_in_to->order_id]);
-                    $del_in_order = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'order_id'=>$order_in->order_id,'state'=>1])->delete();
+                    $wait_in_all     = Wait_order::where(['order_id'=>$order_in->order_id])->update(['table_id'=>$request->table_id,'order_id'=>$order_in_to->order_id]);
+                    $wait_in_all_ex  = Extra_wait_order::where(['number_of_order'=>$order_in->order_id])->update(['number_of_order'=>$order_in_to->order_id]);
+                    $wait_in_all_de  = Details_Wait_Order::where(['number_of_order'=>$order_in->order_id])->update(['number_of_order'=>$order_in_to->order_id]);
+                    $del_in_order    = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'order_id'=>$order_in->order_id,'state'=>1])->delete();
                     $del_serialcheck = SerialCheck::where(['order'=>$order_in->order_id])->delete();
                     $del_serialsheft = SerialShift::where(['order_id'=>$order_in->order_id])->delete();
                     $this->AddTotalOrder('Table',$order_in_to->order_id);
+                    $loginfo = array(
+                        'type' => 'move to order open table',
+                        'table'=>  $request->table_id,
+                        'note' => 'move to order from table number ' . $request->maintable ." to table " . $request->table_id,
+                        'order'=> $order_in_to->order_id,
+                        'op'   => $order_in_to->op,
+                        'time' => $this->Get_Time(),
+                        'date' => $order_in_to->d_order,
+                      );
+                    $this->LogInfo($loginfo);
                 }else{
                     $order_in_all = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->maintable,'state'=>1])->update(['table'=>$request->table_id]);
                     $wait_in_all = Wait_order::where(['order_id'=>$order_in->order_id])->update(['table_id'=>$request->table_id]);
@@ -122,7 +132,18 @@ class MovetoController extends Controller
                             'table_open' =>1,
                         ]);
                     $this->AddTotalOrder('Table',$order_in->order_id);
+                    $loginfo = array(
+                        'type' => 'move to order closed table',
+                        'table'=>  $request->table_id,
+                        'note' => 'move to order from table number ' . $request->maintable ." to table " . $request->table_id,
+                        'order'=> $order_in->order_id,
+                        'op'   => $order_in->op,
+                        'time' => $this->Get_Time(),
+                        'date' => $order_in->d_order,
+                      );
+                    $this->LogInfo($loginfo);
                 }
+
                 $update_state = \App\Models\Table::where(['branch_id'=>$branch_main,'number_table'=>$request->maintable])
                     ->update([
                         'state'      =>0,
@@ -197,6 +218,8 @@ class MovetoController extends Controller
                         'status_take'        =>1,
                         'pick_up'=>1
                     ]);
+
+                    
                     $newID = $new_record->id;
                     // Copy same Extra in old order to new order
                     foreach($find_row[0]->extra as $extra)
@@ -221,7 +244,6 @@ class MovetoController extends Controller
                             'wait_order_id'    => $newID,
                         ]);
                         $del_details = Details_Wait_Order::where(['number_of_order'=>$details->number_of_order , 'wait_order_id'=>$details->wait_order_id])->delete();
-
                     }
 
                     // Update Discount
@@ -289,16 +311,31 @@ class MovetoController extends Controller
                                 'all_total'      => ($Quantity_old_item * $find_row[0]->price) + $old_extra + $old_details - $old_total_dis,
                             ]);
                     }
-
                     // Update table wait_order in slave Order
-                    $new_wait = Wait_order::where('id',$newID)
-                        ->update([
-                            'total_extra'    => $new_extra,
-                            'total_discount' => round($new_details,2),
-                            'discount'       => round($disvalinnew , 2),
-                            'price_details'  => $new_details,
-                            'all_total'      =>$new_total + $new_extra + $new_details - $new_details
-                        ]);
+                    $new_wait = Wait_order::where('id',$newID)->update([
+                        'total_extra'    => $new_extra,
+                        'total_discount' => round($new_details,2),
+                        'discount'       => round($disvalinnew , 2),
+                        'price_details'  => $new_details,
+                        'all_total'      =>$new_total + $new_extra + $new_details - $new_details
+                    ]);
+                    $waitTrans = Wait_order::limit(1)->with(['Without_m','Extra','Details'])->where('id',$newID)->first();
+                    $loginfo = array(
+                        'type'      => 'move to item',
+                        'table'     => $request->table_id,
+                        'note'      => 'move to item from table number ' . $request->maintable ." to table " . $request->table_id,
+                        'order'      => $serial,
+                        'item'       => $find_row[0]->name,
+                        'item_id'    => $find_row[0]->item_id,
+                        'op'         => "Table",
+                        'time'       => $this->Get_Time(),
+                        'date'       => $this->CheckDayOpen(),
+                        'qty'        => $data['quantity'],
+                        'Without'    => json_encode($waitTrans->without_m),
+                        'extra'      => json_encode($waitTrans->extra),
+                        'details'    => json_encode($waitTrans->details),
+                      );
+                    $this->LogInfo($loginfo);
                 }
                 if($check_order_test == 1)
                 {
@@ -340,6 +377,7 @@ class MovetoController extends Controller
                 $get_id_order_to = Orders_d::limit(1)->where(['branch_id'=>$branch_main,'table'=>$request->table_id , 'state'=>1])->select(['order_id'])->first();
                 $date = $this->Get_Date();
                 $time = $this->Get_Time();
+                
                 $savelog = LogTransfer::create([
                     'branch'   =>$branch_main,
                     'date'     =>$date,

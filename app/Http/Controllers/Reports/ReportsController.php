@@ -9,6 +9,7 @@ use App\Models\Orders_d;
 use App\Models\Shift;
 use App\Models\Void_d;
 use App\Models\System;
+use App\Models\LogInfo;
 use App\Models\Wait_order_m;
 use App\Models\Void_m;
 use App\Models\Item;
@@ -206,6 +207,26 @@ class ReportsController extends Controller
             'to_noti_hold',
         ]));
     }
+    public function view_expenses_report(){
+        $this->removeActionTable();
+        $branch = $this->GetBranch();
+        $this->CheckLastOrder();
+        $users = User::where(['branch_id'=>$branch])->get();
+
+        $del_noti          = $this->Delivery();
+        $del_noti_to_pilot = $this->Delivery_to_pilot();
+        $del_noti_pilot    = $this->Delivery_pilot();
+        $del_noti_hold     = $this->Delivery_hold();
+        $to_noti_hold      = $this->TOGO_hold();
+        return view('Reports.expenses',compact([
+            'del_noti',
+            'del_noti_to_pilot',
+            'del_noti_pilot',
+            'del_noti_hold',
+            'to_noti_hold',
+            'users'
+        ]));
+    }
     public function view_cost_report(){
         $this->removeActionTable();
         $this->CheckLastOrder();
@@ -223,6 +244,25 @@ class ReportsController extends Controller
             'to_noti_hold',
         ]));
     }
+
+    public function view_log_report(){
+        $this->removeActionTable();
+        $this->CheckLastOrder();
+        $branch = $this->GetBranch();
+        $del_noti          = $this->Delivery();
+        $del_noti_to_pilot = $this->Delivery_to_pilot();
+        $del_noti_pilot    = $this->Delivery_pilot();
+        $del_noti_hold     = $this->Delivery_hold();
+        $to_noti_hold      = $this->TOGO_hold();
+        return view('Reports.log_report',compact([
+            'del_noti',
+            'del_noti_to_pilot',
+            'del_noti_pilot',
+            'del_noti_hold',
+            'to_noti_hold',
+        ]));
+    }
+
     public function view_cost_sold_report(){
         $this->removeActionTable();
         $this->CheckLastOrder();
@@ -392,7 +432,7 @@ class ReportsController extends Controller
     ############################### Void TReports ###################################
     public function search_void_report(Request $request){
         $branch  = $this->GetBranch();
-        $date    = $this->Get_Date();
+        $date    = $this->CheckDayOpen();
         $system_data  = System::limit(1)->first();
         $res_name     = $system_data->name;
         // Check Of Report in one Day Or Period
@@ -496,7 +536,6 @@ class ReportsController extends Controller
                 }
             }
         }
-//        return $orders;
         return response()->json([
             'status'=>'true',
             'res_nmae' =>$res_name,
@@ -512,5 +551,44 @@ class ReportsController extends Controller
         })->get();
         return $groups;
     }
+    ############################## Log Reports ########################################
+    public function logReport(Request $request){
+        $branch  = $this->GetBranch();
+        $date    = $this->Get_Date();
+        $branch  = $this->GetBranch();
+        $date    = $this->CheckDayOpen();
+        $system_data  = System::limit(1)->first();
+        $res_name     = $system_data->name;
 
+        // Check Of Report in one Day Or Period
+        if($date == $request->to &&  $date == $request->from){
+            $orders = Orders_d::where(['branch_id'=>$branch])->get();
+        }
+        else if($request->from == $request->to || $request->to == null){ // is Filter by Using One Day
+            $orders = Orders_m::where(['branch_id'=>$branch ,'d_order'=>$request->from])->get();
+        }else{
+            $orders = Orders_m::where(['branch_id'=>$branch])
+                ->whereBetween('d_order',[$request->from,$request->to])->get();
+        }
+        $system_data  = System::limit(1)->first();
+        $res_name     = $system_data->name;
+
+        return response()->json([
+            'status'   => 'true',
+            'res_nmae' => $res_name,
+            'orders'   => $orders
+        ]);
+    }
+
+    public function viewLog(Request $request){
+        $branch  = $this->GetBranch();
+        $system_data  = System::limit(1)->first();
+        $res_name     = $system_data->name;
+        $logs = LogInfo::where(['branch'=>$branch])->where(['order'=>$request->order])->get();
+        return response()->json([
+            'status'   => 'true',
+            'res_nmae' => $res_name,
+            'logs'     => $logs
+        ]);
+    }
 }

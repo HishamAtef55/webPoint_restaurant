@@ -224,12 +224,6 @@ class PayController extends Controller
                 'delivery_order'  =>$del,
                 'd_order'         =>$dateReal
             ]);
-            $loginfo = array(
-                'type' => 'end check',
-                'order'=>$request->order,
-                'table'=>$request->table
-            );
-            $this->LogInfo($loginfo);
         $orderCheck = Orders_d::whereOrderId($request->order)->first();
         $this->AddTotalOrder($orderCheck->op,$request->order);
         if($updateorder){
@@ -253,12 +247,23 @@ class PayController extends Controller
                         'user'       => null,
                     ]);
             }
-                $table =  Table::where(['branch_id'=>$branch , 'follow'=>$request->table])
-                    ->update([
-                        'follow' => 0,
-                        'merged' => 0,
-                    ]);
-                $this->deleteTransfer($request->table);
+            $updateorder = Orders_d::limit(1)->where('order_id',$request->order)->first();
+            $loginfo = array(
+                'type' => 'end table',
+                'table'=> $updateorder->table,
+                'note' => 'end Order to table number ' . $updateorder->table ." in order " . $updateorder->order_id,
+                'order'=> $updateorder->order_id,
+                'op'   => $updateorder->op,
+                'time' => $this->Get_Time(),
+                'date' => $updateorder->d_order,
+              );
+            $this->LogInfo($loginfo);
+            $table =  Table::where(['branch_id'=>$branch , 'follow'=>$request->table])
+                ->update([
+                    'follow' => 0,
+                    'merged' => 0,
+                ]);
+            $this->deleteTransfer($request->table);
             return response()->json(['status' => 'true']);
         }
     }
@@ -277,7 +282,7 @@ class PayController extends Controller
         $cashier = Auth::user()->id;
         /*Increase of number of print */
         $Print = Orders_d::limit(1)->where('order_id',$request->order)
-            ->select(['no_print','dev_id'])->first();
+            ->select(['no_print','dev_id','table','order_id','op','d_order'])->first();
 
         $NoPrint = $Print->no_print + 1;
 
@@ -419,11 +424,14 @@ class PayController extends Controller
                 'printer'=>$printer
             );
             $loginfo = array(
-                'type' => 'print check',
-                'order'=>$request->order,
-                'note'=>$request->operation,
-                'table'=>$table_log
-            );
+                'type' => 'print order',
+                'table'=> $Print->table,
+                'note' => 'print '. $NoPrint .' in Order to table number ' . $Print->table ." in order " . $Print->order_id,
+                'order'=> $Print->order_id,
+                'op'   => $Print->op,
+                'time' => $this->Get_Time(),
+                'date' => $Print->d_order,
+              );
             $this->LogInfo($loginfo);
             $this->OrderPrint($order_print);
     }

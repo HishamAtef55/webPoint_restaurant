@@ -22,6 +22,9 @@
         @can("guests")
         <a href='#' class="options-item" data-target="#min_charge_modal_menu" data-toggle="modal" >Guests</a>
         @endcan
+        @can("Expenses")
+        <a href="{{Route('DailyExpenses')}}" class="options-item" >Expenses</a>
+        @endcan
         @can("close shift")
         <a href="#" type="Close Shift" value='close_shift' class="close_shift_day options-item">Close Shift</a>
         @endcan

@@ -154,6 +154,8 @@
                         <a href="{{route('view_item_report')}}" class='link-report'>Item Not Sales Reports</a>
                         <a href="{{route('view_cost_report')}}" class='link-report'>Cost Reports</a>
                         <a href="{{route('view_cost_sold_report')}}" class='link-report'>Cost Sold Items</a>
+                        <a href="{{route('view_log_report')}}" class='link-report'>Log Report</a>
+                        <a href="{{route('view_expenses_report')}}" class='link-report'>Expenses Report</a>
                         <a href="{{Route('View.getDays')}}" class='link-report'>Open Day</a>
                     </div>
                 </div>

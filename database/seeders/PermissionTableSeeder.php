@@ -26,6 +26,7 @@ class PermissionTableSeeder extends Seeder
                 'guests',
                 'close shift',
                 'close day',
+                'Expenses',
            'dien-in',
            'open-tables',
            'customer',
