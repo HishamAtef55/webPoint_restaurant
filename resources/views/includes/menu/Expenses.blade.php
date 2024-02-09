@@ -31,5 +31,32 @@ $(document).ready(function(){
             }
         });
     });
+    
+    $('.delExpenses').on('click',function (e) {
+        e.preventDefault();
+        let id = $(this).attr("rowId");
+        $.ajax({
+            url:"{{route('DailyExpenses.delete')}}",
+            method:'post',
+            data:
+            {
+                _token,
+                id,
+            },
+            success:function(data)
+            {
+                if(data.status == true) {
+                    Swal.fire({
+                        position: 'center-center',
+                        icon: 'success',
+                        title: 'Your Expenses has been deleted',
+                        showConfirmButton: false,
+                        timer: 1250
+                    });
+
+                }
+            }
+        });
+    });
 });
 </script>

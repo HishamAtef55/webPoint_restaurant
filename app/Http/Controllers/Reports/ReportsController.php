@@ -18,6 +18,8 @@ use App\Traits\All_Notifications_menu;
 use App\Models\User;
 use App\Models\Orders_m;
 use App\Models\LogTransfer;
+use App\Models\DailyExpenses;
+use App\Models\ExpensesCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Matrix\Builder;
@@ -212,6 +214,7 @@ class ReportsController extends Controller
         $branch = $this->GetBranch();
         $this->CheckLastOrder();
         $users = User::where(['branch_id'=>$branch])->get();
+        $category = ExpensesCategory::where(['branch_id'=>$this->GetBranch()])->get();
 
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
@@ -224,7 +227,8 @@ class ReportsController extends Controller
             'del_noti_pilot',
             'del_noti_hold',
             'to_noti_hold',
-            'users'
+            'users',
+            'category'
         ]));
     }
     public function view_cost_report(){
@@ -541,6 +545,45 @@ class ReportsController extends Controller
             'res_nmae' =>$res_name,
             'orders'=>$data
         ]);
+    }
+    ############################## expenses Reports ########################################
+    public function expensesReport(Request $request){
+        $branch  = $this->GetBranch();
+        $date    = $this->Get_Date();
+        $system_data  = System::limit(1)->first();
+        $res_name     = $system_data->name;        
+        if($request->category != "all"){
+            $expenses = DailyExpenses::with(['category','user'])->where(['branch_id'=>$this->GetBranch()])
+                ->whereBetween('date',[$request->from,$request->to])
+                ->where(['expense_id'=>$request->category])
+                ->orderBy('id','DESC')
+                ->get();
+        }else{
+            $expenses = DailyExpenses::with(['category','user'])->where(['branch_id'=>$this->GetBranch()])
+                ->whereBetween('date',[$request->from,$request->to])
+                ->orderBy('id','DESC')
+                ->get();
+        }
+        if(isset($request->user)){
+            if($request->category != "all"){
+                $expenses = DailyExpenses::with('category','user')->where(['branch_id'=>$this->GetBranch()])
+                    ->whereBetween('date',[$request->from,$request->to])
+                    ->whereIn('user_id',$request->user)
+                    ->where(['expense_id'=>$request->category])
+                    ->orderBy('id','DESC')
+                    ->get();
+            }else{
+                $expenses = DailyExpenses::with('category','user')->where(['branch_id'=>$this->GetBranch()])
+                    ->whereBetween('date',[$request->from,$request->to])
+                    ->whereIn('user_id',$request->user)
+                    ->orderBy('id','DESC')
+                    ->get();
+            }
+        }
+        return response()->json([
+            'status'=>true,
+            'expenses'=>$expenses
+        ],200);        
     }
     ######################################### view_cost_sold_report #########################
     public function cost_sold_report(Request $request){

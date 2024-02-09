@@ -151,7 +151,7 @@ class CopyCloseShift extends Controller
                     for($x = 0 ; $x < $groups->count() ; $x++){
                         if($groups[$x]['id'] == $w->subgroup_id){
                             $groups[$x]['quantity'] += $w->quantity;
-                            $groups[$x]['total'] += $w->total + $w->total_extra + $w->price_details - $w->total_discount;
+                            $groups[$x]['total'] += $w->total + $w->total_extra + $w->price_details;
                         }
                     }
                 }

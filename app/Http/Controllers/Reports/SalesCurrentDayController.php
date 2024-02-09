@@ -103,6 +103,7 @@ class SalesCurrentDayController extends Controller
             $order['total_discount'] += $all_discount_items;
             $order['sub_total'] += $all_discount_items;
             $extract_data = [];
+            $order->hos == 1 ? $order->hosp_total = $order->sub_total - $all_discount_items : $order->hosp_total = 0;
             $all_discount_items = 0;
             if($order->hos == 1){
 

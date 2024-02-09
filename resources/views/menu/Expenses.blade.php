@@ -17,32 +17,34 @@
                 Create Expenses
             </button>
             <div class="row mt-3">
-                <table class="table">
+                <table id="myTable" class="table" style="color:white">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">Date</th>
                             <th scope="col">Time</th>
                             <th scope="col">Category</th>
                             <th scope="col">Amount</th>
                             <th scope="col">User</th>
                             <th scope="col">Note</th>
-                            <th scope="col">Action</th>
+                            @can('Delete Expenses')
+                                <th scope="col">Action</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($expenses as $row)
                             <tr>
                                 <td>{{$row->id}}</td>
-                                <td>{{$row->date}}</td>
                                 <td>{{$row->time}}</td>
                                 <td>{{$row->category->title}}</td>
                                 <td>{{$row->amount}}</td>
                                 <td>{{$row->user->email}}</td>
                                 <td>{{$row->note}}</td>
-                                <td>
-                                    <button class="btn btn-danger">Delete</button>
-                                </td>
+                                @can('Delete Expenses')
+                                    <td>
+                                        <button rowId ="{{$row->id}}" class="btn btn-danger delExpenses">Delete</button>
+                                    </td>
+                                @endcan
                             </tr>
                         @endforeach
                     </tbody>
@@ -50,7 +52,6 @@
             </div>
         </div>
 
-        
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
@@ -72,17 +73,6 @@
                                         <option value="{{$row->id}}">{{$row->title}}</option>
                                     @endforeach
                                 </select>
-                                {{-- <div class='search-select'>
-                                    <div class='label-Select'>
-                                        <label for='main-input'>Main Table...</label>
-                                        <input type='text' class="search-input" id='main-input' autocomplete="off"/>
-                                        <i class='arrow'></i>
-                                        <span class='line'></span>
-                                    </div>
-                                    <div class='input-options'>
-                                        <ul id="search_main_table"></ul>
-                                    </div>
-                                </div>  --}}
                             </div>
                         </div>
                     </div>

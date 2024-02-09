@@ -426,6 +426,7 @@ Route::group(['prefix'=>'menu'],function()
     Route::group(['controller'=>DailyExpensesController::class],function(){
       Route::get('/DailyExpenses','index')->name('DailyExpenses');
       Route::post('/SaveExpenses' ,'save')->name('DailyExpenses.save');
+      Route::post('/DeleteExpenses' ,'delete')->name('DailyExpenses.delete');
     });
     ############################  End Routes Delivery    ###########################
 });
@@ -462,7 +463,7 @@ Route::group(['prefix' => 'Reports'] ,function()
 
       ################################ Void Reports         ####################
       Route::get('/view_expenses_report','view_expenses_report')->name('view_expenses_report');
-      Route::post('/search_expenses_report','search_expenses_report')->name('search_expenses_report');
+      Route::post('/expensesReport','expensesReport')->name('expensesReport');
 
       ################################## SAles Item Report #####################
       Route::get('/view_item_report','view_item_report')->name('view_item_report');

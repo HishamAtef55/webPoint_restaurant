@@ -56,4 +56,9 @@ class DailyExpensesController extends Controller
         ]);
         return  response()->json(['status'=>'true']);
     }
+
+    public function delete(Request $request){
+        DailyExpenses::where(['id'=>$request->id])->delete();
+        return response()->json(['status'=>true],200);
+    }
 }

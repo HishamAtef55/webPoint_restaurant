@@ -39,11 +39,11 @@
                         <hr>
                         <div class="select-container">
                             <label for="bay_way">Type</label>
-                            <select id="type" class="custom-select select-report">
+                            <select id="category" class="custom-select select-report">
                                 <option value="all">All</option>
-                                <option value="befor-take-order">Befor Take-Order</option>
-                                <option value="after">After Print</option>
-                                <option value="befor">Befor Print</option>
+                                @foreach($category as $row)
+                                    <option value="{{$row->id}}">{{$row->title}}</option>
+                                @endforeach
                             </select>
                         </div>
                         <hr>
@@ -65,7 +65,7 @@
                     </form>
                 </div>
                 <div class="col-md-3 d-flex flex-column">
-                    <button class="btn-report-in-day btn btn-success my-2" id="void_report">View Report</button>
+                    <button class="btn-report-in-day btn btn-success my-2" id="expenses_report">View Report</button>
                 </div>
             </div>
           </div>

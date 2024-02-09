@@ -27,6 +27,7 @@ class PermissionTableSeeder extends Seeder
                 'close shift',
                 'close day',
                 'Expenses',
+                'Delete Expenses',
            'dien-in',
            'open-tables',
            'customer',

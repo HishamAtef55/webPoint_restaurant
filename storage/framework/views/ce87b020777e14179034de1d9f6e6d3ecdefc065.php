@@ -1090,15 +1090,15 @@
         e.preventDefault();
         let from     = $('#from').val();
         let to       = $('#to').val();
-        let type     = $('#type').val();
+        let category = $('#category').val();
         let user     = []
-        let userLabel     = []
+        let userLabel = []
         $('#user').find('input:checked').each(function() {
             user.push($(this).val())
             userLabel.push($(this).siblings('label').text())
         });
         $.ajax({
-            url:"<?php echo e(route('search_expenses_report')); ?>",
+            url:"<?php echo e(route('expensesReport')); ?>",
             method: 'post',
             enctype: "multipart/form-data",
             data:
@@ -1107,37 +1107,35 @@
                     user,
                     from,
                     to,
-                    type
+                    category
                 },
             success: function (data) {
                 let html = '';
                 html += `<table class="reports table text-center mb-5 mt-3 table-report">
                     <thead class="thead-light">
                         <tr>
-                            <th>Order</th>
+                            <th>#</th>
                             <th>Date</th>
-                            <th>Item</th>
-                            <th>Qyt</th>
-                            <th>total</th>
-                            <th>user</th>
-                            <th>status</th>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Note</th>
                         </tr>
                     </thead>
                 <tbody>`;
                 let allTotal = 0;
-                let allQyt = 0;
-                for(var count = 0 ; count < data.voids.length ; count ++){
+                for(var count = 0 ; count < data.expenses.length ; count ++){
                     html += `<tr class="table-light">
-                        <td>${data.voids[count].order_id}</td>
-                        <td>${data.voids[count].date}</td>
-                        <td>${data.voids[count].name}</td>
-                        <td>${data.voids[count].quantity}</td>`
-                        allQyt += data.voids[count].quantity
-                        html += `<td>${data.voids[count].total}</td>`
-                        allTotal += data.voids[count].total
-                        html += `<td>${data.voids[count].user}</td>
-                        <td>${data.voids[count].status}</td>
+                        <td>${data.expenses[count].id}</td>
+                        <td>${data.expenses[count].date}</td>
+                        <td>${data.expenses[count].time}</td>
+                        <td>${data.expenses[count].user.email}</td>
+                        <td>${data.expenses[count].category.title}</td>
+                        <td>${data.expenses[count].amount}</td>
+                        <td>${data.expenses[count].note ?? ""}</td>
                     </tr>`
+                    allTotal+=data.expenses[count].amount;
                 }
                 html += `</tbody>
                     <tfoot class="table-dark">
@@ -1145,9 +1143,9 @@
                             <td>Total</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>${parseFloat(allQyt).toFixed(2)}</td>
-                            <td>${parseFloat(allTotal).toFixed(2)}</td>
                             <td>-</td>
+                            <td>-</td>
+                            <td>${parseFloat(allTotal).toFixed(2)}</td>
                             <td>-</td>
                         </tr>
                     </tfoot>
