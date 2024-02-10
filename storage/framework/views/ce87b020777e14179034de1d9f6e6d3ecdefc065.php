@@ -1119,6 +1119,7 @@
                             <th>Time</th>
                             <th>User</th>
                             <th>Category</th>
+                            <th>Title</th>
                             <th>Amount</th>
                             <th>Note</th>
                         </tr>
@@ -1132,6 +1133,7 @@
                         <td>${data.expenses[count].time}</td>
                         <td>${data.expenses[count].user.email}</td>
                         <td>${data.expenses[count].category.title}</td>
+                        <td>${data.expenses[count].title}</td>
                         <td>${data.expenses[count].amount}</td>
                         <td>${data.expenses[count].note ?? ""}</td>
                     </tr>`
@@ -1141,6 +1143,7 @@
                     <tfoot class="table-dark">
                         <tr>
                             <td>Total</td>
+                            <td>-</td>
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>

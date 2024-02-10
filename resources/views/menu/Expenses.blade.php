@@ -23,6 +23,7 @@
                             <th scope="col">#</th>
                             <th scope="col">Time</th>
                             <th scope="col">Category</th>
+                            <th scope="col">Title</th>
                             <th scope="col">Amount</th>
                             <th scope="col">User</th>
                             <th scope="col">Note</th>
@@ -37,6 +38,7 @@
                                 <td>{{$row->id}}</td>
                                 <td>{{$row->time}}</td>
                                 <td>{{$row->category->title}}</td>
+                                <td>{{$row->title}}</td>
                                 <td>{{$row->amount}}</td>
                                 <td>{{$row->user->email}}</td>
                                 <td>{{$row->note}}</td>
@@ -73,6 +75,14 @@
                                         <option value="{{$row->id}}">{{$row->title}}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row mb-4'>
+                        <div class="col-md-12 d-flex flex-row mt-3">
+                            <div class="form-element w-100">
+                                <h6 class='text-center text-white'>Title</h6>
+                                <input id="title" name="title" type="text" class="form-control use-keyboard-input">
                             </div>
                         </div>
                     </div>

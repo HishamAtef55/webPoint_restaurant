@@ -7,6 +7,7 @@ $(document).ready(function(){
         let category  = $('#search_main_table').val();
         let amount    = $('#amount').val();
         let note      = $('#note').val();
+        let title     = $('#title').val();
         $.ajax({
             url:"{{route('DailyExpenses.save')}}",
             method:'post',
@@ -16,6 +17,7 @@ $(document).ready(function(){
                 category,
                 amount,
                 note,
+                title
             },
             success:function(data)
             {
@@ -53,7 +55,6 @@ $(document).ready(function(){
                         showConfirmButton: false,
                         timer: 1250
                     });
-
                 }
             }
         });

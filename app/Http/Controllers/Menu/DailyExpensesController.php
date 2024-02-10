@@ -49,6 +49,7 @@ class DailyExpensesController extends Controller
             'amount'    => $request->amount,
             'expense_id'=> $request->category,
             'note'      => $request->note,
+            'title'     => $request->title,
             'user_id'   => $this->GetUser(),
             'branch_id' => $this->GetBranch(),
             'date'      => $this->CheckDayOpen(),
