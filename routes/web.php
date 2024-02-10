@@ -346,6 +346,7 @@ Route::group(['prefix'=>'menu'],function()
       Route::post('/getnewsub'        ,'getnewsub')->name('getnewsub.menu');
       Route::post('/TakeOrder'        ,'take_order')->name('take.order');
       Route::post('/CheckService'     ,'CheckService')->name('CheckService');
+      
     });
 
     ############################ PayController ###########################

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Stores extends Model
 {
-    protected  $table ='stores';
+    protected  $table ='stock_stores';
     protected $guarded = [];
 
     public function storgecapacity(){

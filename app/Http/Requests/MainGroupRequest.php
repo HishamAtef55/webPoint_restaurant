@@ -25,7 +25,7 @@ class MainGroupRequest extends FormRequest
     {
         return
             [
-                'name'   =>'required|unique:main_groups,name',
+                'name'   =>'required|unique:stock_main_groups,name',
             ];
     }
 

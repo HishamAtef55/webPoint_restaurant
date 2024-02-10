@@ -474,16 +474,16 @@ $title = 'Tabels';
                                 </div>`
                     html += `</div>`
                     html += `<div class="info-footer d-flex flex-wrap">
-                                 @can("to order")
+                                @can("to order")
                                 <a href="{{url('menu/New_Order/Table-${tableNumber}')}}" class='w-100'> To Order </a>
                                 @endcan
                                 @can("reservation")
-                                <div class='flex-grow-1 reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
+                                <div class='w-50  reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
                                     <span>Reservation</span>
                                 </div>
                                 @endcan
                                 @can("transfer")
-                                <div class='flex-grow-1 transfer-btn' data-toggle="modal" data-target="#transfer_modal">
+                                <div class='w-50  transfer-btn' data-toggle="modal" data-target="#transfer_modal">
                                     <span>Transfarer</span>
                                 </div>
                                 @endcan

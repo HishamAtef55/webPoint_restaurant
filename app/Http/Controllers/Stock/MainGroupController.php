@@ -15,7 +15,7 @@ class MainGroupController extends Controller
     }
     private function getNextId()
     {
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'main_groups'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_main_groups'");
         $nextUserId = $statement[0]->Auto_increment;
         return $nextUserId;
     }

@@ -25,7 +25,7 @@ class SupplierRequest extends FormRequest
     {
         return
             [
-                'name'=>'required|unique:suppliers,name',
+                'name'=>'required|unique:stock_suppliers,name',
             ];
     }
 

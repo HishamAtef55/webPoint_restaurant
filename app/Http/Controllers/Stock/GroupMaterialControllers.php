@@ -17,7 +17,7 @@ class GroupMaterialControllers extends Controller
     }
     private function getNextUserId()
     {
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'material_groups'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_material_groups'");
         $nextUserId = $statement[0]->Auto_increment;
         return $nextUserId;
     }

@@ -25,7 +25,7 @@ class InDirectRequest extends FormRequest
     {
         return
             [
-                'name'   =>'required|unique:in_direct_costs,name,{$this->id}',
+                'name'   =>'required|unique:stock_in_direct_costs,name,{$this->id}',
             ];
     }
     public function messages()

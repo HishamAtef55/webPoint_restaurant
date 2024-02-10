@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return
         [
-            'name'=>'required|unique:stores,name',
+            'name'=>'required|unique:stock_stores,name',
         ];
     }
 

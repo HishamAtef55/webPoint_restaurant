@@ -394,14 +394,15 @@ class PayController extends Controller
                 $table_log = $request->table;
             }
             $type_check = 0;
-            $no_copies = 0;
-            $printer  = null;
+            $no_copies  = 0;
+            $printer    = null;
             $device_print = Device::limit(1)->where(['branch_id'=>$branch,'id_device'=>$Print->dev_id])->first();
             switch($request->operation){
                 case 'Table':{
+                    $ex = Service_tables::limit(1)->where(['branch'=>$branch])->select(['invoic_copies'])->first();
                     $type_check = 3;
                     $printer = $device_print->printer_invoice;
-                    $no_copies = 1;
+                    $no_copies = $ex->invoic_copies;
                 }break;
                 case 'Delivery':{
                     $type_check = 4;

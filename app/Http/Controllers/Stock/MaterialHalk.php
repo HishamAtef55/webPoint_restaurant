@@ -31,7 +31,7 @@ class MaterialHalk extends Controller
     }
     protected function getSerial(){
         $serial = 0;
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'halk_mains'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_halk_mains'");
         $serial = $statement[0]->Auto_increment;
         return $serial;
     }
@@ -303,7 +303,7 @@ class MaterialHalk extends Controller
     // Halk Items
     protected function getSerialItem(){
         $serial = 0;
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'halk_mains'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_halk_mains'");
         $serial = $statement[0]->Auto_increment;
         return $serial;
     }

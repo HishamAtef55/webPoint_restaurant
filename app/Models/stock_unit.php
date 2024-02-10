@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class stock_unit extends Model
 {
     use HasFactory;
-    protected  $table ='stock_stock_units';
+    protected  $table ='stock_units';
     protected $guarded = [];
     protected $hidden = ['created_at','updated_at'];
 }

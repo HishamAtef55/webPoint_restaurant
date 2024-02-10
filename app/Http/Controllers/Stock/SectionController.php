@@ -21,7 +21,7 @@ class SectionController extends Controller
     }
     private function getNextUserId()
     {
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stocksections'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_sections'");
         $nextUserId = $statement[0]->Auto_increment;
         return $nextUserId;
     }

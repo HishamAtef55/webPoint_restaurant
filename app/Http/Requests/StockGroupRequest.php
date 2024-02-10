@@ -25,7 +25,7 @@ class StockGroupRequest extends FormRequest
     {
         return
             [
-                'name'   =>'required|unique:material_groups,name',
+                'name'   =>'required|unique:stock_material_groups,name',
                 'from' =>'required',
                 'to'  =>'required',
             ];

@@ -32,10 +32,10 @@ class PurchasesController extends Controller
     protected function getSerial($type){
         $serial = 0;
         if($type == 'store'){
-            $statement  = DB::select("SHOW TABLE STATUS LIKE 'store_purchases'");
+            $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_store_purchases'");
             $serial = $statement[0]->Auto_increment;
         }elseif($type == 'section'){
-            $statement  = DB::select("SHOW TABLE STATUS LIKE 'section_purchases'");
+            $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_section_purchases'");
             $serial = $statement[0]->Auto_increment;
         }
         return $serial;

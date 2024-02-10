@@ -25,8 +25,8 @@ class MaterialRequest extends FormRequest
     {
         return
             [
-                'materialId'    =>'required|unique:materials,code',
-                'materialName'  =>'required|unique:materials,name',
+                'materialId'    =>'required|unique:stock_materials,code',
+                'materialName'  =>'required|unique:stock_materials,name',
                 'subGroup'      =>'required',
                 'allGroup'      =>'required',
                 'unit'          =>'required',

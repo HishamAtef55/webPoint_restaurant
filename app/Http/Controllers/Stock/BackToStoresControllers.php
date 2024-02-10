@@ -28,7 +28,7 @@ class BackToStoresControllers extends Controller
     }
     protected function getSerial(){
         $serial = 0;
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'back_to_store_mains'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_back_to_store_mains'");
         $serial = $statement[0]->Auto_increment;
         return $serial;
     }

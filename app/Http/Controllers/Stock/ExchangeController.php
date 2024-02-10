@@ -26,7 +26,7 @@ class ExchangeController extends Controller
     }
     protected function getSerial(){
         $serial = 0;
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'exchange_mains'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_exchange_mains'");
         $serial = $statement[0]->Auto_increment;
         return $serial;
     }

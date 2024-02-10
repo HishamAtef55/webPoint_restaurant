@@ -19,7 +19,7 @@ class MaterialOperations extends Controller
 {
     protected function getSerial(){
         $serial = 0;
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'operations_mains'");
+        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_operations_mains'");
         $serial = $statement[0]->Auto_increment;
         return $serial;
     }

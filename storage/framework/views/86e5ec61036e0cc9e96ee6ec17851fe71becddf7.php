@@ -474,16 +474,16 @@ $title = 'Tabels';
                                 </div>`
                     html += `</div>`
                     html += `<div class="info-footer d-flex flex-wrap">
-                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("to order")): ?>
+                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("to order")): ?>
                                 <a href="<?php echo e(url('menu/New_Order/Table-${tableNumber}')); ?>" class='w-100'> To Order </a>
                                 <?php endif; ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("reservation")): ?>
-                                <div class='flex-grow-1 reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
+                                <div class='w-50  reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
                                     <span>Reservation</span>
                                 </div>
                                 <?php endif; ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("transfer")): ?>
-                                <div class='flex-grow-1 transfer-btn' data-toggle="modal" data-target="#transfer_modal">
+                                <div class='w-50  transfer-btn' data-toggle="modal" data-target="#transfer_modal">
                                     <span>Transfarer</span>
                                 </div>
                                 <?php endif; ?>
