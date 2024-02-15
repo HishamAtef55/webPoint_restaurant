@@ -19,7 +19,7 @@ class TablesController extends Controller
     public function view_ser_table()
     {
         $branchs = Branch::get()->all();
-        $printers = Printers::where(['active'=>'1'])->get();
+        $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
         return view('control.services_tables',compact('branchs','printers'));
     }
 

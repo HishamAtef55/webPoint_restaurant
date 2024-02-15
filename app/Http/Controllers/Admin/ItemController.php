@@ -163,7 +163,7 @@ class ItemController extends Controller
     public function View_update_item()
     {
         $branchs = Branch::get() -> all();
-        $printers = Printers::where(['active'=>'1'])->get();
+        $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
 
         return view('control.update_item',compact('branchs','printers'));
     }

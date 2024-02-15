@@ -58,7 +58,7 @@ class HomeController extends Controller
         $del_noti_to_pilot = $this->Delivery_to_pilot();
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
-        $printers = Printers::where(['active'=>'1'])->get();
+        $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
         return view('menu.tables',compact(['transfers','printers','to_noti_hold','user','holes','branch','order_delivery','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold']));
     }
 

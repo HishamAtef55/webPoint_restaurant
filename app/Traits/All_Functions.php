@@ -9,6 +9,7 @@ use App\Models\Others;
 use App\Models\TransferUsers;
 use Illuminate\Http\Request;
 use App\Models\Device;
+use App\Models\DailyExpenses;
 use App\Models\CloseShiftGroup;
 use App\Models\CloseShift;
 use App\Models\Days;
@@ -863,7 +864,7 @@ Trait All_Functions
         }
         $data['hos'] = $total_new_hos;
         // Cal total_cash
-        $data['total_cash'] = $data['cash'] + $data['visa'] + $data['hos'];
+        $data['total_cash'] = $data['cash'];
         $data['gust_avarge'] = $data['cash'] / $data['gust_no'];
 
         // Cal total_cash
@@ -904,10 +905,10 @@ Trait All_Functions
         // Calculate Toatal service
         $data['service'] = Orders_d::where(['shift_status'=>'1','state' => '0','branch_id'=>$branch])->sum('services');
 
-        // Calculate Toatal tip
-        $data['tip'] = Orders_d::where(['shift_status'=>'1','state' => '0','branch_id'=>$branch])->sum('tip');
-        // Calculate Toatal r_bank
-        $data['r_bank'] = Orders_d::where(['shift_status'=>'1','state' => '0','branch_id'=>$branch])->sum('r_bank');
+        // Calculate Toatal Expenses
+        $data['tip'] = DailyExpenses::where(['branch_id'=>$this->GetBranch(),'date'=>$date])->orderBy('id','DESC')->sum('amount');
+        // Calculate Toatal 
+        $data['r_bank'] = $data['total_cash'] - $data['tip'];
 
         // Calculate Toatal Extra
         $data['extras'] = Orders_d::where(['shift_status'=>'1','state' => '0','branch_id'=>$branch])->sum('total_extra');

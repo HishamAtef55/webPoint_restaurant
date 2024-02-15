@@ -19,7 +19,7 @@ class Device extends Controller
     public function Add_Device()
     {
         $branchs = Branch::get()->all();
-        $printers = Printers::where(['active'=>'1'])->get();
+        $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
         return view('control.add_device',compact('branchs','printers'));
     }
 

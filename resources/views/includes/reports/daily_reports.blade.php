@@ -121,7 +121,7 @@
                         html += `
                             <th>Visa</th>
                             <th>Cash</th>
-                            <th>Bank</th>
+                            <th>Exp</th>
                             <th>Tip</th>
                             <th>Total</th>
                         </tr>

@@ -112,7 +112,7 @@ class TablesController extends Controller
                     $customer = 0;
                     $gust     = 0;
                     $taxandservice = $this->calculate_taxandservice($op_cal , $new_order);
-                    $printers = Printers::where(['active'=>'1'])->get();
+                    $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
                     return view('menu.menu',compact(['printers','no_print','to_noti_hold','gust','mincharge','capten','customer','delivery','state_tax','state_ser','taxandservice','locations','dis','dis_type','dis_val','dis_name','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold','operation','menus','subgroup','discount_value','discount_ratio']));
                 }
                 break;
@@ -154,7 +154,7 @@ class TablesController extends Controller
                     $customer = 0;
                     $gust     = 0;
                     $taxandservice = $this->calculate_taxandservice($op_cal , $new_order);
-                    $printers = Printers::where(['active'=>'1'])->get();
+                    $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
                     return view('menu.menu',compact(['printers','no_print','to_noti_hold','gust','mincharge','capten','customer','state_tax','state_ser','taxandservice','dis','dis_type','dis_val','dis_name','locations','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold','operation','menus','subgroup','discount_value','discount_ratio']));
                 }
                 break;
@@ -274,7 +274,7 @@ class TablesController extends Controller
                     $dis = '0';
                 }
                 $this->addActionTable($actionTable);
-                $printers = Printers::where(['active'=>'1'])->get();
+                $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
                 return view('menu.menu',compact(['printers','no_print','to_noti_hold','gust','mincharge','capten','customer','delivery','state_tax','state_ser','taxandservice','dis','dis_type','dis_val','dis_name','new_order','Orders','del_noti','del_noti_to_pilot','del_noti_pilot','del_noti_hold','operation','menus','subgroup','table','discount_value','discount_ratio','min_charge']));
             }
         }

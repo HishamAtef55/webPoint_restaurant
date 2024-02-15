@@ -84,7 +84,7 @@ class MenuController extends Controller
         $del_noti_pilot    = $this->Delivery_pilot();
         $del_noti_hold     = $this->Delivery_hold();
         $to_noti_hold      = $this->TOGO_hold();
-        $printers = Printers::where(['active'=>'1'])->get();
+        $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
 
         $user = User::where('branch_id',1)->get()->first();
         $holes = Hole::where('branch_id',1)->get();

@@ -152,11 +152,11 @@
                                     <span id="tax"></span>
                                 </li>
                                 <li>
-                                    <span>Tip</span>
+                                    <span>Expenses</span>
                                     <span id="tip"></span>
                                 </li>
                                 <li>
-                                    <span>Ratio Bank</span>
+                                    <span>Total</span>
                                     <span id="ration_bank"></span>
                                 </li>
                             </ul>

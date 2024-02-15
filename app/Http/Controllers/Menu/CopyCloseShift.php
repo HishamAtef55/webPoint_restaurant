@@ -12,6 +12,7 @@ use App\Models\Orders_d;
 use App\Models\Orders_m;
 use App\Models\Service_tables;
 use App\Models\Shift;
+use App\Models\DailyExpenses;
 use App\Models\Wait_order;
 use App\Models\Wait_order_m;
 use App\Traits\All_Functions;
@@ -71,6 +72,9 @@ class CopyCloseShift extends Controller
             $groups[$i]['total_pre'] = 0;
         }
         if(Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->count() > 0){
+
+            $data['tip'] = DailyExpenses::where(['branch_id'=>$this->GetBranch(),'date'=>$date])->orderBy('id','DESC')->sum('amount');
+
             // Cal Order_No
             $data['order_no'] = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->count();
             // Cal Order_Min
@@ -92,7 +96,7 @@ class CopyCloseShift extends Controller
             $sud_dis = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch,'hos'=>1])->sum('total_discount');
             $data['hos'] = $sud_hos + $sud_tax + $sud_ser - $sud_dis;
             // Cal total_cash
-            $data['total_cash'] = $data['cash'] + $data['visa'] + $data['hos'];
+            $data['total_cash'] = $data['cash'];
             $data['gust_avarge'] = $data['cash'] / $data['gust_no'];
 
             // Cal total_cash
@@ -134,9 +138,9 @@ class CopyCloseShift extends Controller
             $data['service'] = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->sum('services');
 
             // Calculate Toatal tip
-            $data['tip'] = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->sum('tip');
-            // Calculate Toatal r_bank
-            $data['r_bank'] = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->sum('r_bank');
+            
+            // Calculate Toatal
+            $data['r_bank'] = $data['total_cash'] - $data['tip'];
 
             // Calculate Toatal Extra
             $data['extras'] = Orders_m::where(['d_order'=>$date,'shift'=>$shift_id,'branch_id'=>$branch])->sum('total_extra');

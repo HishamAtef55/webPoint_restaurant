@@ -10,6 +10,7 @@ use App\Models\Orders_m;
 use App\Models\System;
 use App\Models\Sub_group;
 use App\Models\Wait_order_m;
+use App\Models\DailyExpenses;
 use App\Traits\All_Functions;
 use App\Traits\All_Notifications_menu;
 use Illuminate\Http\Request;
@@ -135,6 +136,7 @@ class DailyReportsController extends Controller
                             $period[$i]['cash']+=$order['cash'];
                             $period[$i]['visa']+=$order['visa'];
                             $period[$i]['tip']+=$order['tip'];
+                            $period[$i]['r_bank'] = DailyExpenses::where(['branch_id'=>$this->GetBranch(),'date'=>$order['d_order']])->orderBy('id','DESC')->sum('amount');
                             $period[$i]['discount']+=$order['discount'];
                             $period[$i]['total_discount']+=$order['total_discount'];
                             foreach($group as $gr){
