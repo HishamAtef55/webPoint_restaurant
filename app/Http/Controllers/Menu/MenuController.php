@@ -87,7 +87,7 @@ class MenuController extends Controller
         $to_noti_hold      = $this->TOGO_hold();
         $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
 
-        $user = User::where('branch_id',auth()->user()->branch_id)->get()->first();
+        $user = User::where('branch_id',auth()->user()->branch_id)->first();
         $holes = Hole::where('branch_id',auth()->user()->branch_id)->get();
         return view('menu.tables',compact
         ([
