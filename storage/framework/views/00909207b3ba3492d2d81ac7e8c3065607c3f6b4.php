@@ -150,7 +150,16 @@
             let Branch = 0;
             let op = 'outadmin';
             let printer = $('#device_printer').val();
+            let selectedPrinters =  [];
+            $('.devicePrinters:checked').each(function () {
+                let printerId = $(this).attr('dataPrinterId');
+                let printerName = $(this).attr('dataPrinterName');
 
+                selectedPrinters.push({
+                    id: printerId,
+                    name: printerName
+                });
+            });
             $.ajax({
                 url: "<?php echo e(route('upload.device')); ?>",
                 method: 'post',
@@ -161,7 +170,8 @@
                         _token   : _token,
                         Branch   : Branch,
                         op       : op,
-                        printer   : printer
+                        printer   : printer,
+                        selectedPrinters : selectedPrinters
 
                     },
                 success: function (data) {

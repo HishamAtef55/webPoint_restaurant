@@ -39,6 +39,7 @@ class ReportsController extends Controller
         $branch = $this->GetBranch();
         $this->removeActionTable();
         $this->CheckLastOrder();
+        $this->fixDeleveryStatus();
         $orders = Orders_d::where(['state'=>'0','d_order'=>$date])->get();
         $shifts = Shift::where(['branch_id'=>$branch])->get();
         $users = User::where(['branch_id'=>$branch])->get();
@@ -551,7 +552,7 @@ class ReportsController extends Controller
         $branch  = $this->GetBranch();
         $date    = $this->Get_Date();
         $system_data  = System::limit(1)->first();
-        $res_name     = $system_data->name;        
+        $res_name     = $system_data->name;
         if($request->category != "all"){
             $expenses = DailyExpenses::with(['category','user'])->where(['branch_id'=>$this->GetBranch()])
                 ->whereBetween('date',[$request->from,$request->to])
@@ -583,7 +584,7 @@ class ReportsController extends Controller
         return response()->json([
             'status'=>true,
             'expenses'=>$expenses
-        ],200);        
+        ],200);
     }
     ######################################### view_cost_sold_report #########################
     public function cost_sold_report(Request $request){

@@ -665,6 +665,7 @@ class ComposerStaticInitffad16b6933071f09aa52b07674d957e
         'App\\Models\\Details_Wait_Order' => __DIR__ . '/../..' . '/app/Models/Details_Wait_Order.php',
         'App\\Models\\Details_Wait_Order_m' => __DIR__ . '/../..' . '/app/Models/Details_Wait_Order_m.php',
         'App\\Models\\Device' => __DIR__ . '/../..' . '/app/Models/Device.php',
+        'App\\Models\\DevicePrinters' => __DIR__ . '/../..' . '/app/Models/DevicePrinters.php',
         'App\\Models\\ExpensesCategory' => __DIR__ . '/../..' . '/app/Models/ExpensesCategory.php',
         'App\\Models\\ExtraWaitOrdersDel' => __DIR__ . '/../..' . '/app/Models/ExtraWaitOrdersDel.php',
         'App\\Models\\Extra_wait_order' => __DIR__ . '/../..' . '/app/Models/Extra_wait_order.php',

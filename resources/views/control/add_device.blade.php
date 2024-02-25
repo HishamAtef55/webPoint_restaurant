@@ -42,31 +42,37 @@
                 </form>
 
                 <div class="select-box">
-                            <select class="select_printers" id="printer">
-                                <option></option>
-                                @foreach($printers as $printer)
-                                    <option value="{{ $printer->printer }}">{{ $printer->printer }}</option>
-                                @endforeach
-                            </select>
-                            <div class='search-select'>
-                                <div class='label-Select'>
-                                    <label for='printers-input'>Print Invoice...</label>
-                                    <input autocomplete="off" name="printer" type='text' class="search-input"
-                                        id='printers-input' />
-                                    <i class='arrow'></i>
-                                    <span class='line'></span>
-                                </div>
-
-                                <div class='input-options'>
-                                    <ul></ul>
-                                </div>
-                            </div>
+                    <select class="select_printers" id="printer">
+                        <option></option>
+                        @foreach($printers as $printer)
+                            <option value="{{ $printer->printer }}">{{ $printer->printer }}</option>
+                        @endforeach
+                    </select>
+                    <div class='search-select'>
+                        <div class='label-Select'>
+                            <label for='printers-input'>Print Invoice...</label>
+                            <input autocomplete="off" name="printer" type='text' class="search-input"
+                                id='printers-input' />
+                            <i class='arrow'></i>
+                            <span class='line'></span>
                         </div>
-                        <button type="submit" id="add_device" class="btn btn-block btn-success mt-3"> Add </button>
+
+                        <div class='input-options'>
+                            <ul></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    @foreach($printers as $printer)
+                    <div class="col-4">
+                        <label for="device-{{ $printer->id }}" class="input-label">{{ $printer->printer }}</label>
+                        <input type="checkbox" id="device-{{ $printer->id }}"  class="devicePrinters" dataPrinterId="{{ $printer->id }}" dataPrinterName="{{ $printer->printer }}">
+                    </div>
+                    @endforeach
+                </div>
+                <button type="submit" id="add_device" class="btn btn-block btn-success mt-3"> Add </button>
             </div>
-
         </div>
-
     </div>
 </section>
 @include('includes.control.device')

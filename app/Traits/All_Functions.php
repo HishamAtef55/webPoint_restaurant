@@ -907,7 +907,7 @@ Trait All_Functions
 
         // Calculate Toatal Expenses
         $data['tip'] = DailyExpenses::where(['branch_id'=>$this->GetBranch(),'date'=>$date])->orderBy('id','DESC')->sum('amount');
-        // Calculate Toatal 
+        // Calculate Toatal
         $data['r_bank'] = Orders_d::where(['shift_status'=>'1','state' => '0','branch_id'=>$branch])->sum('r_bank');
 
         // Calculate Toatal Extra
@@ -1354,5 +1354,13 @@ Trait All_Functions
             $wait->save();
         }
         $this->AddTotalOrder($order->op,$order->order_id);
+    }
+    public function fixDeleveryStatus(){
+      $branch = $this->GetBranch();
+      $orders = Orders_d::where(['branch_id'=>$branch,'state'=>1,'delivery_order'=>1])->get();
+      foreach($orders as $order){
+          $order->state = 0;
+          $order->save();
+      }
     }
 }

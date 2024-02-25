@@ -177,14 +177,23 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <h5>Device No</h5>
                         <input class="form-control" id='number_dev_inut' type="number">
+                        <h5>Invoice Printer</h5>
                         <select class="form-control mt-2" name="device_printer" id="device_printer">
-                            @if(isset($printers))
-                                @foreach($printers as $printer)
-                                <option value="{{ $printer->printer }}">{{ $printer->printer }}</option>
-                                @endforeach
-                            @endif
+                            @foreach(\App\Models\Printers::where('branch_id',auth()->user()->branch_id)->get() as $printer)
+                            <option value="{{ $printer->printer }}">{{ $printer->printer }}</option>
+                            @endforeach
                         </select>
+                        <h5 class="mt-2">Slip Printer</h5>
+                        <div class="row">
+                            @foreach(\App\Models\Printers::where('branch_id',auth()->user()->branch_id)->get() as $printer)
+                            <div class="col-4 form-group">
+                                <input type="checkbox" id="device-{{ $printer->id }}"  class="devicePrinters" dataPrinterId="{{ $printer->id }}" dataPrinterName="{{ $printer->printer }}">
+                                <label for="device-{{ $printer->id }}" class="input-label">{{ $printer->printer }}</label>
+                            </div>
+                            @endforeach
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="save_dev_outadmin" class="btn btn-success" data-dismiss="modal">Save</button>

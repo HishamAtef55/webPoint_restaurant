@@ -35,6 +35,7 @@ class DeliveryController extends Controller
     public function Delivery_Order()
     {
         $this->CheckLastOrder();
+        $this->fixDeleveryStatus();
         date_default_timezone_set('Africa/Cairo');
         $time_now = date(' H:i');
         $day_now = $this->CheckDayOpen();
@@ -151,6 +152,7 @@ class DeliveryController extends Controller
     public function to_pilot()
     {
         $this->CheckLastOrder();
+        $this->fixDeleveryStatus();
         date_default_timezone_set('Africa/Cairo');
         $time_now = date(' H:i');
         $day_now = $this->CheckDayOpen();

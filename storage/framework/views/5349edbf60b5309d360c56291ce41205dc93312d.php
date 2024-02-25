@@ -177,14 +177,23 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <h5>Device No</h5>
                         <input class="form-control" id='number_dev_inut' type="number">
+                        <h5>Invoice Printer</h5>
                         <select class="form-control mt-2" name="device_printer" id="device_printer">
-                            <?php if(isset($printers)): ?>
-                                <?php $__currentLoopData = $printers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $printer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($printer->printer); ?>"><?php echo e($printer->printer); ?></option>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            <?php endif; ?>
+                            <?php $__currentLoopData = \App\Models\Printers::where('branch_id',auth()->user()->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $printer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($printer->printer); ?>"><?php echo e($printer->printer); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
+                        <h5 class="mt-2">Slip Printer</h5>
+                        <div class="row">
+                            <?php $__currentLoopData = \App\Models\Printers::where('branch_id',auth()->user()->branch_id)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $printer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="col-4 form-group">
+                                <input type="checkbox" id="device-<?php echo e($printer->id); ?>"  class="devicePrinters" dataPrinterId="<?php echo e($printer->id); ?>" dataPrinterName="<?php echo e($printer->printer); ?>">
+                                <label for="device-<?php echo e($printer->id); ?>" class="input-label"><?php echo e($printer->printer); ?></label>
+                            </div>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="save_dev_outadmin" class="btn btn-success" data-dismiss="modal">Save</button>

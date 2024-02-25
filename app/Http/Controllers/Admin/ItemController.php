@@ -279,10 +279,6 @@ class ItemController extends Controller
                         'unit'                  =>$data->unit,
                         'image'                 =>$data->image,
                         'calories'              =>$data->calories,
-                        'branch_id'             =>$data->branch_id,
-                        'menu_id'               =>$data->menu_id,
-                        'group_id'              =>$data->group_id,
-                        'sub_group_id'          =>$data->sub_group_id
                     ]);
             }else{
                 $add_Extra = extra::create([
@@ -296,10 +292,6 @@ class ItemController extends Controller
                     'unit'                  =>$data->unit,
                     'image'                 =>$data->image,
                     'calories'              =>$data->calories,
-                    'branch_id'             =>$data->branch_id,
-                    'menu_id'               =>$data->menu_id,
-                    'group_id'              =>$data->group_id,
-                    'sub_group_id'          =>$data->sub_group_id
                 ]);
             }
         }

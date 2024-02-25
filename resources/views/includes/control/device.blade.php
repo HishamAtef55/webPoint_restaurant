@@ -6,6 +6,16 @@
             let ID_DEV = $('#device_id').val();
             let Branch = $('#select').val();
             let printer = $('#printer').val();
+            let selectedPrinters =  [];
+            $('.devicePrinters:checked').each(function () {
+                let printerId = $(this).attr('dataPrinterId');
+                let printerName = $(this).attr('dataPrinterName');
+
+                selectedPrinters.push({
+                    id: printerId,
+                    name: printerName
+                });
+            });
             $.ajax({
                 url: "{{route('upload.device')}}",
                 method: 'post',
@@ -16,6 +26,7 @@
                         _token,
                         Branch,
                         printer,
+                        selectedPrinters
                     },
                 success: function (data) {
                     if(data.status == true)

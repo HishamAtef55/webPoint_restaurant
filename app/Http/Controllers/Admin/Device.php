@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\DeviceRequest;
 use App\Models\Branch;
 use App\Models\Printers;
+use App\Models\DevicePrinters;
 use App\Traits\All_Functions;
-
 class Device extends Controller
 {
     public function __construct()
@@ -31,23 +31,28 @@ class Device extends Controller
         }else{
             $branch = $request->Branch;
         }
-        if(\App\Models\Device::where(['branch_id'=>$branch , 'id_device'=>$request -> ID_DEV])->count() > 0){
+
+        \App\Models\Device::where(['branch_id'=>$branch , 'id_device'=>$request->ID_DEV])->delete();
+        DevicePrinters::where(['branch_id'=>$branch,'device_id'=>$request->ID_DEV])->delete();
+        $save_device = \App\Models\Device::create
+        ([
+            'id_device'       => $request -> ID_DEV,
+            'branch_id'       => $branch,
+            'printer_invoice' => $request->printer
+        ]);
+        if($save_device)
+        {
+            foreach($request->selectedPrinters as $row){
+                DevicePrinters::create([
+                    'printer_id' => $row['id'],
+                    'printer'    => $row['name'],
+                    'device_id'  => $request->ID_DEV,
+                    'branch_id'  => $branch
+                ]);
+            }
             return response()->json([
                 'status'=>true
             ]);
-        }else{
-            $save_device = \App\Models\Device::create
-            ([
-                'id_device'       => $request -> ID_DEV,
-                'branch_id'       => $branch,
-                'printer_invoice' => $request->printer
-            ]);
-            if($save_device)
-            {
-                return response()->json([
-                    'status'=>true
-                ]);
-            }
         }
     }
 }

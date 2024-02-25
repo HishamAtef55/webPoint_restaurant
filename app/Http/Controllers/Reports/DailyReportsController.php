@@ -269,6 +269,9 @@ class DailyReportsController extends Controller
                 $gr_count = sizeof($group);
                 for($gr = 0 ; $gr < $gr_count ; $gr++){
                     if($group[$gr]['id'] == $group_h){
+                        // if(!isset($group[$gr]['sub_group'])){
+                        //     return $group[$gr];
+                        // }
                         $sub_count = sizeof($group[$gr]['sub_group']);
                         for($sub = 0 ; $sub < $sub_count ; $sub++){
                             if($group[$gr]['sub_group'][$sub]['id'] == $sub_group_h){

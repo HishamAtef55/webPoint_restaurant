@@ -78,6 +78,7 @@ class MenuController extends Controller
         $this->CheckWaitFail();
         $this->removeActionTable();
         $this->checkTableStatus();
+        $this->fixDeleveryStatus();
         $transfers = $this->checkTransfers();
         $del_noti          = $this->Delivery();
         $del_noti_to_pilot = $this->Delivery_to_pilot();
@@ -86,8 +87,8 @@ class MenuController extends Controller
         $to_noti_hold      = $this->TOGO_hold();
         $printers = Printers::where(['active'=>'1','branch_id'=>auth()->user()->branch_id])->get();
 
-        $user = User::where('branch_id',1)->get()->first();
-        $holes = Hole::where('branch_id',1)->get();
+        $user = User::where('branch_id',auth()->user()->branch_id)->get()->first();
+        $holes = Hole::where('branch_id',auth()->user()->branch_id)->get();
         return view('menu.tables',compact
         ([
             'printers',
@@ -784,7 +785,7 @@ class MenuController extends Controller
             ->where('sub_num_order',$Order_ID)
             ->get()
             ->first();
-       
+
         // $order_NO = $order -> Order_Number_dev ;
         // if type of discount Ratio
         function Ratio($type , $value , $Order_ID , $no_order , $Name_Dis , $total_discount)

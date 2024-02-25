@@ -146,6 +146,7 @@ return array(
     'App\\Models\\Details_Wait_Order' => $baseDir . '/app/Models/Details_Wait_Order.php',
     'App\\Models\\Details_Wait_Order_m' => $baseDir . '/app/Models/Details_Wait_Order_m.php',
     'App\\Models\\Device' => $baseDir . '/app/Models/Device.php',
+    'App\\Models\\DevicePrinters' => $baseDir . '/app/Models/DevicePrinters.php',
     'App\\Models\\ExpensesCategory' => $baseDir . '/app/Models/ExpensesCategory.php',
     'App\\Models\\ExtraWaitOrdersDel' => $baseDir . '/app/Models/ExtraWaitOrdersDel.php',
     'App\\Models\\Extra_wait_order' => $baseDir . '/app/Models/Extra_wait_order.php',
