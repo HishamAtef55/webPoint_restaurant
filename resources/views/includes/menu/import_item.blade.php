@@ -1449,9 +1449,9 @@ $(document).on('click','#take_order',function (e) {
                         let checkHold = $('#check_hold').attr('value');
                         if (editCus == 'Edit_customer') {
                             if (checkHold == 0) {
-                                location.href = '/menu/Delivery_to_pilot'
+                                location.href = '/webpoint/menu/Delivery_to_pilot'
                             } else if (checkHold == 1) {
-                                location.href = '/menu/Delivery_holding_list'
+                                location.href = '/webpoint/menu/Delivery_holding_list'
                             }
                         } else {
                             toPilot.removeClass('del').text(parseInt(toPilot.text()) + 1)
@@ -1474,7 +1474,7 @@ $(document).on('click','#take_order',function (e) {
                     }
                     else if (op == "Table") {
                         if(data.status = "true"){
-                            location.href = '/menu/Show_Table'
+                            location.href = '/webpoint/menu/Show_Table'
                         }
                     }
 
@@ -1651,7 +1651,7 @@ $('#printcheck').on('click', function() {
                 $(this).val(serVal)
             })
             if(operation == "Table"){
-                location.href = '/menu/Show_Table'
+                location.href = '/webpoint/menu/Show_Table'
             }else if(operation == "Delivery"){
                 $('#new_order').attr('value','')
                 $('#Edit_customer').attr('value','New_customer')
@@ -1682,7 +1682,7 @@ $('#printcheck').on('click', function() {
 
             let holdCheck = $('#check_hold').attr('value');
             if (operation == 'TO_GO' && holdCheck == '0') {
-                location.href = '/menu/New_Order/TO_GO'
+                location.href = '/webpoint/menu/New_Order/TO_GO'
             }
 
         }
@@ -1745,7 +1745,7 @@ $('#paycheck').on('click', function() {
                     Delivery :summaryDelivery
                 },
                 success: function (data) {
-                    location.href = '/menu/Show_Table'
+                    location.href = '/webpoint/menu/Show_Table'
                 }
             });
         }
@@ -1777,9 +1777,9 @@ $('#paycheck').on('click', function() {
     $('body').on('click','#change_hold', function () {
         let operation = $('#operation').attr('value');
         if(operation == 'Delivery') {
-            location.href = '/menu/Delivery_holding_list'
+            location.href = '/webpoint/menu/Delivery_holding_list'
         } else if (operation == 'TO_GO') {
-            location.href = '/menu/TOGO_holding_list'
+            location.href = '/webpoint/menu/TOGO_holding_list'
         }
     })
 

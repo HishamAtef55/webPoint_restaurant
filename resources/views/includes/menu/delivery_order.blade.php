@@ -630,7 +630,7 @@
                 })
                 $('#pay-model').modal('hide')
                 if(operation == "Table"){
-                    location.href = '/menu/Show_Table'
+                    location.href = '/webpoint/menu/Show_Table'
                 } else if(operation == "Delivery"){
                     $('#new_order').attr('value','')
                     $('#Edit_customer').attr('value','New_customer')
@@ -668,7 +668,7 @@
 
                 let holdCheck = $('#check_hold').attr('value');
                 if (operation == 'TO_GO' && holdCheck == '0') {
-                    location.href = '/menu/New_Order/TO_GO'
+                    location.href = '/webpoint/menu/New_Order/TO_GO'
                 }
 
             }

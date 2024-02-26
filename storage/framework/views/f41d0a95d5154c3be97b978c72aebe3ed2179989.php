@@ -191,7 +191,7 @@ $(document).ready(function(){
                             $('#alert_show').hide();
                         }, 2500);
                         $(`.left ul li`).remove();
-                         location.href = '/menu/Show_Table'
+                         location.href = '/webpoint/menu/Show_Table'
                     }
 
                 }
