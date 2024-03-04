@@ -374,15 +374,15 @@ class PayController extends Controller
                 'cash'            => $cash,
                 'visa'            => $visa,
                 't_closeorder'    => $time_now,
-                'r_bank'          =>$request->bank_value,
-                'hos'             =>$hos,
-                'state'           =>$endcheck,
+                'r_bank'          => $request->bank_value,
+                'hos'             => $hos,
+                'state'           => $endcheck,
                 'total_extra'     => $extras,
                 'total_details'   => $details,
                 'total_discount'  => $request->discount,
                 'total'           => $total,
                 'shift'           => $shift,
-                'd_order'         =>$dateReal,
+                'd_order'         => $dateReal,
             ]);
 
             if($request->table != null){

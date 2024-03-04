@@ -421,6 +421,17 @@ class DailyReportsController extends Controller
                 }
             }
         }
+        // $sum= 0 ;
+        // foreach($group as $gr){
+        //     foreach($gr['sub_group'] as $row2){
+        //         if(isset($row2['sold'])){
+        //             foreach($row2['sold'] as $row3){
+        //                 $sum+= $row3['price'];
+        //             }
+        //         }
+        //     }
+        // }
+        // return $sum;
         return response()->json([
             'orders'=>$group,
             'report_type'=>$request->type,

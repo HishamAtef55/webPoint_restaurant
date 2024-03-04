@@ -1346,7 +1346,7 @@ Trait All_Functions
             $wait->total_extra = $extra;
             $wait->price_details = $details;
             $allTotal = $wait->total + $extra + $details;
-            if($wait->discount != 0 || $wait->discount_type != null){
+            if($wait->discount != 0 && $wait->discount_type != null){
                 if($wait->discount_type == "Ratio"){
                     $wait->total_discount = $allTotal * $wait->discount / 100;
                 }
