@@ -1350,6 +1350,8 @@ Trait All_Functions
                 if($wait->discount_type == "Ratio"){
                     $wait->total_discount = $allTotal * $wait->discount / 100;
                 }
+            }else{
+                $wait->total_discount = 0;
             }
             $wait->save();
         }
