@@ -30,7 +30,7 @@ class UserController extends Controller
             if($request->mopile == null){$request->mopile = 0;}
             $file = "not_found.jpg";
             if(isset($request->image)){
-                $file = $this->saveimage($request->image,'control/images/users');
+                $file = $this->saveimage($request->image,'public/control/images/users');
             }
             $pass = Hash::make($request->password);
             $data = User::create

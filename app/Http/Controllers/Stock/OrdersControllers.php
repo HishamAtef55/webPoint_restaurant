@@ -31,7 +31,7 @@ class OrdersControllers extends Controller
     public function save(Request $request){
         $img = null;
         if($request->hasFile('image')){
-            $img = saveImage($request->image,'stock/images/orders');
+            $img = saveImage($request->image,'public/stock/images/orders');
         }
         if($request->branch == null || $request->branch == "null"){$request->branch = 0;}
         $saveMain = stockOrders::create([

@@ -87,7 +87,7 @@ class ItemController extends Controller
         $barcode = explode('+', $request->barcode);
         $file = 'not_found.jpg';
         if ($request->image != null) {
-            $file = $this->saveimage($request->image, 'control/images/items');
+            $file = $this->saveimage($request->image, 'public/control/images/items');
         }
         if ($request->extra == "on") {
             $data = extra::create
@@ -214,7 +214,7 @@ class ItemController extends Controller
         //update Item
         $data = '';
         if($request->image != null){
-            $file = $this->saveimage($request->image,'control/images/items');
+            $file = $this->saveimage($request->image,'public/control/images/items');
             $data = Item::limit(1)->where('id',$request->id)->update
             ([
                 'name'                  =>$request->name,
