@@ -388,7 +388,7 @@ $title = 'Tabels';
 
                 <div class="modal-footer d-flex justify-content-between">
                     @can("print check")
-                    <button class="btn btn-info" type="button" id="printcheck_hold">Print</button>
+                    <button class="btn btn-info" type="button" id="printcheck">Print</button>
                     @endcan
                 </div>
             </div>
@@ -644,7 +644,7 @@ $title = 'Tabels';
                                     @can("to order")
                                     <a href="{{url('menu/New_Order/Table-${tableNumber}')}}" class='flex-grow-1'> To Order </a>
                                     @endcan
-                                    <button class="btn btn-info flex-grow-1" type="button" id="printcheck">Print</button>
+                                    <button class="btn btn-info flex-grow-1" type="button" id="printcheck_info">Print</button>
                                 </div>
                                 @can("reservation")
                                 <div class='w-50  reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
@@ -1368,7 +1368,7 @@ $title = 'Tabels';
 
 
     // --# # # # # # # # # # # # # # # # # # # # # # Start Pay Modal # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
-    $(document).on('click', '#printcheck', function(e) {
+    $(document).on('click', '#printcheck_info', function(e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -1379,6 +1379,10 @@ $title = 'Tabels';
         let myModal = $("#pay-model");
         let totalPrice = tableInfo.find(`#table_total${table}`).attr('value');
         let bankRatio = myModal.find('#bank-ratio');
+        let tableData = {
+            order,
+            table
+        }
 
         $.ajax({
             type: 'POST',
@@ -1453,7 +1457,8 @@ $title = 'Tabels';
 
                     });
                     myModal.attr('totVal', $('#total-price').attr('totval'));
-                    $('#ser-check').attr('dis') == '0' ? myModal.attr('status', 'without') : myModal.attr('status', 'with')
+                    $('#ser-check').attr('dis') == '0' ? myModal.attr('status', 'without') : myModal.attr('status', 'with');
+                    myModal.attr('data', JSON.stringify(tableData))
                 } else if (data.status == "min") {
                     Swal.fire({
                         title: 'The operation is wrong',
@@ -1481,6 +1486,59 @@ $title = 'Tabels';
         });
     });
     // --# # # # # # # # # # # # # # # # # # # # # # End Pay Modal # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    // ############################### Start Print Check #############################
+    $('#printcheck').on('click', function() {
+        let summaryTotal = $('.summary-total').text();
+        let summaryService = $('.summary-service').text();
+        let summaryTax = $('.summary-tax').text();
+        let allTotal = $(this).parents('.modal').find('.tab-pane.active .summary-price').text();
+        let summaryDelivery = $('.summary-delivery').text();
+        let summaryDiscount = $('.summary-discount').text();
+        let method_bay = $(this).parents('.modal').find('.tab-pane.active').attr('id');
+        let Price = $(this).parents('.modal').find('.tab-pane.active .price-value').val();
+        let Rest = $(this).parents('.modal').find('.tab-pane.active .price-rest').text();
+        let order = JSON.parse($(this).parents('.modal').attr('data')).order;
+        let serButton = $('#ser-check');
+        let myModal = $(this).parents('.modal')
+        let serVal = myModal.find('.tab-pane.active .input-ser').val();
+        let device = localStorage.getItem('device_number');
+        let table = JSON.parse($(this).parents('.modal').attr('data')).table;
+        let operation = $('#operation').attr('value');
+        let bank_value = $('.summary-bank').text();
+        let type_method = $('#operation').attr('value');
+
+        console.log(JSON.parse($(this).parents('.modal').attr('data')))
+
+        $.ajax({
+            url: "{{route('print.check')}}",
+            method: 'post',
+            enctype: "multipart/form-data",
+            data: {
+                _token: _token,
+                order: order,
+                bank_value: bank_value,
+                service: summaryService,
+                tax: summaryTax,
+                subtotal: summaryTotal,
+                discount: summaryDiscount,
+                total: allTotal,
+                method_bay: method_bay,
+                price: Price,
+                rest: Rest,
+                device: device,
+                table: table,
+                serviceratio: serVal,
+                Delivery: summaryDelivery,
+                operation: 'Table'
+            },
+            success: function(data) {
+                myModal.modal('hide')
+                $(".nav-hole a.active").click();
+            }
+        });
+    });
+    // ############################### End Print Check #############################
 </script>
 @include('includes.menu.reservation')
 @stop

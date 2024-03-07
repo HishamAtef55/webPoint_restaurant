@@ -285,12 +285,7 @@
 
                     html += `<div class="card-image">`;
                     if (data[count].image != 'not_found.jpg') {
-
-                        // html += '<img src="{{URL::asset('
-                        //     control / images / items ')}}/' + data[count].image + '" class="card-img-top">';
-
-                        html += `<img src="{{URL::asset('public/control/images/users/${data[count].image}')}}" class="card-img-top">`;
-
+                        html += `<img src="{{URL::asset('control/images/items/${data[count].image}')}}" class="card-img-top">`;
                     }
 
                     html += '</div>';

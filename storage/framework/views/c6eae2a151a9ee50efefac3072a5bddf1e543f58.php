@@ -285,13 +285,7 @@
 
                     html += `<div class="card-image">`;
                     if (data[count].image != 'not_found.jpg') {
-
-                        // html += '<img src="<?php echo e(URL::asset('
-                        //     control / images / items ')); ?>/' + data[count].image + '" class="card-img-top">';
-
-                        html += `<img src="<?php echo e(URL::asset('public/control/images/users/1662222949223.jpg')); ?>" class="card-img-top">`;
-                        console.log(`<?php echo e(URL::asset('')); ?>`)
-
+                        html += `<img src="<?php echo e(URL::asset('control/images/items/${data[count].image}')); ?>" class="card-img-top">`;
                     }
 
                     html += '</div>';
