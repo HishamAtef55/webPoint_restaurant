@@ -34,7 +34,7 @@ class SalesCurrentDayController extends Controller
         $res_name     = $system_data->name;
 
         $menu = menu::limit(1)->where(['branch_id'=>$branch , 'active'=>1])->first();
-        $group = Group::where(['branch_id'=>$branch , 'menu_id'=>$menu->id])->select(['name'])->get();
+        $group = Group::where(['branch_id'=>$branch])->select(['name'])->get();
 
         if($request->type == "cashier_report"){
             $orders = Orders_d::where(['branch_id'=>$branch , 'state'=>0])->get();
@@ -167,7 +167,7 @@ class SalesCurrentDayController extends Controller
 
         // Get Wait Order
         $menu = menu::limit(1)->where(['branch_id'=>$branch , 'active'=>1])->first();
-        $group_d = Group::with('Supgroups')->where(['branch_id'=>$branch , 'menu_id'=>$menu->id])->get();
+        $group_d = Group::with('Supgroups')->where(['branch_id'=>$branch])->get();
 
         foreach ($group_d as $gr){
             $count = 0;
