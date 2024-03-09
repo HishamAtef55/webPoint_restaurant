@@ -522,43 +522,44 @@ $(document).ready(function(){
                 data.groups.forEach((group) => {
                     group.supgroups.forEach((subgroup) => {
                         subgroup.items.forEach((item) => {
-                            if(item.active == "0"){
-                                colorBut = "btn-danger";
-                                statusBut = "Disable";
-                            }else{
-                                 colorBut = "btn-success";
-                                 statusBut = "Enable";
-                            }
-                            if(subgroup_check != 0){
-                                if(subgroup_check == subgroup.id){
-                                    html+=`<tr itemid="${item.id}">
-                                      <td>${count++}</td>
-                                      <td colspan="2"><input type="text" class="text-center form-control nameUpdate" value="${item.name}"></td>
-                                      <td><input type='text' class="text-center costPriceUpdate" value="${item.cost_price}"></td>
-                                      <td><input type='text' class="text-center priceUpdate" value="${item.price}"></td>
-                                      <td><input type='text' class="text-center updateDeliveryPrice" id="updateDeliveryPrice_${item.id}" value="${item.dellvery_price}"></td>
-                                      <td><input type='text' class="text-center updateTogoPrice" id="updateTogoPrice_${item.id}" value="${item.takeaway_price}"></td>
-                                      <td>
-                                            <button class="btn btn-primary updatePriceAll color_${item.id}" value="${item.id}">update</button>
-                                            <button class="btn ${colorBut} updateActiveAll active_${item.id}" value="${item.id}">${statusBut}</button>
-                                      </td>
-                                  </tr>`
+                            if(item.active == 1){
+                                if(item.active == "0"){
+                                    colorBut = "btn-danger";
+                                    statusBut = "Disable";
+                                }else{
+                                    colorBut = "btn-success";
+                                    statusBut = "Enable";
                                 }
-                            }else{
-                                html+=`<tr itemid="${item.id}">
-                                      <td>${count++}</td>
-                                      <td colspan="2"><input type="text" class="text-center nameUpdate" value="${item.name}"></td>
-                                      <td><input type='text' class="text-center costPriceUpdate" value="${item.cost_price}"></td>
-                                      <td><input type='text' class="text-center priceUpdate" value="${item.price}"></td>
-                                      <td><input type='text' class="text-center updateDeliveryPrice" id="updateDeliveryPrice_${item.id}" value="${item.dellvery_price}"></td>
-                                      <td><input type='text' class="text-center updateTogoPrice" id="updateTogoPrice_${item.id}" value="${item.takeaway_price}"></td>
-                                      <td>
-                                            <button class="btn btn-primary updatePriceAll color_${item.id}" value="${item.id}">update</button>
-                                            <button class="btn ${colorBut} updateActiveAll active_${item.id}" value="${item.id}">${statusBut}</button>
-                                      </td>
-                                  </tr>`
+                                if(subgroup_check != 0){
+                                    if(subgroup_check == subgroup.id){
+                                        html+=`<tr itemid="${item.id}">
+                                        <td>${count++}</td>
+                                        <td colspan="2"><input type="text" class="text-center form-control nameUpdate" value="${item.name}"></td>
+                                        <td><input type='text' class="text-center costPriceUpdate" value="${item.cost_price}"></td>
+                                        <td><input type='text' class="text-center priceUpdate" value="${item.price}"></td>
+                                        <td><input type='text' class="text-center updateDeliveryPrice" id="updateDeliveryPrice_${item.id}" value="${item.dellvery_price}"></td>
+                                        <td><input type='text' class="text-center updateTogoPrice" id="updateTogoPrice_${item.id}" value="${item.takeaway_price}"></td>
+                                        <td>
+                                                <button class="btn btn-primary updatePriceAll color_${item.id}" value="${item.id}">update</button>
+                                                <button class="btn ${colorBut} updateActiveAll active_${item.id}" value="${item.id}">${statusBut}</button>
+                                        </td>
+                                    </tr>`
+                                    }
+                                }else{
+                                    html+=`<tr itemid="${item.id}">
+                                        <td>${count++}</td>
+                                        <td colspan="2"><input type="text" class="text-center nameUpdate" value="${item.name}"></td>
+                                        <td><input type='text' class="text-center costPriceUpdate" value="${item.cost_price}"></td>
+                                        <td><input type='text' class="text-center priceUpdate" value="${item.price}"></td>
+                                        <td><input type='text' class="text-center updateDeliveryPrice" id="updateDeliveryPrice_${item.id}" value="${item.dellvery_price}"></td>
+                                        <td><input type='text' class="text-center updateTogoPrice" id="updateTogoPrice_${item.id}" value="${item.takeaway_price}"></td>
+                                        <td>
+                                                <button class="btn btn-primary updatePriceAll color_${item.id}" value="${item.id}">update</button>
+                                                <button class="btn ${colorBut} updateActiveAll active_${item.id}" value="${item.id}">${statusBut}</button>
+                                        </td>
+                                    </tr>`
+                                }
                             }
-
                         });
                     })
                 });
@@ -599,6 +600,135 @@ $(document).ready(function(){
             }
         });
     })
+
+    $(document).on('click','#update_itemsNotActive',function (e){
+        e.preventDefault();
+        let branch = $('#select_branch').val()
+        let group = $('#select_group').val()
+        let subgroup_check = $('#select_subgroup').val() | 0;
+        $(".label-model").text('');
+        $(".listofitem").html('');
+        if(branch == '') {
+            Swal.fire({
+                position: 'center-center',
+                icon: 'error',
+                title: 'Please Select Branch',
+                showConfirmButton: true,
+            });
+            return false
+        }
+        $.ajax({
+            url:"{{route('show_all_item')}}",
+            method:'post',
+            data: {
+                _token,
+                branch,
+                group,
+            },
+            success: function (data)
+            {
+                let html ='';
+                let label ='Update Price';
+                let count = 1;
+                let colorBut = "btn-success";
+                let statusBut = "Enable";
+                html+=`<div class="table-responsive" style=" margin-bottom: 0;"><table class="table items-table">
+                          <thead>
+                            <tr>
+                              <th class="text-center" scope="col">#</th>
+                              <th colspan="2" class="text-center" scope="col">name</th>
+                              <th class="text-center" scope="col">cost price</th>
+                              <th class="text-center" scope="col">price</th>
+                              <th class="text-center" scope="col">delivery price</th>
+                              <th class="text-center" scope="col">togo price</th>
+                              <th class="text-center" scope="col">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>`;
+
+                data.groups.forEach((group) => {
+                    group.supgroups.forEach((subgroup) => {
+                        subgroup.items.forEach((item) => {
+                            if(item.active == 0){
+                                if(item.active == "0"){
+                                    colorBut = "btn-danger";
+                                    statusBut = "Disable";
+                                }else{
+                                    colorBut = "btn-success";
+                                    statusBut = "Enable";
+                                }
+                                if(subgroup_check != 0){
+                                    if(subgroup_check == subgroup.id){
+                                        html+=`<tr itemid="${item.id}">
+                                        <td>${count++}</td>
+                                        <td colspan="2"><input type="text" class="text-center form-control nameUpdate" value="${item.name}"></td>
+                                        <td><input type='text' class="text-center costPriceUpdate" value="${item.cost_price}"></td>
+                                        <td><input type='text' class="text-center priceUpdate" value="${item.price}"></td>
+                                        <td><input type='text' class="text-center updateDeliveryPrice" id="updateDeliveryPrice_${item.id}" value="${item.dellvery_price}"></td>
+                                        <td><input type='text' class="text-center updateTogoPrice" id="updateTogoPrice_${item.id}" value="${item.takeaway_price}"></td>
+                                        <td>
+                                                <button class="btn btn-primary updatePriceAll color_${item.id}" value="${item.id}">update</button>
+                                                <button class="btn ${colorBut} updateActiveAll active_${item.id}" value="${item.id}">${statusBut}</button>
+                                        </td>
+                                    </tr>`
+                                    }
+                                }else{
+                                    html+=`<tr itemid="${item.id}">
+                                        <td>${count++}</td>
+                                        <td colspan="2"><input type="text" class="text-center nameUpdate" value="${item.name}"></td>
+                                        <td><input type='text' class="text-center costPriceUpdate" value="${item.cost_price}"></td>
+                                        <td><input type='text' class="text-center priceUpdate" value="${item.price}"></td>
+                                        <td><input type='text' class="text-center updateDeliveryPrice" id="updateDeliveryPrice_${item.id}" value="${item.dellvery_price}"></td>
+                                        <td><input type='text' class="text-center updateTogoPrice" id="updateTogoPrice_${item.id}" value="${item.takeaway_price}"></td>
+                                        <td>
+                                                <button class="btn btn-primary updatePriceAll color_${item.id}" value="${item.id}">update</button>
+                                                <button class="btn ${colorBut} updateActiveAll active_${item.id}" value="${item.id}">${statusBut}</button>
+                                        </td>
+                                    </tr>`
+                                }
+                            }
+                        });
+                    })
+                });
+
+                html +=`</tbody>
+                          </table></div>`;
+                $(".label-model").text(label);
+                $(".listofitem").html(html);
+                $('#staticBackdrop').modal('show')
+                $('.items-table').DataTable({
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy',
+                        'csv',
+                        'excel',
+                        {
+                            extend: 'pdfHtml5',
+                            download: 'open',
+                            orientation: 'landscape',
+                            pageSize: 'A4',
+                            customize: function (doc) {
+                                doc.defaultStyle.font = 'Cairo';
+                                doc.styles.tableBodyEven.alignment = "center";
+                                doc.styles.tableBodyOdd.alignment = "center";
+                                doc.styles.tableBodyEven.lineHeight = "1.5";
+                                doc.styles.tableBodyOdd.lineHeight = "1.5";
+                                doc.styles.tableFooter.alignment = "center";
+                                doc.styles.tableHeader.alignment = "center";
+                            }
+                        },
+                        {
+                            extend: 'print',
+                            orientation: 'landscape',
+                        },
+                        'pageLength',
+                    ]
+                });
+            }
+        });
+    })
+
+
     $(document).on('click','.updatePriceAll',function (e){
         e.preventDefault();
         let currentRow=$(this).closest("tr");

@@ -432,6 +432,7 @@ class ItemController extends Controller
         $items = Item::whereDoesntHave('Printer')->get();
         return response()->json(['items'=>$items]);
     }
+
     public function show_all_item(Request $request){
         if(isset($request->group)){
             $groups = Group::with(['Supgroups','Supgroups.items'])->where(['branch_id'=>$request->branch,'id'=>$request->group])->get();
