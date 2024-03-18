@@ -1365,4 +1365,27 @@ Trait All_Functions
           $order->save();
       }
     }
+    public function fixDuplicate(){
+        $order = '';
+        $waitOrder = '';
+        $orders = Orders_m::where(['d_order'=>"2024-03-15"])->orderBy('order_id','asc')->get();
+        foreach($orders as $orderRow){
+            if(Orders_m::where(['order_id'=>$orderRow->order_id])->count() > 1){
+                $waitOrders = Wait_order_m::with('Extra','Details')->where(['order_id'=>$orderRow->order_id])->orderBy('sub_num_order','asc')->get();
+                foreach($waitOrders as $waitRow){
+                    if(Wait_order_m::where(['order_id'=>$waitRow->order_id,'sub_num_order'=>$waitRow->sub_num_order , 'item_id'=>$waitRow->item_id])->count() > 1){
+                        if($waitRow->extra){
+                            Extra_wait_order_m::where(['wait_order_id'=>$waitRow->id])->delete();
+                        }
+                        if($waitRow->details){
+                            Details_Wait_Order_m::where(['wait_order_id'=>$waitRow->id])->delete();
+                        }
+                        $waitRow->delete();
+                    }
+                }
+                $orderRow->delete();
+            }
+        }
+        return "success";
+    }
 }
