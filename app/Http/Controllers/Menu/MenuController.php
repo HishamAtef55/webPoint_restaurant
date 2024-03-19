@@ -72,7 +72,7 @@ class MenuController extends Controller
     }
     public function view_table()
     {
-        $this->fixDuplicate();
+        //$this->fixDuplicate();
         $this->checkTable();
         $this->CheckDay();
         $this->CheckLastOrder();
