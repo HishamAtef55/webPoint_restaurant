@@ -87,7 +87,7 @@ class ItemController extends Controller
         $barcode = explode('+', $request->barcode);
         $file = 'not_found.jpg';
         if ($request->image != null) {
-            $file = $this->saveimage($request->image, 'control/images/items');
+            $file = $this->saveimage($request->image, 'public/control/images/items');
         }
         if ($request->extra == "on") {
             $data = extra::create
@@ -214,7 +214,7 @@ class ItemController extends Controller
         //update Item
         $data = '';
         if($request->image != null){
-            $file = $this->saveimage($request->image,'control/images/items');
+            $file = $this->saveimage($request->image,'public/control/images/items');
             $data = Item::limit(1)->where('id',$request->id)->update
             ([
                 'name'                  =>$request->name,
@@ -432,6 +432,7 @@ class ItemController extends Controller
         $items = Item::whereDoesntHave('Printer')->get();
         return response()->json(['items'=>$items]);
     }
+
     public function show_all_item(Request $request){
         if(isset($request->group)){
             $groups = Group::with(['Supgroups','Supgroups.items'])->where(['branch_id'=>$request->branch,'id'=>$request->group])->get();

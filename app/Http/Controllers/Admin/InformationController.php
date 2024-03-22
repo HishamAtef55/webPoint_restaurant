@@ -28,10 +28,10 @@ class InformationController extends Controller
         $slogan = '';
 
         if($request->image != null){
-            $image = $this->saveimage($request->image, 'control/images/information');
+            $image = $this->saveimage($request->image, 'public/control/images/information');
         }
         if($request->slogan != null){
-            $slogan = $this->saveimage($request->slogan, 'control/images/information');
+            $slogan = $this->saveimage($request->slogan, 'public/control/images/information');
         }
         if(Informations_System::limit(1)->where(['branch_id'=>$request->branch])->count() > 0){
             return response()->json([
@@ -71,14 +71,14 @@ class InformationController extends Controller
         $image  = null;
         $slogan = null;
         if ($request->image != null) {
-            $image = $this->saveimage($request->image, 'control/images/information');
+            $image = $this->saveimage($request->image, 'public/control/images/information');
         }else{
             $data = Informations_System::limit(1)->where(['branch_id'=>$request->branch])->select(['image'])->first();
             $image = $data->image;
         }
 
         if ($request->slogan != null) {
-            $slogan = $this->saveimage($request->slogan, 'control/images/information');
+            $slogan = $this->saveimage($request->slogan, 'public/control/images/information');
         }else{
             $data = Informations_System::limit(1)->where(['branch_id'=>$request->branch])->select(['slogan'])->first();
             $slogan = $data->slogan;

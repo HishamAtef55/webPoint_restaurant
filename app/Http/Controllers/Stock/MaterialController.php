@@ -13,6 +13,19 @@ use App\Models\stocksection;
 use App\Models\storeCost;
 use App\Models\Stores;
 use App\Models\Units;
+use App\Models\backToStoreDetails;
+use App\Models\backToSuppliersDetails;
+use App\Models\stockOrdersDetails;
+use App\Models\exchangeDetails;
+use App\Models\halkDetails;
+use App\Models\storePurchasesDetails;
+use App\Models\sectionPurchasesDetails;
+use App\Models\transfersDetails;
+use App\Models\ComponentsItems;
+use App\Models\detailsComponent;
+use App\Models\manufacturingDetails;
+use App\Models\operationsDetails;
+
 use http\Env\Response;
 use App\Http\Requests\MaterialRequest;
 use App\Http\Requests\UpdateMaterialRequest;
@@ -164,6 +177,19 @@ class MaterialController extends Controller
             }
             if($insert){
                 $materials = material::with('group')->orderBy('id','DESC')->get();
+                backToStoreDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);
+                backToSuppliersDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);
+                stockOrdersDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);
+                exchangeDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);
+                halkDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);
+                storePurchasesDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);   
+                sectionPurchasesDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);   
+                transfersDetails::where(['code'=>$request->materialId])->update(['name'=>$request->materialName]);   
+                ComponentsItems::where(['material_id'=>$request->materialId])->update(['material_name'=>$request->materialName]);
+                detailsComponent::where(['material_id'=>$request->materialId])->update(['material_name'=>$request->materialName]);
+                manufacturingDetails::where(['code'=>$request->materialId])->update(['material'=>$request->materialName]);
+                operationsDetails::where(['code'=>$request->materialId])->update(['material'=>$request->materialName]);
+
                 return response()->json(['status'=>'true','msg'=>'تم تعديل الخامة بنجاح','materials'=>$materials]);
             }
         }

@@ -250,6 +250,8 @@ $title = 'Items';
                 <button id="item_without" type="button" class="btn-block btn btn-secondary mt-4" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Item Without Printers</button>
                 <button id="show_items" type="button" class="btn-block btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Show Items</button>
                 <button id="update_items_price" type="button" class="btn-block btn btn-info" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Update Price</button>
+                <button id="update_itemsNotActive" type="button" class="btn-block btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Items Not Active</button>
+
             </div>
         </form>
     </div>
