@@ -198,7 +198,7 @@
                 success: function(data) {
                     $('#pills-tabContent').hide();
                     $('#pills-tab').find('.nav-item').remove();
-                    $('#subgroupnew').remove();
+                    $('#subgroupnew ul').empty();
                     let html = '';
                     for (let count = 0; count < data.length; count++) {
                         html += '<li class="nav-item" role="presentation">';

@@ -643,9 +643,22 @@ $title = 'Tabels';
                                 <div class="w-100 d-flex">
                                     <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("to order")): ?>
                                     <a href="<?php echo e(url('menu/New_Order/Table-${tableNumber}')); ?>" class='flex-grow-1'> To Order </a>
-                                    <?php endif; ?>
-                                    <button class="btn btn-info flex-grow-1" type="button" id="printcheck_info">Print</button>
-                                </div>
+                                    <?php endif; ?>`;
+
+                                    if(data[count].printcheck >= 1){
+                                        html +=`    
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check more than once")): ?>
+                                            <button class="btn btn-info flex-grow-1" type="button" id="printcheck_info">Print</button>
+                                            <?php endif; ?>
+                                        </div>`; 
+                                    }else{
+                                        html +=`    
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check")): ?>
+                                            <button class="btn btn-info flex-grow-1" type="button" id="printcheck_info">Print</button>
+                                            <?php endif; ?>
+                                        </div>`; 
+                                    }  
+                    html +=`
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("reservation")): ?>
                                 <div class='w-50  reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
                                     <span>Reservation</span>
