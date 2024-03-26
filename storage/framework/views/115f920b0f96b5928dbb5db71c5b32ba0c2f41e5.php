@@ -650,7 +650,7 @@ $title = 'Tabels';
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("reservation")): ?>
                                 <div class='reserve-btn flex-grow-1 d-flex flex-column align-items-center' data-toggle="modal" data-target="#Reservation_modal">
                                     <span><i class="fas fa-hand-holding-usd fa-fw fa-lg"></i></span>
-                                    <span> Res </span>
+                                    <span> Reserve </span>
                                 </div>
                                 <?php endif; ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("transfer")): ?>
