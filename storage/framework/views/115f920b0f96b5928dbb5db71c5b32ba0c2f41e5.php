@@ -663,7 +663,7 @@ $title = 'Tabels';
                         html += `
                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check more than once")): ?>
                             <button class="btn reserve-btn flex-grow-1 rounded-0 d-flex  flex-column align-items-center" type="button" id="printcheck_info">
-                                <i class="fas fa-print fa-fw fa-lg"></i>
+                                <span><i class="fas fa-print fa-fw fa-lg"></i></span>
                                 <span>Print</span>
                             </button>
                             <?php endif; ?>
@@ -672,7 +672,7 @@ $title = 'Tabels';
                         html += `
                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check")): ?>
                             <button class="btn reserve-btn  flex-grow-1 rounded-0 d-flex  flex-column align-items-center" type="button" id="printcheck_info">
-                                <i class="fas fa-print fa-fw fa-lg"></i>
+                            <span><i class="fas fa-print fa-fw fa-lg"></i></span>
                                 <span>Print</span>
                             </button>
                             <?php endif; ?>
