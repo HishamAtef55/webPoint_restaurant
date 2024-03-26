@@ -15,7 +15,7 @@ $title = 'Tabels';
 <?php endif; ?>
 
 <section class='tables'>
-    <audio src="<?php echo e(asset('menu/sound/notification.mp3')); ?>" loop=""  id="noti_sound"></audio>
+    <audio src="<?php echo e(asset('menu/sound/notification.mp3')); ?>" loop="" id="noti_sound"></audio>
     <?php if(session()->has('data_back')): ?>
     <script>
         $(document).ready(function() {
@@ -28,32 +28,30 @@ $title = 'Tabels';
     </script>
     <?php endif; ?>
     <?php if(isset($transfers)): ?>
-        <?php if($transfers->count() > 0): ?>
-            <script>
+    <?php if($transfers->count() > 0): ?>
+    <script>
+        $(document).ready(function() {
 
-                $(document).ready(function() {
-
-                    $('#noti_sound').get(0).play();
-                    Swal.fire({
-                        title: 'Transfer',
-                        text: "You Have Transfer For New Table ",
-                        backdrop: false,
-                        icon: 'info',
-                        showCancelButton: false,
-                        confirmButtonColor: '#3085d6',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $('#noti_sound').get(0).pause();
-                        }
-                    })
-                });
-            </script>
-        <?php endif; ?>
+            $('#noti_sound').get(0).play();
+            Swal.fire({
+                title: 'Transfer',
+                text: "You Have Transfer For New Table ",
+                backdrop: false,
+                icon: 'info',
+                showCancelButton: false,
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#noti_sound').get(0).pause();
+                }
+            })
+        });
+    </script>
+    <?php endif; ?>
     <?php endif; ?>
     <!-- Table Merge Modal -->
-    <div class="modal fade table-merge-modal" id="table-merge-modal" tabindex="-1" role="dialog"
-        aria-labelledby="tableMergeModal" aria-hidden="true">
+    <div class="modal fade table-merge-modal" id="table-merge-modal" tabindex="-1" role="dialog" aria-labelledby="tableMergeModal" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -72,8 +70,7 @@ $title = 'Tabels';
     </div>
 
     <!-- Table transfer Modal -->
-    <div class="modal fade table-transfer-modal" id="transfer_modal" tabindex="-1" role="dialog"
-        aria-labelledby="tableMergeModal" aria-hidden="true">
+    <div class="modal fade table-transfer-modal" id="transfer_modal" tabindex="-1" role="dialog" aria-labelledby="tableMergeModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -123,7 +120,7 @@ $title = 'Tabels';
     </div>
 
     <!-- Reservation Modal -->
-    <div class="modal fade Reservation_modal" id="Reservation_modal" tabindex="-1"  aria-hidden="true">
+    <div class="modal fade Reservation_modal" id="Reservation_modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -134,68 +131,68 @@ $title = 'Tabels';
                 </div>
                 <form id="form_save_reservation" action=" " method="POST" multiple enctype="multipart/form-data">
                     <?php echo csrf_field(); ?>
-                <div class="modal-body">
+                    <div class="modal-body">
 
-                    <nav>
-                        <div class="nav nav-tabs" role="tablist">
-                            <a class="nav-item nav-link active" id="Reserving-tab" data-toggle="tab" href="#Reserving" role="tab" aria-controls="Reserving" aria-selected="true">Reserving</a>
-                            <a class="nav-item nav-link" id="Reservation-tab" data-toggle="tab" href="#Reserved" role="tab" aria-controls="Reserved" aria-selected="false">Reserved</a>
-                        </div>
-                    </nav>
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active px-3 py-2" id="Reserving" role="tabpanel" aria-labelledby="Reserving-tab">
-                            <div class="form-group">
-                                <label for="userName-input">Name</label>
-                                <input type="text" class="form-control use-keyboard-input" id="userName-input" name="userName">
-                                <input type="hidden" name="table_id">
+                        <nav>
+                            <div class="nav nav-tabs" role="tablist">
+                                <a class="nav-item nav-link active" id="Reserving-tab" data-toggle="tab" href="#Reserving" role="tab" aria-controls="Reserving" aria-selected="true">Reserving</a>
+                                <a class="nav-item nav-link" id="Reservation-tab" data-toggle="tab" href="#Reserved" role="tab" aria-controls="Reserved" aria-selected="false">Reserved</a>
                             </div>
-                            <div class="form-group">
-                                <label for="phoneNumber-input">Phone</label>
-                                <input type="number" class="form-control use-keyboard-input" id="phoneNumber-input" name="phone_number">
-                            </div>
-                            <div class="form-group">
-                                <label for="cash-input">Cash</label>
-                                <input type="number" class="form-control use-keyboard-input" id="cash-input" name="cash">
-                            </div>
-                            <div class="form-group">
-                                <label for="date-input">Date</label>
-                                <input type="date" class="form-control" id="date-input" dataformatas="dd/mm/yyyy" name="date" value="<?php echo date('Y-m-d'); ?>">
-                            </div>
-                            <div class="d-flex">
-                                <div class="form-group flex-grow-1 mr-3">
-                                    <label for="time-input">From</label>
-                                    <input type="time" class="form-control" id="time-input" name="time_from" value="<?php echo date('H:i'); ?>">
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active px-3 py-2" id="Reserving" role="tabpanel" aria-labelledby="Reserving-tab">
+                                <div class="form-group">
+                                    <label for="userName-input">Name</label>
+                                    <input type="text" class="form-control use-keyboard-input" id="userName-input" name="userName">
+                                    <input type="hidden" name="table_id">
                                 </div>
-                                <div class="form-group flex-grow-1">
-                                    <label for="time-input">To</label>
-                                    <input type="time" class="form-control" id="time-input_to" name="time_to">
+                                <div class="form-group">
+                                    <label for="phoneNumber-input">Phone</label>
+                                    <input type="number" class="form-control use-keyboard-input" id="phoneNumber-input" name="phone_number">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cash-input">Cash</label>
+                                    <input type="number" class="form-control use-keyboard-input" id="cash-input" name="cash">
+                                </div>
+                                <div class="form-group">
+                                    <label for="date-input">Date</label>
+                                    <input type="date" class="form-control" id="date-input" dataformatas="dd/mm/yyyy" name="date" value="<?php echo date('Y-m-d'); ?>">
+                                </div>
+                                <div class="d-flex">
+                                    <div class="form-group flex-grow-1 mr-3">
+                                        <label for="time-input">From</label>
+                                        <input type="time" class="form-control" id="time-input" name="time_from" value="<?php echo date('H:i'); ?>">
+                                    </div>
+                                    <div class="form-group flex-grow-1">
+                                        <label for="time-input">To</label>
+                                        <input type="time" class="form-control" id="time-input_to" name="time_to">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade px-3 py-2" id="Reserved" role="tabpanel" aria-labelledby="Reservation-tab">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <th>Name</th>
+                                            <th>Phone</th>
+                                            <th>Cash</th>
+                                            <th>Date</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th></th>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade px-3 py-2" id="Reserved" role="tabpanel" aria-labelledby="Reservation-tab">
-                            <div class="table-responsive">
-                                <table class="table">
-                                    <thead>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th>Cash</th>
-                                        <th>Date</th>
-                                        <th>From</th>
-                                        <th>To</th>
-                                        <th></th>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
+
+
                     </div>
-
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success" id="reservation_table">Save</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="reservation_table">Save</button>
+                    </div>
                 </form>
             </div>
 
@@ -226,31 +223,200 @@ $title = 'Tabels';
         </div>
     </div>
 
+    <!-- Pay & Print Modal -->
+    <div class="modal fade pay-modal" id="pay-model" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered " role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">PAY</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <?php echo csrf_field(); ?>
+                    <section class='check-out'>
+                        <div class='container'>
+                            <div class='row'>
+                                <div class="col-lg-4 col-md-5 col-6">
+                                    <div class='summary'>
+                                        <h2>Order Summary</h2>
+                                        <ul class="list-unstyled">
+
+                                            <li class='last-item'>
+                                                <div>
+                                                    <span>Items</span>
+                                                    <span class="items-quant"></span>
+                                                </div>
+                                                <div class='total'>
+                                                    <span>Sub Total</span>
+                                                    <span class="summary-total"></span>
+                                                </div>
+                                                <div class='service'>
+                                                    <span>Service</span>
+                                                    <span class="summary-service"></span>
+                                                </div>
+                                                <div class='tax'>
+                                                    <span>Tax</span>
+                                                    <span class="summary-tax"></span>
+                                                </div>
+                                                <div class='bank'>
+                                                    <span>Bank Value</span>
+                                                    <span class="summary-bank">0.00</span>
+                                                </div>
+                                                <div class='min-charge'>
+                                                    <span>Min-Charge</span>
+                                                    <span class="summary-mincharge"></span>
+                                                </div>
+                                                <div class='discount'>
+                                                    <span>Discount</span>
+                                                    <span class="summary-discount"></span>
+                                                </div>
+                                                <div class='total'>
+                                                    <span>Total</span>
+                                                    <span class="all-total"></span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class='col-lg-8 col-md-7 col-6'>
+                                    <div class="checkout">
+                                        <ul class="nav nav-pills  justify-content-center align-items-center" id="pay-tab" role="tablist">
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("cash")): ?>
+                                            <li class="nav-item" role="presentation">
+
+                                                <a class="nav-link active" id="cash-tab" data-toggle="pill" href="#cash" role="tab" aria-controls="cash" aria-selected="true">
+
+                                                    <i class="fas fa-money-bill-wave"></i>
+
+                                                    <span>Cash</span>
+
+                                                </a>
+
+                                            </li>
+                                            <?php endif; ?>
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("credit")): ?>
+                                            <li class="nav-item" role="presentation">
+
+                                                <a class="nav-link" id="credit-tab" data-toggle="pill" href="#credit" role="tab" aria-controls="credit" aria-selected="false">
+
+                                                    <i class="far fa-credit-card"></i>
+
+                                                    <span>Credit</span>
+
+                                                </a>
+
+                                            </li>
+                                            <?php endif; ?>
+                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("hospatility")): ?>
+                                            <li class="nav-item" role="presentation">
+
+                                                <a class="nav-link" id="hospitality-tab" data-toggle="pill" href="#hospitality" role="tab" aria-controls="hospitality" aria-selected="false">
+
+                                                    <i class="fas fa-hotel"></i>
+
+                                                    <span>Hospitality</span>
+
+                                                </a>
+
+                                            </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                        <div class="tab-content" id="pills-tabContent">
+
+                                            <div class="tab-pane fade show active pay-method" id="cash" role="tabpanel" aria-labelledby="cash-tab">
+                                                <div class="cash-content">
+                                                    <div>
+                                                        <span class='text-white'>Remainder</span>
+                                                        <h2 class='price summary-price' id='cash-total-price'></h2>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="cash-price" class='text-white'>Cash</label>
+                                                        <input type="number" min="0" class="form-control price-value" id="cash-price">
+                                                    </div>
+                                                    <div>
+                                                        <span class='text-white'>Rest</span>
+                                                        <h3 class='price-rest'>0.00</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="cash-services" class='text-white'>Services</label>
+                                                    <input type="number" min="0" class="form-control input-ser" id="cash-services">
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade pay-method" id="credit" role="tabpanel" aria-labelledby="credit-tab">
+                                                <div class="cash-content">
+                                                    <div>
+                                                        <span class='text-white'>Remainder</span>
+                                                        <h2 class='price summary-price' id="credit-total-price"></h2>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="visa-price" class='text-white'>Visa</label>
+                                                        <input type="number" min="0" class="form-control price-value" id="visa-price">
+                                                    </div>
+                                                    <div>
+                                                        <span class='text-white'>Rest</span>
+                                                        <h3 class='price-rest'>0.00</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="bank-ratio" class='text-white'>bank ratio</label>
+                                                    <input type="number" min="0" class="form-control" id="bank-ratio" data-bank="" disabled>
+                                                </div>
+                                                <div class="form-group mt-3">
+                                                    <label for="visa-services" class='text-white'>Services</label>
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("change service")): ?>
+                                                    <input type="number" min="0" class="form-control input-ser" id="visa-services">
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="hospitality" role="tabpanel" aria-labelledby="hospitality-tab">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-between">
+                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check")): ?>
+                    <button class="btn btn-info" type="button" id="printcheck">Print</button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class='tabs table-tabs'>
         <ul class="nav nav-tabs nav-hole" id="holes" role="tablist">
             <?php echo csrf_field(); ?>
             <?php $__currentLoopData = $holes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hole): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check($hole->name . '-hole')): ?>
-                <?php if($hole->name == "Other"): ?>
-                    <li class="nav-item" style="order: 100">
-                        <a hole="<?php echo e($hole->number_holes); ?>" class="nav-link" data-toggle="tab" href="#hole<?php echo e($hole->number_holes); ?>"
-                           role="tab" aria-controls="first" aria-selected="true"><?php echo e($hole->name); ?></a>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                        <a hole="<?php echo e($hole->number_holes); ?>" class="nav-link" data-toggle="tab" href="#hole<?php echo e($hole->number_holes); ?>"
-                           role="tab" aria-controls="first" aria-selected="true"><?php echo e($hole->name); ?></a>
-                    </li>
-                <?php endif; ?>
+            <?php if($hole->name == "Other"): ?>
+            <li class="nav-item" style="order: 100">
+                <a hole="<?php echo e($hole->number_holes); ?>" class="nav-link" data-toggle="tab" href="#hole<?php echo e($hole->number_holes); ?>" role="tab" aria-controls="first" aria-selected="true"><?php echo e($hole->name); ?></a>
+            </li>
+            <?php else: ?>
+            <li class="nav-item">
+                <a hole="<?php echo e($hole->number_holes); ?>" class="nav-link" data-toggle="tab" href="#hole<?php echo e($hole->number_holes); ?>" role="tab" aria-controls="first" aria-selected="true"><?php echo e($hole->name); ?></a>
+            </li>
+            <?php endif; ?>
             <?php endif; ?>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
 
         <div class="tab-content p-5 text-center" id="holesContent">
             <?php $__currentLoopData = $holes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $hole): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <div class="tab-pane fade" id="hole<?php echo e($hole->number_holes); ?>" role="tabpanel" aria-labelledby="first-tab"
-                data-hole='hole<?php echo e($hole->number_holes); ?>'>
+            <div class="tab-pane fade" id="hole<?php echo e($hole->number_holes); ?>" role="tabpanel" aria-labelledby="first-tab" data-hole='hole<?php echo e($hole->number_holes); ?>'>
             </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
@@ -263,6 +429,7 @@ $title = 'Tabels';
 
 <script type='module'>
     let _token = $('input[name="_token"]').val();
+
     function formatDate(date) {
         var d = new Date(date),
             month = '' + (d.getMonth() + 1),
@@ -277,7 +444,7 @@ $title = 'Tabels';
         return [year, month, day].join('-');
     }
     // ################################# Start search holes ###################
-    $(".nav-hole a").click(function (e) {
+    $(".nav-hole a").click(function(e) {
         e.preventDefault();
         $('#holesContent').find('.tab-pane').each(function() {
             $(this).html('')
@@ -294,18 +461,17 @@ $title = 'Tabels';
                 _token: _token,
                 hole_num: hole_num
             },
-            success: function (data) {
+            success: function(data) {
                 let html = '';
                 for (var count = 0; count < data.length; count++) {
                     let num_res = 0;
-                    let today   = 0;
-                    let res     = 0;
+                    let today = 0;
+                    let res = 0;
                     for (var i = 0; i < data[count].reservation.length; i++) {
                         let today = new Date().toLocaleString().slice(0, 10)
-                        let res   = data[count].reservation[i].date;
+                        let res = data[count].reservation[i].date;
                         if (formatDate(today) == res) {
-                            if(data[count].reservation[i].status == 0)
-                            {
+                            if (data[count].reservation[i].status == 0) {
                                 num_res = num_res + 1
                             }
                         }
@@ -341,7 +507,7 @@ $title = 'Tabels';
                     // else if(data[count].user_id == null || data[count].user_id == 0){
                     //     table_user = 'empty';
                     // }
-                    if(data[count].user_id != 0) {
+                    if (data[count].user_id != 0) {
                         if (data[count].user_id != user) {
                             if (table_user == "false") {
                                 class_user = "other-user"
@@ -373,9 +539,11 @@ $title = 'Tabels';
                     html += `<div class='table-properties'>`
                     html += `<span class="table-status"></span>`
                     html += `<span class="merge-table ${followed}" follow="${follow}" data-toggle="modal" data-target="#table-merge-modal"></span>`
-                    if(num_res > 0) {html += `<span class="reservation-time" test='${num_res}'></span>`}
-                    if(data[count].main_hole.name === "Other") {
-                        if(data[count].state == 0){
+                    if (num_res > 0) {
+                        html += `<span class="reservation-time" test='${num_res}'></span>`
+                    }
+                    if (data[count].main_hole.name === "Other") {
+                        if (data[count].state == 0) {
                             html += `<span class="delete-table" branch="${data[count].branch_id}" hole="${data[count].main_hole.number_holes}"></span>`
                         }
                     }
@@ -422,26 +590,25 @@ $title = 'Tabels';
                     html += `</div>`
 
                     html += `<div class='resrvation-menu'>`
-                        html += `<ul class="list-unstyled resLength">`
-                            for (var x = 0; x < data[count].reservation.length; x++) {
-                                let today = new Date().toLocaleString().slice(0, 10);
-                                let res   = data[count].reservation[x].date;
+                    html += `<ul class="list-unstyled resLength">`
+                    for (var x = 0; x < data[count].reservation.length; x++) {
+                        let today = new Date().toLocaleString().slice(0, 10);
+                        let res = data[count].reservation[x].date;
 
-                                if(formatDate(today) == res){
+                        if (formatDate(today) == res) {
 
-                                    if(data[count].reservation[x].status == 0)
-                                    {
-                                        html += `<li class='reserved-item' resId="${data[count].reservation[x].phone}${data[count].reservation[x].time_from}" data-toggle="modal" data-target="#Reservation_modal">`
-                                        html += `<span> <i class="fas fa-user-clock"></i> ${data[count].reservation[x].customer} </span>`
-                                        html += `<span> <i class="fas fa-phone-alt"></i> ${data[count].reservation[x].phone}</span>`
-                                        html += `<span> <i class="far fa-clock"></i> ${data[count].reservation[x].time_from}</span>`
-                                        html += `<span> <i class="fas fa-money-bill-wave"></i> ${data[count].reservation[x].cash}</span>`
-                                        html += `</li>`;
-                                    }
-                                }
+                            if (data[count].reservation[x].status == 0) {
+                                html += `<li class='reserved-item' resId="${data[count].reservation[x].phone}${data[count].reservation[x].time_from}" data-toggle="modal" data-target="#Reservation_modal">`
+                                html += `<span> <i class="fas fa-user-clock"></i> ${data[count].reservation[x].customer} </span>`
+                                html += `<span> <i class="fas fa-phone-alt"></i> ${data[count].reservation[x].phone}</span>`
+                                html += `<span> <i class="far fa-clock"></i> ${data[count].reservation[x].time_from}</span>`
+                                html += `<span> <i class="fas fa-money-bill-wave"></i> ${data[count].reservation[x].cash}</span>`
+                                html += `</li>`;
                             }
+                        }
+                    }
 
-                        html += `</ul> `;
+                    html += `</ul> `;
 
                     html += `</div>`
                     html += `<div class='table-info' order=''>`
@@ -452,8 +619,7 @@ $title = 'Tabels';
                                 <p id="captaintable${tableNumber}"></p>
                             </div>`
                     let num_gest = 'Null';
-                    if(data[count].guest > 0 )
-                    {
+                    if (data[count].guest > 0) {
                         num_gest = data[count].guest
                     }
                     html += `<div>
@@ -474,22 +640,38 @@ $title = 'Tabels';
                                 </div>`
                     html += `</div>`
                     html += `<div class="info-footer d-flex flex-wrap">
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("to order")): ?>
-                                <a href="<?php echo e(url('menu/New_Order/Table-${tableNumber}')); ?>" class='w-100'> To Order </a>
-                                <?php endif; ?>
+                                <div class="w-100 d-flex flex-column">
+                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("to order")): ?>
+                                    <a href="<?php echo e(url('menu/New_Order/Table-${tableNumber}')); ?>" class='flex-grow-1 d-block'> To Order </a>
+                                    <?php endif; ?>`;
+
+
+                    html += `<div class="d-flex w-100">
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("reservation")): ?>
-                                <div class='w-50  reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
-                                    <span>Reservation</span>
+                                <div class='reserve-btn flex-grow-1' data-toggle="modal" data-target="#Reservation_modal">
+                                    <span><i class="fas fa-hand-holding-usd fa-fw fa-lg"></i></span>
                                 </div>
                                 <?php endif; ?>
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("transfer")): ?>
-                                <div class='w-50  transfer-btn' data-toggle="modal" data-target="#transfer_modal">
-                                    <span>Transfarer</span>
+                                <div class='reserve-btn flex-grow-1' data-toggle="modal" data-target="#transfer_modal">
+                                    <span><i class="fas fa-exchange-alt fa-fw fa-lg"></i></span>
                                 </div>
-                                <?php endif; ?>
-                            </div>`
-                    html += `</div>`
-                    html += '</div>';
+                                <?php endif; ?>`;
+                    if (data[count].printcheck >= 1) {
+                        html += `
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check more than once")): ?>
+                            <button class="btn reserve-btn flex-grow-1 rounded-0" type="button" id="printcheck_info"><i class="fas fa-print fa-fw fa-lg"></i></button>
+                            <?php endif; ?>
+                        </div>`;
+                    } else {
+                        html += `
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check("print check")): ?>
+                            <button class="btn reserve-btn  flex-grow-1 rounded-0" type="button" id="printcheck_info"><i class="fas fa-print fa-fw fa-lg"></i></button>
+                            <?php endif; ?>
+                        </div>`;
+                    }
+                    html += `</div>
+                            </div></div></div>`;
                 }
                 if (holeName === 'Other') {
                     html += `<div style="width:150px;height:150px" class="table add-table" data-toggle="modal" data-target="#add_other_modal"></div>`
@@ -513,16 +695,16 @@ $title = 'Tabels';
             url: "<?php echo e(route('add.new.table')); ?>",
             method: 'post',
             enctype: "multipart/form-data",
-            data:{
+            data: {
                 _token,
                 branch_id,
                 tableName,
                 type,
                 hole
             },
-            success: function (data) {
+            success: function(data) {
                 if (data.status == 'true') {
-                    if(tableName.trim() !== '') {
+                    if (tableName.trim() !== '') {
                         let table = tableName.replace(' ', '-')
                         html +=
                             `<div colorcheck="0" state="0" booked="0" follow="0" style="width:150px;height:150px;background-image: url(<?php echo e(asset('global/image/logo-small.png')); ?>)" hole="${hole}" number_of_tables = "${table}" class="table other-table">`;
@@ -621,11 +803,11 @@ $title = 'Tabels';
                     $('#add_other_modal').modal('hide');
                     $('#add_other_input').val('');
                     $('.keyboard').addClass('keyboard--hidden')
-                }else if(data.status == 'false'){
+                } else if (data.status == 'false') {
                     Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: data.msg,
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.msg,
                     });
                     $('#add_other_modal').modal('hide');
                     $('#add_other_input').val('');
@@ -636,7 +818,7 @@ $title = 'Tabels';
     });
     // ############################### End Add Other Table ###########################
 
-    $(document).on('click', '.occupy', function (e) {
+    $(document).on('click', '.occupy', function(e) {
         e.preventDefault();
 
         let tableParent = $(this).parents('.table');
@@ -669,13 +851,13 @@ $title = 'Tabels';
                 number_of_tables: number_of_tables,
                 Branch_ID: Branch_ID
             },
-            success: function (data) {}
+            success: function(data) {}
         });
 
     });
 
-    
-    $(document).on('click', '#save_mincharge_table', function (e) {
+    // ######################Strat change min_charge#####################################
+    $(document).on('click', '#save_mincharge_table', function(e) {
 
         e.preventDefault();
         let _token = $('input[name="_token"]').val();
@@ -693,20 +875,22 @@ $title = 'Tabels';
                 table: table,
                 min_charge: min_charge,
             },
-            success: function (data) {
+            success: function(data) {
                 $('#min_charge_modal').modal('hide')
                 $('#minchrage-input').val(min_charge);
                 tableName.parent().attr('min-charge', min_charge)
             },
         });
     });
-    
+
+    // --# # # # # # # # # # # # # # # # # # # # # #End change min_charge # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
 
     $(document).on('click', '.delete-table', function(e) {
         let tableDiv = $(this).parents('.table')
         let _token = $('input[name="_token"]').val();
         let hole = $(this).attr('hole');
-        let table= tableDiv.attr('number_of_tables');
+        let table = tableDiv.attr('number_of_tables');
         let branch = $(this).attr('branch');
         Swal.fire({
             title: 'Are you sure?',
@@ -716,21 +900,24 @@ $title = 'Tabels';
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete it!'
-        }).then( (result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
                     url: "<?php echo e(route('del.table')); ?>",
                     method: 'post',
                     enctype: "multipart/form-data",
-                    data:{_token:_token,hole:hole,table:table,branch:branch},
-                    success: function (data)
-                    {
-                        if(data.status == 'true')
-                        {
+                    data: {
+                        _token: _token,
+                        hole: hole,
+                        table: table,
+                        branch: branch
+                    },
+                    success: function(data) {
+                        if (data.status == 'true') {
                             tableDiv.remove();
                         }
-                        if(data.status == 'false'){
-                            Swal.fire ({
+                        if (data.status == 'false') {
+                            Swal.fire({
                                 title: 'Table is Open !',
                                 icon: 'error',
                                 showConfirmButton: false,
@@ -745,9 +932,11 @@ $title = 'Tabels';
     });
 
 
-    
+
+    // --# # # # # # # # # # # # # # # # # # # # # #Start starting Table Time # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
     // When Click On Table Body Show All Menus
-    $(document).on('click', '.table-body', function () {
+    $(document).on('click', '.table-body', function() {
 
         let btn = $(this);
         let tableMenuPop = $(this).siblings(".table-menu");
@@ -773,8 +962,7 @@ $title = 'Tabels';
             tableInfoPop.slideDown();
             new Popper(btn, tableInfoPop, {
                 placement: "auto",
-                modifiers: [
-                    {
+                modifiers: [{
                         name: "offset", //offsets popper from the reference/button
                         options: {
                             offset: [0, 8]
@@ -806,9 +994,9 @@ $title = 'Tabels';
                     tableNumber: tableNumber,
                     Branch_ID: Branch_ID,
                 },
-                success: function (data) {
-                    alltotal  =parseFloat(data.total).toFixed(2);
-                    $(`#table_total${tableNumber}`).html(`${alltotal} &pound;`);
+                success: function(data) {
+                    alltotal = parseFloat(data.total).toFixed(2);
+                    $(`#table_total${tableNumber}`).html(`${alltotal} &pound;`).attr('value', alltotal);
                     $(`#captaintable${tableNumber}`).html(`${data.captain}`);
                     $(`#order_get${tableNumber}`).html(`${data.order}`);
                     $(`#gust${tableNumber}`).html(`${data.gust}`);
@@ -824,8 +1012,7 @@ $title = 'Tabels';
 
             new Popper(btn, tableMenuPop, {
                 placement: "auto",
-                modifiers: [
-                    {
+                modifiers: [{
                         name: "offset", //offsets popper from the reference/button
                         options: {
                             offset: [0, 8]
@@ -845,10 +1032,10 @@ $title = 'Tabels';
         }
 
     });
-    
+    // ######################End starting Table Time#######################################
 
-    
-    $(document).on('click', '#save-merge', function () {
+    // ######################Start Save Merge#######################################
+    $(document).on('click', '#save-merge', function() {
 
         let _token = $('input[name="_token"]').val();
         let Branch_ID = $('#id_branch').attr('value');
@@ -860,7 +1047,7 @@ $title = 'Tabels';
 
         let slave_tables = []
 
-        tableChecked.each(function () {
+        tableChecked.each(function() {
             let obj = {}
             obj.id = $(this).attr('id');
             slave_tables.push(obj);
@@ -869,7 +1056,7 @@ $title = 'Tabels';
         // Function To Merged Tables Is Ckecked
         function mergedTables() {
 
-            tableChecked.each(function () {
+            tableChecked.each(function() {
 
                 let myTable = $(`.table .table-name:contains(${$(this).attr('id')})`).first();
                 console.log(myTable);
@@ -895,8 +1082,8 @@ $title = 'Tabels';
                 master_table: master_table,
                 Branch_ID: Branch_ID
             },
-            success: function (data) {
-                if(data.status == 'false'){
+            success: function(data) {
+                if (data.status == 'false') {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -904,7 +1091,7 @@ $title = 'Tabels';
                     });
                 }
 
-                 // Convert Array Of Object (Merged Table) To Array Of String
+                // Convert Array Of Object (Merged Table) To Array Of String
                 let tables = slave_tables.map(function(table) {
                     return table['id'];
                 });
@@ -918,7 +1105,7 @@ $title = 'Tabels';
                 let AllTablesMerged = $(`.table[follow=${master_table}]`); // get All Tables Merged With This Master Table
 
                 // Remove All Classes And All Atributes From All Tables Merged
-                AllTablesMerged.each(function () {
+                AllTablesMerged.each(function() {
 
                     $(this).removeClass("merged");
                     $(this).find('.merge-table').removeClass('followed').attr('follow', '0')
@@ -939,7 +1126,7 @@ $title = 'Tabels';
 
     });
     $(document).on('click', '#Reservation-tab', function() {
-        let _token  = $('input[name="_token"]').val();
+        let _token = $('input[name="_token"]').val();
         let table = $(this).parents('.modal').attr('table');
         let row = '';
         $.ajax({
@@ -947,10 +1134,10 @@ $title = 'Tabels';
             method: 'post',
             enctype: "multipart/form-data",
             data: {
-                _token  : _token,
-                table  : table,
+                _token: _token,
+                table: table,
             },
-            success: function (data) {
+            success: function(data) {
                 for (let count = 0; count < data.length; count++) {
                     row += `<tr resID="${data[count].id}" resli="${data[count].phone}${data[count].time_from}">
                         <td>${data[count].customer}</td>
@@ -966,18 +1153,20 @@ $title = 'Tabels';
                         </td>
                     </tr>`;
                 }
-            $('#Reserved tbody').html(row)
+                $('#Reserved tbody').html(row)
             },
         });
     });
 
-    
 
-    
-    $("#add_other_modal").on("shown.bs.modal", function (e) {
+    // --# # # # # # # # # # # # # # # # # # # # # #End Save Merge # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    // --# # # # # # # # # # # # # # # # # # # # # #Start Reservation Tables # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    $("#add_other_modal").on("shown.bs.modal", function(e) {
         $(this).find('input').focus();
     })
-    $("#Reservation_modal").on("shown.bs.modal", function (e) {
+    $("#Reservation_modal").on("shown.bs.modal", function(e) {
         let ReserveButton = $(e.relatedTarget);
         let myTable = ReserveButton.parents(".table");
         $(this).attr('table', myTable.attr('number_of_tables'));
@@ -992,13 +1181,13 @@ $title = 'Tabels';
 
     $(document).on('click', '.trash-res', function(e) {
         e.preventDefault();
-        let _token  = $('input[name="_token"]').val();
+        let _token = $('input[name="_token"]').val();
         let resId = $(this).parents('tr').attr('resID');
         let resLiId = $(this).parents('tr').attr('resli');
         let thisBtn = $(this);
         let resList = $(this).parents('tr').siblings().length;
-        let ModalNumber   = $(this).parents('.modal').attr('table');
-        let myTable  = $(`.table-name:contains('${ModalNumber}')`).parents('.table');
+        let ModalNumber = $(this).parents('.modal').attr('table');
+        let myTable = $(`.table-name:contains('${ModalNumber}')`).parents('.table');
 
         Swal.fire({
             title: 'Are you sure?',
@@ -1015,8 +1204,8 @@ $title = 'Tabels';
                     method: 'post',
                     enctype: "multipart/form-data",
                     data: {
-                        _token  : _token,
-                        resid  : resId,
+                        _token: _token,
+                        resid: resId,
                     },
                     success: function(data) {
                         console.log(resList)
@@ -1031,9 +1220,11 @@ $title = 'Tabels';
             }
         });
     });
-    
 
-    
+    // --# # # # # # # # # # # # # # # # # # # # # #End Reservation Tables # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    // --# # # # # # # # # # # # # # # # # # # # # #Start Transfer Tables # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
     $("#transfer_modal").on("show.bs.modal", function(e) {
         let _token = $('input[name="_token"]').val();
         let modalButton = $(e.relatedTarget);
@@ -1048,11 +1239,11 @@ $title = 'Tabels';
             data: {
                 _token: _token,
             },
-            success: function (data) {
+            success: function(data) {
                 let html = ``;
                 for (var count = 0; count < data.data.length; count++) {
-                    if(data.user !== data.data[count].id){
-                        html +=`
+                    if (data.user !== data.data[count].id) {
+                        html += `
                         <div class="form-group">
                             <input type="radio" name="transfer" id="user-${data.data[count].id}" user='${data.data[count].id}'>
                             <label for="user-${data.data[count].id}"> ${data.data[count].name} </label>
@@ -1088,12 +1279,12 @@ $title = 'Tabels';
                 table: modal.attr('table'),
                 note: note.val()
             },
-            success: function (data) {
-                if(data.status == 'true'){
+            success: function(data) {
+                if (data.status == 'true') {
                     modal.modal('hide');
                     note.val('')
                 }
-                if(data.msg) {
+                if (data.msg) {
                     $(`.table-name:contains('${modal.attr('table')}')`).parents('.table').addClass('other-user')
                     Swal.fire({
                         position: 'center-center',
@@ -1106,12 +1297,14 @@ $title = 'Tabels';
             }
         });
     });
-    
 
-    
-    $('.notification').on('show.bs.dropdown', function () {
+    // --# # # # # # # # # # # # # # # # # # # # # #End Transfer Tables # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    // --# # # # # # # # # # # # # # # # # # # # # #Start Transfer Notification # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    $('.notification').on('show.bs.dropdown', function() {
         let _token = $('input[name="_token"]').val();
-        let user   = $('#id_user').attr('user');
+        let user = $('#id_user').attr('user');
         $.ajax({
             url: "<?php echo e(route('get.wait.transfer')); ?>",
             method: 'post',
@@ -1119,25 +1312,23 @@ $title = 'Tabels';
             data: {
                 _token: _token,
             },
-            success: function (data) {
+            success: function(data) {
                 let html = '';
                 for (var count = 0; count < data.length; count++) {
-                    if(user == data[count].c_user)
-                    {
+                    if (user == data[count].c_user) {
                         html +=
-                        `<li noti_id='${data[count].id}' status='${data[count].status}'>
+                            `<li noti_id='${data[count].id}' status='${data[count].status}'>
                             <p class='m-0'>Your Transfer <span> table ${data[count].table}</span> To <span>${data[count].new_user.name}</span></p>
                             <span class='status'>${data[count].status}</span>
 
                         </li>`
-                    }else{
+                    } else {
 
                         html +=
-                        `<li noti_id='${data[count].id}' order="${data[count].order}">
+                            `<li noti_id='${data[count].id}' order="${data[count].order}">
                             <p class='m-0'>You Have Transfer <span> table ${data[count].table}</span> From <span>${data[count].current_user.name}</span></p>
                             <div class="btns">`
-                        if(data[count].note != null)
-                        {
+                        if (data[count].note != null) {
                             html += `<button class="btn btn-secondary Mse-popover" onclick='event.stopPropagation();' content='${data[count].note}'><i class="fas fa-comment-dots"></i></button>`
                         }
                         html += `<button class='btn btn-success req-btn ml-2' id="accepte_noti"><i class="fas fa-check"></i> </button>
@@ -1146,7 +1337,8 @@ $title = 'Tabels';
                         </li>`
                     }
 
-                }$('#show_noti').html(html);
+                }
+                $('#show_noti').html(html);
             }
         });
     });
@@ -1163,30 +1355,204 @@ $title = 'Tabels';
 
     $(document).on('click', '.req-btn', function(e) {
         e.stopPropagation();
-        let _token  = $('input[name="_token"]').val();
-        let status  = $(this).attr('id');
-        let parent  = $(this).parents('li')
+        let _token = $('input[name="_token"]').val();
+        let status = $(this).attr('id');
+        let parent = $(this).parents('li')
         let noti_id = parent.attr('noti_id');
-        let order   = parent.attr('order');
+        let order = parent.attr('order');
 
         $.ajax({
             url: "<?php echo e(route('opration.transfer')); ?>",
             method: 'post',
             enctype: "multipart/form-data",
             data: {
-                _token  : _token,
-                status  : status,
-                noti_id : noti_id,
-                order   : order
+                _token: _token,
+                status: status,
+                noti_id: noti_id,
+                order: order
             },
-            success: function (data) {
+            success: function(data) {
                 parent.remove();
             }
         });
     });
-    
+
+    // --# # # # # # # # # # # # # # # # # # # # # #End Transfer Notification # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+
+    // --# # # # # # # # # # # # # # # # # # # # # # Start Pay Modal # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+    $(document).on('click', '#printcheck_info', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let _token = $('input[name="_token"]').val();
+        let tableInfo = $(this).parents('.table-info');
+        let table = tableInfo.find('.info-title').text();
+        let order = tableInfo.attr('order');
+        let myModal = $("#pay-model");
+        let totalPrice = tableInfo.find(`#table_total${table}`).attr('value');
+        let bankRatio = myModal.find('#bank-ratio');
+        let tableData = {
+            order,
+            table
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: "<?php echo e(route('Pay.check')); ?>",
+            method: 'post',
+            enctype: "multipart/form-data",
+            data: {
+                _token: _token,
+                table: table,
+                totalPrice: totalPrice,
+                order: order,
+            },
+            success: function(data) {
+                let html = '';
+                let allquan = 0;
+                let alltotal = 0;
+                let allsummary = 0;
+                let allnew = 0;
+                let bank = 0;
+                if (data.status == true) {
+                    if (data.type == 'credit') {
+                        $('#credit-tab').click();
+                        $('#visa-price').val(data.visa)
+                    } else if (data.type == 'cash') {
+                        $('#cash-tab').click();
+                        $('#cash-price').val(data.visa)
+                    } else if (data.type == 'hospitality') {
+                        $('#hospitality-tab').click();
+                    }
+                    html += `<li>`
+                    for (var count = 0; count < data.data.length; count++) {
+                        allquan = +allquan + +data.data[count].quantity
+                        alltotal += +data.data[count].total + +data.data[count].total_extra + +data.data[count].price_details - +data.data[count].total_discount
+
+                        myModal.modal('show')
+
+                        html += `<div>`
+                        html += `<span>${data.data[count].quantity}<span style='color:var(--price-color)'> | </span>${data.data[count].name}</span>`
+                        html += `<span>${+data.data[count].total + +data.data[count].total_extra + +data.data[count].price_details - +data.data[count].total_discount}</span>`
+                        html += `</div>`
+
+                    }
+                    bank = data.bank_ratio
+                    allsummary = parseFloat(+alltotal + +data.service[0].service + +data.service[0].tax - parseFloat(data.discount))
+                    html += `</li>`
+                    myModal.find('.summary ul').prepend(html);
+                    myModal.find('.summary .last-item .items-quant').html(allquan);
+                    myModal.find('.summary .last-item .summary-total').html(alltotal.toFixed(2));
+                    myModal.find('.summary .last-item .summary-tax').html(parseFloat(data.service[0].tax).toFixed(2));
+                    myModal.find('.summary .last-item .summary-service').html(parseFloat(data.service[0].service).toFixed(2));
+                    myModal.find('.summary .last-item .summary-mincharge').html(parseFloat(data.min_charge).toFixed(2));
+                    myModal.find('.summary .last-item .summary-discount').html(parseFloat(data.discount).toFixed(2));
+                    myModal.find('.summary .summary-bank').html(data.value_bank);
+                    allnew = allsummary
+                    if (data.min_charge > allsummary) {
+                        allnew = data.min_charge
+                    }
+                    bankRatio.val(parseFloat(data.bank_ratio).toFixed(2));
+                    bankRatio.attr('data-allnew', parseFloat(allnew).toFixed(2));
+                    myModal.find('.summary .last-item .all-total').html(parseFloat(allnew).toFixed(2));
+                    myModal.find('.summary-price').each(function() {
+                        $(this).html(parseFloat(allnew).toFixed(2));
+                    })
+                    myModal.find('.input-ser').each(function() {
+                        if ($('#ser-check').is(':checked')) {
+                            $(this).val(parseFloat(data.service[0].service_ratio));
+                            $(this).prop('disabled', false)
+                        } else {
+                            $(this).val(0);
+                            $(this).prop('disabled', true)
+                        }
+
+                    });
+                    myModal.attr('totVal', $('#total-price').attr('totval'));
+                    $('#ser-check').attr('dis') == '0' ? myModal.attr('status', 'without') : myModal.attr('status', 'with');
+                    myModal.attr('data', JSON.stringify(tableData))
+                } else if (data.status == "min") {
+                    Swal.fire({
+                        title: 'The operation is wrong',
+                        html: `The MinCharge is ${data.min_charge} You Must Pay <span class='text-danger'>${data.rest}</span>`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Pay',
+                        cancelButtonText: 'Ok'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#total-price').text(data.min_charge);
+                            $('#summary_check').click();
+                        }
+                    });
+                } else if (data.status == "empty_order") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Order Not Found',
+                    });
+                }
+            },
+        });
+    });
+    // --# # # # # # # # # # # # # # # # # # # # # # End Pay Modal # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #--
+
+    // ############################### Start Print Check #############################
+    $('#printcheck').on('click', function() {
+        let summaryTotal = $('.summary-total').text();
+        let summaryService = $('.summary-service').text();
+        let summaryTax = $('.summary-tax').text();
+        let allTotal = $(this).parents('.modal').find('.tab-pane.active .summary-price').text();
+        let summaryDelivery = $('.summary-delivery').text();
+        let summaryDiscount = $('.summary-discount').text();
+        let method_bay = $(this).parents('.modal').find('.tab-pane.active').attr('id');
+        let Price = $(this).parents('.modal').find('.tab-pane.active .price-value').val();
+        let Rest = $(this).parents('.modal').find('.tab-pane.active .price-rest').text();
+        let order = JSON.parse($(this).parents('.modal').attr('data')).order;
+        let serButton = $('#ser-check');
+        let myModal = $(this).parents('.modal')
+        let serVal = myModal.find('.tab-pane.active .input-ser').val();
+        let device = localStorage.getItem('device_number');
+        let table = JSON.parse($(this).parents('.modal').attr('data')).table;
+        let operation = $('#operation').attr('value');
+        let bank_value = $('.summary-bank').text();
+        let type_method = $('#operation').attr('value');
+
+        console.log(JSON.parse($(this).parents('.modal').attr('data')))
+
+        $.ajax({
+            url: "<?php echo e(route('print.check')); ?>",
+            method: 'post',
+            enctype: "multipart/form-data",
+            data: {
+                _token: _token,
+                order: order,
+                bank_value: bank_value,
+                service: summaryService,
+                tax: summaryTax,
+                subtotal: summaryTotal,
+                discount: summaryDiscount,
+                total: allTotal,
+                method_bay: method_bay,
+                price: Price,
+                rest: Rest,
+                device: device,
+                table: table,
+                serviceratio: serVal,
+                Delivery: summaryDelivery,
+                operation: 'Table'
+            },
+            success: function(data) {
+                myModal.modal('hide')
+                $(".nav-hole a.active").click();
+            }
+        });
+    });
+    // ############################### End Print Check #############################
 </script>
 <?php echo $__env->make('includes.menu.reservation', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <?php $__env->stopSection(); ?>
-
 <?php echo $__env->make('layouts.tables', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\Xampp\htdocs\webpoint\resources\views/menu/tables.blade.php ENDPATH**/ ?>
