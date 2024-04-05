@@ -640,38 +640,46 @@ $title = 'Tabels';
                                 </div>`
                     html += `</div>`
                     html += `<div class="info-footer d-flex flex-wrap">
-                                <div class="w-100 d-flex">
+                                <div class="w-100 d-flex flex-column">
                                     @can("to order")
-                                    <a href="{{url('menu/New_Order/Table-${tableNumber}')}}" class='flex-grow-1'> To Order </a>
+                                    <a href="{{url('menu/New_Order/Table-${tableNumber}')}}" class='flex-grow-1 d-block'> To Order </a>
                                     @endcan`;
 
-                                    if(data[count].printcheck >= 1){
-                                        html +=`    
-                                            @can("print check more than once")
-                                            <button class="btn btn-info flex-grow-1" type="button" id="printcheck_info">Print</button>
-                                            @endcan
-                                        </div>`; 
-                                    }else{
-                                        html +=`    
-                                            @can("print check")
-                                            <button class="btn btn-info flex-grow-1" type="button" id="printcheck_info">Print</button>
-                                            @endcan
-                                        </div>`; 
-                                    }  
-                    html +=`
+
+                    html += `<div class="d-flex w-100">
                                 @can("reservation")
-                                <div class='w-50  reserve-btn' data-toggle="modal" data-target="#Reservation_modal">
-                                    <span>Reservation</span>
+                                <div class='reserve-btn flex-grow-1 d-flex flex-column align-items-center' data-toggle="modal" data-target="#Reservation_modal">
+                                    <span><i class="fas fa-hand-holding-usd fa-fw fa-lg"></i></span>
+                                    <span> Resrv </span>
                                 </div>
                                 @endcan
                                 @can("transfer")
-                                <div class='w-50  transfer-btn' data-toggle="modal" data-target="#transfer_modal">
-                                    <span>Transfarer</span>
+                                <div class='reserve-btn flex-grow-1 d-flex  flex-column align-items-center' data-toggle="modal" data-target="#transfer_modal">
+                                    <span><i class="fas fa-exchange-alt fa-fw fa-lg"></i></span>
+                                    <span> Trans </span>
                                 </div>
-                                @endcan
-                            </div>`
-                    html += `</div>`
-                    html += '</div>';
+                                @endcan`;
+                    if (data[count].printcheck >= 1) {
+                        html += `
+                            @can("print check more than once")
+                            <button class="btn reserve-btn flex-grow-1 rounded-0 d-flex  flex-column align-items-center" type="button" id="printcheck_info">
+                                <span><i class="fas fa-print fa-fw fa-lg"></i></span>
+                                <span>Print</span>
+                            </button>
+                            @endcan
+                        </div>`;
+                    } else {
+                        html += `
+                            @can("print check")
+                            <button class="btn reserve-btn  flex-grow-1 rounded-0 d-flex  flex-column align-items-center" type="button" id="printcheck_info">
+                            <span><i class="fas fa-print fa-fw fa-lg"></i></span>
+                                <span>Print</span>
+                            </button>
+                            @endcan
+                        </div>`;
+                    }
+                    html += `</div>
+                            </div></div></div>`;
                 }
                 if (holeName === 'Other') {
                     html += `<div style="width:150px;height:150px" class="table add-table" data-toggle="modal" data-target="#add_other_modal"></div>`
