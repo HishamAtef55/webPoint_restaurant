@@ -442,7 +442,8 @@ Trait All_Functions
         $branch = $this->GetBranch();
         $date   = $this->CheckDayOpen();
         $time   = $this->Get_Time();
-        $update = Days::limit(1)->where(['branch'=>$branch,'date'=>$date])->update([
+        //return Days::limit(1)->where(['branch'=>$branch,'date'=>$date])->get();
+        $update = Days::where(['branch'=>$branch,'date'=>$date])->update([
             'active'=>0,
             'time_close'=>$time
         ]);
@@ -465,10 +466,18 @@ Trait All_Functions
         }else{
             $close_date = '07';
         }
-        $close_date;
+        // if($date > $date_open){
+        //     $this->EndDay();
+        // }else{
+        //     return "alaa2152";
+        // }
+        
         if($date != $date_open){
             if($time >= $close_date ){
-                $this->EndDay();
+                return $this->EndDay();
+                return  $date_open;
+            }else{
+                return "alaa";
             }
         }
     }

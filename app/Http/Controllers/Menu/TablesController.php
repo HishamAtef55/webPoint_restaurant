@@ -211,6 +211,7 @@ class TablesController extends Controller
                     ->where('table_id',$table)
                     ->where('state',1)
                     ->get();
+                $order_dis = Orders_d::where(['branch_id'=>$branch->branch_id,'table'=>$table,'state'=>1])->first();    
                 $dis_name    = '';
                 $dis_val     = 0;
                 $dis_type    ='Ratio';
@@ -220,7 +221,8 @@ class TablesController extends Controller
                 $customer    = 0;
                 $gust        = 0;
                 $no_print    = 0;
-                if($Orders->count() == 0)
+                // Orders->count() == 0
+                if(!$order_dis)
                 {
                     $new_order = '';
                     $state_ser = 0;
@@ -229,9 +231,11 @@ class TablesController extends Controller
                     $taxandservice = $this->calculate_taxandservice($op_cal , $new_order);
 
                 }else{
-                    $new_order = $Orders[0]->order_id;
-                    $order_dis = Orders_d::limit(1)->where(['branch_id'=>$branch->branch_id,'order_id'=>$new_order])
-                        ->select(['no_print','gust','min_charge','user','customer_name','discount','discount_name','discount_type','state_service','state_tax','total_discount','created_at'])->first();
+                    //$new_order = $Orders[0]->order_id;
+                    $new_order = $order_dis->order_id;
+                    $Orders =  Wait_order::with(['Details','Extra','Without_m'])->where(['order_id'=>$new_order])->get();
+                    //$order_dis = Orders_d::limit(1)->where(['branch_id'=>$branch->branch_id,'order_id'=>$new_order])
+                        //->select(['no_print','gust','min_charge','user','customer_name','discount','discount_name','discount_type','state_service','state_tax','total_discount','created_at'])->first();
                     $dis_name = $order_dis->discount_name;
                     $dis_type = $order_dis->discount_type;
                     $dis       = $order_dis->discount;
