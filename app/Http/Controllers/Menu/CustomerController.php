@@ -83,6 +83,16 @@ class CustomerController extends Controller
         date_default_timezone_set('Africa/Cairo');
         $time_now = date(' H:i');
         $day_now = $this->CheckDayOpen();
+
+        $branch = Auth::user()->branch_id;
+        $check = Delavery::limit(1)
+            ->where('branch',$branch)
+            ->select(['discount_tax_service','tax','ser_ratio'])
+            ->first();
+        $discount_tax_service = $check->discount_tax_service;
+        $tax                  = $check->tax;
+        $service_ratio        = $check->ser_ratio;
+
         $data = Orders_d::create([
             'branch_id' => $request->branch,
             'customer_id'      => $insertcustomer,
@@ -103,6 +113,9 @@ class CustomerController extends Controller
             'time_hold_list'  =>null,
             'date_holde_list' =>null,
             'delivery_order'  =>0,
+            'tax_ratio'        => $tax,
+            'service_ratio'    => $service_ratio,
+            'discount_tax_service' =>$discount_tax_service,
         ]);
         if($insertcustomer)
         {
