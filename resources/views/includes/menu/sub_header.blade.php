@@ -142,7 +142,7 @@
 
     });
     $(document).ready(function(){
-        // Get Device Number From Local
+
         if(!localStorage.getItem("device_number")){
             $('#device-model').modal('show')
         }
