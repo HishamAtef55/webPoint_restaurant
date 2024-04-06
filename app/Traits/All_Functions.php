@@ -466,18 +466,10 @@ Trait All_Functions
         }else{
             $close_date = '07';
         }
-        // if($date > $date_open){
-        //     $this->EndDay();
-        // }else{
-        //     return "alaa2152";
-        // }
         
         if($date != $date_open){
             if($time >= $close_date ){
                 return $this->EndDay();
-                return  $date_open;
-            }else{
-                return "alaa";
             }
         }
     }

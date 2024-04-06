@@ -34,7 +34,7 @@ class ShiftController extends Controller
         $date   = $this->CheckDayOpen();
         $this->calcBeforeCloseShift();
         if($request->type == 'close_day'){
-            $this->EndDay();
+            return $this->EndDay();
         }elseif($request->type == "close_shift"){
             if(Orders_d::where(['branch_id'=>$branch])->count() == 0)
             {

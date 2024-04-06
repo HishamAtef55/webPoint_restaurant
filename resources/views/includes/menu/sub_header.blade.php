@@ -109,6 +109,7 @@
             confirmButtonText: 'Yes'
         }).then((result) => {
             if (result.isConfirmed) {
+                $('#loading').addClass('show')
                 $.ajax({
                     url: "{{route('close.shift')}}",
                     method: 'post',
@@ -120,12 +121,14 @@
                         },
                     success: function (data) {
                         if(data.status == "error"){
+                            $('#loading').removeClass('show')
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Oops...',
                                 text: data.msg,
                             });
                         }else if(data.status == "success"){
+                            $('#loading').removeClass('show')
                             Swal.fire({
                                 position: 'center-center',
                                 icon: 'success',
