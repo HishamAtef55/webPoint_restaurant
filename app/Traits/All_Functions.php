@@ -1377,7 +1377,7 @@ Trait All_Functions
     public function fixDuplicate(){
         $order = '';
         $waitOrder = '';
-        $orders = Orders_m::where(['d_order'=>"2024-03-15"])->orderBy('order_id','asc')->get();
+        $orders = Orders_m::where(['d_order'=>"2024-04-05"])->orderBy('order_id','asc')->get();
         foreach($orders as $orderRow){
             if(Orders_m::where(['order_id'=>$orderRow->order_id])->count() > 1){
                 $waitOrders = Wait_order_m::with('Extra','Details')->where(['order_id'=>$orderRow->order_id])->orderBy('sub_num_order','asc')->get();
