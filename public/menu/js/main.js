@@ -203,17 +203,32 @@ $("document").ready(function() {
     }
 
     // When Click on Crad Handel Create Item Function
-    $("body").on("dblclick", ".card", function() {
+    // $("body").on("dblclick", ".card", function() {
+    //     clicking = false; // For MouseDown On Item
+    //     if ($(this).attr("details_no") > 0) {
+    //         createItem($(this));
+    //         $(this).attr("id", "card_chose");
+    //         $("#details-model").modal("show");
+    //     } else {
+    //         createItem($(this));
+    //     }
+    //     createModal($(this));
+    // });
+
+    function handelCardClick(card) {
         clicking = false; // For MouseDown On Item
-        if ($(this).attr("details_no") > 0) {
-            createItem($(this));
-            $(this).attr("id", "card_chose");
+        if (card.attr("details_no") > 0) {
+            createItem(card);
+            card.attr("id", "card_chose");
             $("#details-model").modal("show");
         } else {
-            createItem($(this));
+            createItem(card);
         }
-        createModal($(this));
-    });
+        createModal(card);
+    }
+
+    window.handelCardClick = handelCardClick;
+
 
     $("body").on("click", "#details-model .nav-link", function() {
         let href = $(this).attr("href");
