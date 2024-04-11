@@ -380,8 +380,8 @@
                 togo_table: togo_table
             },
             success: function(data) {
-                console.log(card)
-                handelCardClick(card)
+                if (data.status == true) {
+                    handelCardClick(card)
                 $('#new_order').attr('value', data.order)
                 $('.orderCheck').find('span:last-child').text(data.order)
                 CalcTotalCheck();
@@ -396,6 +396,14 @@
                 setTimeout(() => {
                     $('#newrow').removeClass('no-click')
                 }, 500);
+                }else if (data.status == true) {
+                    Swal.fire({
+                        position: 'center-center',
+                        icon: 'error',
+                        title: data.msg,
+                        showConfirmButton: true,
+                    });
+                }
             }
         });
     });
