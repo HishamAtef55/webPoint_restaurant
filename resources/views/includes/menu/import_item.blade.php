@@ -340,13 +340,14 @@
 
     // ###################### Start save wait order #######################################
     $('body').on('dblclick', '.card', function() {
-        let Item_ID = $(this).attr('value');
+        const card = $(this);
+        let Item_ID = card.attr('value');
         let Table_ID = $('#table_id').attr('value');
         let togo_table = $('#togo_table').attr('value');
         let Order_Number = $('#new_order').attr('value');
         let operation = $('#operation').attr('value');
-        let Item_Name = $(this).children('.card-body').attr('value');
-        let Item_Price = $(this).children('.card-footer').attr('value');
+        let Item_Name = card.children('.card-body').attr('value');
+        let Item_Price = card.children('.card-footer').attr('value');
         let Order_Number_dev = $('#device_id').val();
         let Quantity = $('#quantity').val();
         let subgroup_name = $('.nav-sub .nav-link.active').find('span').text();
@@ -379,6 +380,8 @@
                 togo_table: togo_table
             },
             success: function(data) {
+                console.log(card)
+                handelCardClick(card)
                 $('#new_order').attr('value', data.order)
                 $('.orderCheck').find('span:last-child').text(data.order)
                 CalcTotalCheck();
