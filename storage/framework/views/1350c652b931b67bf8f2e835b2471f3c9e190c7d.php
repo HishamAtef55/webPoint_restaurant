@@ -155,7 +155,7 @@
                     groupArray.forEach(group =>{
                         let price = data.orders[order][group.name] || 0
                         html += `<td>${parseFloat(price).toFixed(2)}</td>`;
-                        group.total += parseFloat(price).toFixed(2);
+                        group.total += price;
                     });
                     html += `<td>${parseFloat(data.orders[order].sub_total).toFixed(2)}</td>`
                     totalSub +=data.orders[order].sub_total

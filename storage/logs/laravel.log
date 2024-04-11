@@ -3990,3 +3990,51 @@
 [stacktrace]
 #0 {main}
 "} 
+[2024-04-11 12:43:25] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:44:25] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:45:25] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:46:25] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:47:25] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:48:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:49:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:50:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:51:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:52:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:53:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
+[2024-04-11 12:54:26] local.ERROR: Cannot redeclare branchName() (previously declared in C:\xampp\htdocs\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5) at C:\\xampp\\htdocs\\webpoint\\app\\helpers.php:5)
+[stacktrace]
+#0 {main}
+"} 
