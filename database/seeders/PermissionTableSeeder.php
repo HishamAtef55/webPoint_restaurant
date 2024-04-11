@@ -23,6 +23,7 @@ class PermissionTableSeeder extends Seeder
                 'discount',
                 'insert value discount',
                 'move to',
+                'Open Add Item',
                 'guests',
                 'close shift',
                 'close day',

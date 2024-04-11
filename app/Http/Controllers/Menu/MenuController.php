@@ -179,7 +179,7 @@ class MenuController extends Controller
         {
             case "TO_GO":
             {
-                    // Generate New Device Order
+                // Generate New Device Order
                 if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() == 0)
                 {
                     $check = ToGo::limit(1)
@@ -233,19 +233,19 @@ class MenuController extends Controller
                         'branch_id'          => Auth::user()->branch_id,
                     ]
                 );
-                return response() ->json(['order'=>$new_serial,'item_id'=>$request->Item_ID]);
+                return response()->json(['status'=>true,'order'=>$new_serial,'item_id'=>$request->Item_ID]);
             }break;
             case"Delivery":
             {
                 if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() == 0)
                 {
-                $check = Delavery::limit(1)
-                    ->where('branch',$branch_main)
-                    ->select(['discount_tax_service','tax','ser_ratio'])
-                    ->first();
-                $discount_tax_service = $check->discount_tax_service;
-                $tax                  = $check->tax;
-                $service_ratio        = $check->ser_ratio;
+                    $check = Delavery::limit(1)
+                        ->where('branch',$branch_main)
+                        ->select(['discount_tax_service','tax','ser_ratio'])
+                        ->first();
+                    $discount_tax_service = $check->discount_tax_service;
+                    $tax                  = $check->tax;
+                    $service_ratio        = $check->ser_ratio;
                     $save_order = Orders_d::create([
                         'id'              =>$idCount,
                         'order_id'        => $new_serial,
@@ -267,73 +267,67 @@ class MenuController extends Controller
 
                     ]);
                 }
-                    $group = Group::limit(1)->where('branch_id',Auth::user()->branch_id)
-                        ->where('id',$request->subgroup_id)
-                        ->get()
-                        ->first();
-                    $data = Wait_order::create(
-                        [
-                            'item_id'            => $request->Item_ID,
-                            'name'               => $request->Item_Name,
-                            'price'              => $request->Item_Price,
-                            'order_id'           => $new_serial,
-                            'sub_num_order'      => $new_order,
-                            'subgroup_id'        => $group->id,
-                            'subgroup_name'      => $group->name,
-                            'total'              => $request->Item_Price * $Quantity,
-                            'quantity'           => $Quantity,
-                            'op'                 => $request->operation,
-                            'state'              => 1,
-                            'user'               => Auth::user()->name,
-                            'user_id'            => Auth::user()->id,
-                            'branch_id'          => Auth::user()->branch_id,
-                        ]
-                    );
-                return response() ->json(['order'=>$new_serial,'item_id'=>$request->Item_ID]);
+                $group = Group::limit(1)->where('branch_id',Auth::user()->branch_id)
+                    ->where('id',$request->subgroup_id)
+                    ->get()
+                    ->first();
+                $data = Wait_order::create(
+                    [
+                        'item_id'            => $request->Item_ID,
+                        'name'               => $request->Item_Name,
+                        'price'              => $request->Item_Price,
+                        'order_id'           => $new_serial,
+                        'sub_num_order'      => $new_order,
+                        'subgroup_id'        => $group->id,
+                        'subgroup_name'      => $group->name,
+                        'total'              => $request->Item_Price * $Quantity,
+                        'quantity'           => $Quantity,
+                        'op'                 => $request->operation,
+                        'state'              => 1,
+                        'user'               => Auth::user()->name,
+                        'user_id'            => Auth::user()->id,
+                        'branch_id'          => Auth::user()->branch_id,
+                    ]
+                );
+                return response()->json(['status'=>true,'order'=>$new_serial,'item_id'=>$request->Item_ID]);
             }break;
             default:
             {
                 if(Orders_d::where('branch_id',$branch_main)->where('order_id',$new_serial)->limit(1)->count() == 0)
                 {
-                // $print_table = 0;
-                // $check_other = Table::limit(1)->where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->select('hole')->first();
-                // $hole_name   = Hole::limit(1)->where(['branch_id'=>$branch_main,'number_holes'=>$check_other->hole])->select(['name'])->first();
-                // if($hole_name->name == 'Other'){
-                //     $print_table = 1;
-                // }
-                $state_table = Table::where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->limit(1)->select(['state','min_charge','guest'])->first();
-                $min_charge = $state_table->min_charge * $state_table->guest ;
+                    $state_table = Table::where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->limit(1)->select(['state','min_charge','guest'])->first();
+                    $min_charge = $state_table->min_charge * $state_table->guest ;
 
-                $check = Service_tables::limit(1)
-                    ->where('branch',$branch_main)
-                    ->select(['discount_tax_service','tax','service_ratio'])
-                    ->first();
+                    $check = Service_tables::limit(1)
+                        ->where('branch',$branch_main)
+                        ->select(['discount_tax_service','tax','service_ratio'])
+                        ->first();
 
-                $discount_tax_service = $check->discount_tax_service;
-                $tax                  = $check->tax;
-                $service_ratio        = $check->service_ratio;
+                    $discount_tax_service = $check->discount_tax_service;
+                    $tax                  = $check->tax;
+                    $service_ratio        = $check->service_ratio;
 
-                $check_other = Table::limit(1)->where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->select('hole')->first();
-                $save_order = Orders_d::create([
-                    'order_id'        => $new_serial,
-                    'dev_id'          => $request->Order_Number_dev,
-                    'table'           => $request->Table_ID,
-                    'op'              => $request->operation,
-                    'user'            => Auth::user()->name,
-                    'user_id'         => Auth::user()->id,
-                    'branch_id'       => Auth::user()->branch_id,
-                    't_order'         => $time_now,
-                    'd_order'         => $day_now,
-                    'state'           => 1,
-                    'shift'           =>$shift,
-                    'min_charge'      =>$min_charge,
-                    'gust'            =>$state_table->guest,
-                    'tax_ratio'       => $tax,
-                    'service_ratio'   => $service_ratio,
-                    'discount_tax_service' =>$discount_tax_service,
-                    'hold_list' =>0,
-                    'gust'            =>1,
-                ]);
+                    $check_other = Table::limit(1)->where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->select('hole')->first();
+                    $save_order = Orders_d::create([
+                        'order_id'        => $new_serial,
+                        'dev_id'          => $request->Order_Number_dev,
+                        'table'           => $request->Table_ID,
+                        'op'              => $request->operation,
+                        'user'            => Auth::user()->name,
+                        'user_id'         => Auth::user()->id,
+                        'branch_id'       => Auth::user()->branch_id,
+                        't_order'         => $time_now,
+                        'd_order'         => $day_now,
+                        'state'           => 1,
+                        'shift'           =>$shift,
+                        'min_charge'      =>$min_charge,
+                        'gust'            =>$state_table->guest,
+                        'tax_ratio'       => $tax,
+                        'service_ratio'   => $service_ratio,
+                        'discount_tax_service' =>$discount_tax_service,
+                        'hold_list' =>0,
+                        'gust'            =>1,
+                    ]);
                 }
                 $state_table = Table::where('branch_id',$branch_main )->where('number_table',$request->Table_ID)->limit(1)->select(['state','min_charge','guest'])->first();
                 if($state_table->state == 0)
@@ -371,9 +365,10 @@ class MenuController extends Controller
                         'branch_id'          => Auth::user()->branch_id,
                     ]
                 );
-                return response() ->json(['order'=>$new_serial,'item_id'=>$request->Item_ID]);
+                return response()->json(['status'=>true,'order'=>$new_serial,'item_id'=>$request->Item_ID]);
             }
         }
+        return response()->json(['status'=>false,'msg'=>'Please close the table and open it again']);
     }
     ################################## Delete Items Wait Orders #############################
     public function Delete_Order(Request $request)

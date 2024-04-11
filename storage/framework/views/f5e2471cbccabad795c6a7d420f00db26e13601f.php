@@ -142,6 +142,7 @@
 
     });
     $(document).ready(function(){
+
         if(!localStorage.getItem("device_number")){
             $('#device-model').modal('show')
         }

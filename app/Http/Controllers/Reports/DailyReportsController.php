@@ -166,7 +166,7 @@ class DailyReportsController extends Controller
         }else{
             $system_data->image = 'global/image/logo.png';
         }
-        $res_name     = $system_data->name;
+        $res_name = $system_data->name ?? "Web Point";
 
         return response()->json([
             'orders'=>$orders,
