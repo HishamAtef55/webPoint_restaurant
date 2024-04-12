@@ -72,6 +72,7 @@ class MenuController extends Controller
     }
     public function view_table()
     {
+        $this->CheckDay();
         //$this->fixDuplicate();
         $this->checkTable();
         $this->CheckDay();

@@ -41,9 +41,7 @@ use App\Models\SerialShift;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Redirect;
-
-
-
+use Carbon\Carbon;
 Trait All_Functions
 {
     public function Get_Date(){
@@ -466,9 +464,15 @@ Trait All_Functions
         }else{
             $close_date = '07';
         }
-        
+        $date = Carbon::parse($date);
+        $date_open = Carbon::parse($date_open);
+        $differenceInDays = $date->diffInDays($date_open);
         if($date != $date_open){
-            if($time >= $close_date ){
+            if($differenceInDays == 1){
+                if($time >= $close_date ){
+                    return $this->EndDay();
+                }
+            }else{
                 return $this->EndDay();
             }
         }
