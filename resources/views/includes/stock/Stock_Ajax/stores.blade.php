@@ -26,14 +26,14 @@
         });
 
         $.ajax({
-            url: "{{route('save.store')}}",
+            url: "{{ route('save.store') }}",
             method: 'post',
             data: {
                 _token,
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
-                storages,
+                storages: storages,
             },
             success: function(data) {
                 if (data.status == 'true') {
@@ -127,7 +127,7 @@
         });
 
         $.ajax({
-            url: "{{route('update.store')}}",
+            url: "{{ route('update.store') }}",
             method: 'post',
             data: {
                 _token,
@@ -176,5 +176,56 @@
                 });
             }
         });
+    });
+
+    $(document).on('click', '#delete_store', function() {
+        const id = $(this).data('id');
+        swal({
+                title: 'Delete !',
+                text: 'Are you sure you want to delete the store ?',
+                type: 'warning',
+                showCancelButton: true,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true,
+                confirmButtonColor: '#5cb85c',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'No',
+                confirmButtonText: 'Yes',
+            },
+            function() {
+                $.ajax({
+                    url: "{{ route('delete.store') }}",
+                    method: 'post',
+                    DataType: 'json',
+                    data: {
+                        store_id: id,
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                       console.log(response)
+                       return false;
+                        swal({
+                            title: 'Deleted!',
+                            text: 'Your store has been deleted successfully.',
+                            type: 'success',
+                            timer: 2000,
+
+                        });
+                        $('#cancelMembership').remove();
+                        $('#mobile-group-container').remove();
+
+
+
+                    },
+                    error: function(error) {
+                        swal({
+                            title: 'Error!',
+                            text: error.responseJSON.message,
+                            type: 'error',
+                            timer: 5000,
+                        })
+                    }
+                });
+            });
     });
 </script>
