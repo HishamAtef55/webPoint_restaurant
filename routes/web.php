@@ -499,7 +499,6 @@ Route::group(['prefix' => 'stock', 'controller' => StockController::class], func
   Route::post('/save_store', 'save_store')->name('save.store');
   Route::post('/search_store', 'search_store');
   Route::post('/get_store', 'get_store');
-  Route::get('/edit/{id}', 'editStore')->name('edit.store');
   Route::post('/update', 'update_store')->name('update.store');
   Route::get('/view/{id}', 'viewStore')->name('view.store');
   Route::get('/delete', 'deleteStore')->name('delete.store');

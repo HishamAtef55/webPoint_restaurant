@@ -178,7 +178,8 @@
                         </table>
                     </div>
                     <div class="d-grid gap-2 mx-auto mt-4">
-                        <button class='btn btn-success' id="save_store">Save</button>
+                        <button class='btn btn-success stores_btns' data-action="create"
+                            >Save</button>
                         <button class='btn btn-primary d-none' id="update_store">Update</button>
                     </div>
                 </div>
@@ -204,15 +205,21 @@
                                             <td>{{ $store->phone ?? '-' }}</td>
                                             <td>{{ $store->address ?? '-' }}</td>
                                             <td>
-                                                <a class="text-dark" href="{{ route('edit.store', $store->id) }}">
-                                                    <i class="far fa-edit fa-lg"></i>
-                                                </a>
-                                                <a class="text-dark" href="{{ route('view.store', $store->id) }}">
-                                                    <i class="far fa-view fa-lg"></i>
-                                                </a>
-                                                <button type="submit" id="delete_store" class=""
+                                                <button title="تعديل" class="btn btn-success stores_btns"
+                                                    data-id="{{ $store->id }}" data-action="edit">
+
+                                                    <i class="far fa-edit"></i>
+                                                </button>
+
+                                                <button title="عرض" data-id="{{ $store->id }}" data-action="view"
+                                                    class="btn btn-primary stores_btns">
+
+                                                    <i class="fa fa-eye" aria-hidden="true"></i>
+
+                                                </button>
+                                                <button class="btn btn-danger stores_btns" data-action="delete"
                                                     data-id="{{ $store->id }}">
-                                                    <i class="fa fa-trash fa-fw"></i>
+                                                    <i class="fa fa-trash"></i>
                                                 </button>
                                             </td>
                                         </tr>

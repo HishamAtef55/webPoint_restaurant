@@ -1,6 +1,4 @@
 <script>
-    let _token = $('input[name="_token"]').val();
-
     $(document).ready(function() {
         $('select').select2({
             selectOnClose: true,
@@ -15,7 +13,7 @@
                 url: url,
                 method: 'post',
                 data: {
-                    _token,
+                    _token: "{{ csrf_token() }}",
                     query,
                     branch,
                 },
@@ -40,7 +38,7 @@
             url: url,
             method: 'post',
             data: {
-                _token,
+                _token: "{{ csrf_token() }}",
                 id
             },
             success: function(request) {
@@ -70,6 +68,20 @@
         })
     }
 
+    checkForm();
+
+    function validateForm(meta) {
+        let isValid = true;
+
+        Object.keys(meta).forEach(function(key) {
+            if (meta[key].val() === '') {
+                isValid = false;
+                errorMsg("قم بإدخال اسم المخزن")
+            }
+        });
+        return isValid;
+    }
+
 
     const Toast = Swal.mixin({
         toast: true,
@@ -95,6 +107,105 @@
         });
     }
 
+    function collectJsonMeta(action, meta) {
 
-    checkForm();
+        let endPoint = '';
+        let method = '';
+        let body = {};
+
+        switch (action) {
+            case 'create':
+                endPoint = "{{ route('save.store') }}";
+                method = 'post';
+                body = {
+                    _token: "{{ csrf_token() }}",
+                    name: meta.name.val(),
+                    phone: meta.phone.val(),
+                    address: meta.address.val(),
+                };
+                break;
+
+            default:
+                console.error('Unknown action:', action);
+                return;
+        }
+
+        return {
+            "endPoint": endPoint,
+            "method": method,
+            "body": body
+        };
+    }
+
+    function callApi(JsonMeta) {
+        $.ajax({
+
+            url: JsonMeta.endPoint,
+            method: JsonMeta.method,
+            DataType: 'json',
+            data: JsonMeta.body,
+            success: function(data) {
+                switch (action) {
+                    case 'create':
+                        if (data.status == 'true') {
+                            let html = '';
+                            tbody.empty();
+                            data.stores.forEach(store => {
+                                html += `<tr>
+                                <th>${store.id}</th>
+                                <td>${store.name || '-'}</td>
+                                <td>${store.phone || '-'}</td>
+                                <td>${store.address || '-'}</td>
+
+                                 <td>
+                                <button title="تعديل" class="btn btn-success stores_btns"
+                                    data-id="${ store.id }"data-action="edit">
+
+                                    <i class="far fa-edit"></i>
+                                </button>
+
+                                <button title="عرض" data-id="${ store.id }" data-action="view"
+                                    class="btn btn-primary stores_btns">
+
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
+
+                                </button>
+                                <button class="btn btn-danger stores_btns" data-action="delete"
+                                    data-id="${ store.id }">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                                           </td>
+                                </tr>`;
+                            })
+                            tbody.html(html);
+                            id.val(data.new_store);
+                            name.val('');
+                            phone.val('');
+                            address.val('');
+                            $('input[type="checkbox"]').each(function() {
+                                $(this).prop('checked', false)
+                            })
+                            $('.unit').each(function() {
+                                $(this).find(' option:first-child')
+                                    .prop('selected', true)
+                            })
+                            $('input[name="capacity"]').each(function() {
+                                $(this).val('')
+                            })
+
+                            successMsg(data.msg);
+                        }
+                    default:
+                        console.error('Unknown action:', action);
+                        return;
+                }
+            },
+            error: function(reject) {
+                let response = $.parseJSON(reject.responseText);
+                $.each(response.errors, function(key, val) {
+                    errorMsg(val[0])
+                });
+            }
+        });
+    }
 </script>
