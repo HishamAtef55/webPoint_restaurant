@@ -494,15 +494,18 @@ Route::group(['prefix' => 'Reports'], function () {
 
 ############################ Start Routes in Cost Control ###################
 ################################## Stores ############################################
-Route::group(['prefix' => 'stock', 'controller' => StockController::class], function () {
-  Route::get('/stores', 'view_Store')->name('view.stores');
-  Route::post('/save_store', 'save_store')->name('save.store');
-  Route::post('/search_store', 'search_store');
-  Route::post('/get_store', 'get_store');
-  Route::post('/update', 'update_store')->name('update.store');
-  Route::get('/view/{id}', 'viewStore')->name('view.store');
-  Route::get('/delete', 'deleteStore')->name('delete.store');
-});
+Route::group(
+  [
+    'middleware' => [
+      'auth',
+    ],
+    'prefix' => 'stock',
+    'as' => 'stock.'
+  ],
+  function () {
+    Route::resource('stores', StockController::class);
+  }
+);
 
 ################################## Sections ############################################
 Route::group(['prefix' => 'stock', 'controller' => SectionController::class], function () {

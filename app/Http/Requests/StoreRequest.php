@@ -24,17 +24,21 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return
-        [
-            'name'=>'required|unique:stock_stores,name',
-        ];
+            [
+                'name' => 'required', 'string', 'unique:stock_stores,name',
+                'phone' => 'required', 'integer',
+                'address' => 'required', 'string',
+            ];
     }
 
     public function messages()
     {
         return
-        [
-            'name.required' => __('برجاء ادخال اسم المخزن'),
-            'name.unique'   => __('هذا المخزن موجود بالفعل'),
-        ];
+            [
+                'name.required' => __('برجاء ادخال اسم المخزن'),
+                'phone.required' => __('برجاء ادخال رقم التليفون'),
+                'address.required' => __('برجاء ادخال العنوان'),
+                'name.unique'   => __('هذا المخزن موجود بالفعل'),
+            ];
     }
 }
