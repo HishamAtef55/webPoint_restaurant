@@ -17,6 +17,6 @@ class Stores extends Model
 
   public function storgecapacity()
   {
-    return $this->hasMany(storage_capacity::class, 'store', 'id');
+    return $this->hasMany(storage_capacity::class);
   }
 }

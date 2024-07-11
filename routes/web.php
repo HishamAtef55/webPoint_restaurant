@@ -1,82 +1,82 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Models\User;
-use App\Http\Controllers\Auth\LogoutController;
-
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Menu\ShiftController;
-use App\Http\Controllers\Menu\MovetoController;
-use App\Http\Controllers\Menu\TablesController;
-use App\Http\Controllers\Menu\CustomerController;
-use App\Http\Controllers\Menu\ReservationController;
-use App\Http\Controllers\Menu\DeliveryController;
-use App\Http\Controllers\Menu\CopyCloseShift;
-use App\Http\Controllers\Menu\LoginController;
-use App\Http\Controllers\Menu\MenuController;
-use App\Http\Controllers\Menu\PayController;
-use App\Http\Controllers\Menu\DailyExpensesController;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\Device;
-use App\Http\Controllers\Admin\GenralController;
-use App\Http\Controllers\Admin\InformationController;
-use App\Http\Controllers\Admin\OpenDayController;
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\ItemController;
-use App\Http\Controllers\Admin\Item_DetailsController;
-use App\Http\Controllers\Admin\DiscountController;
-use App\Http\Controllers\Admin\DeleveryController;
-use App\Http\Controllers\Admin\ToGoController;
-use App\Http\Controllers\Admin\OthersController;
-use App\Http\Controllers\Admin\CarServicesController;
-use App\Http\Controllers\Admin\MinchargeController;
-use App\Http\Controllers\Admin\ExpensesCategoryController;
-
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\TablesController as AdminTablesController;
-
-use App\Http\Controllers\Reports\ReportsController;
-use App\Http\Controllers\Reports\DailyReportsController;
-use App\Http\Controllers\Reports\SalesCurrentDayController;
-
-use App\Http\Controllers\Stock\StockController;
-use App\Http\Controllers\Stock\SectionController;
-use App\Http\Controllers\Stock\SuppliersController;
-use App\Http\Controllers\Stock\MainGroupController;
-use App\Http\Controllers\Stock\GroupMaterialControllers;
-use App\Http\Controllers\Stock\MaterialController;
-use App\Http\Controllers\Stock\ComponentItemsController;
-use App\Http\Controllers\Stock\ComponentDetailsItemController;
-use App\Http\Controllers\Stock\MaterialRecipeController;
-use App\Http\Controllers\Stock\PurchasesController;
-use App\Http\Controllers\Stock\ExchangeController;
-use App\Http\Controllers\Stock\MaterialTransfer;
-use App\Http\Controllers\Stock\MaterialOperations;
-use App\Http\Controllers\Stock\materialManufacturing;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\Menu\PayController;
 use App\Http\Controllers\Stock\MaterialHalk;
+use App\Http\Controllers\Menu\CopyCloseShift;
+use App\Http\Controllers\Menu\MenuController;
+use App\Http\Controllers\Admin\ItemController;
+use App\Http\Controllers\Admin\ToGoController;
+use App\Http\Controllers\Menu\LoginController;
+use App\Http\Controllers\Menu\ShiftController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Auth\LogoutController;
+
+
+use App\Http\Controllers\Menu\MovetoController;
+use App\Http\Controllers\Menu\TablesController;
+use App\Http\Controllers\Stock\StockController;
+use App\Http\Controllers\Stock\StoreController;
+use App\Http\Controllers\Admin\GenralController;
+use App\Http\Controllers\Admin\OthersController;
+use App\Http\Controllers\Stock\MaterialTransfer;
+use App\Http\Controllers\Admin\OpenDayController;
+use App\Http\Controllers\Menu\CustomerController;
+use App\Http\Controllers\Menu\DeliveryController;
+use App\Http\Controllers\Stock\OrdersControllers;
+use App\Http\Controllers\Stock\SectionController;
+use App\Http\Controllers\Admin\DeleveryController;
+use App\Http\Controllers\Admin\DiscountController;
+
+use App\Http\Controllers\Stock\ExchangeController;
+use App\Http\Controllers\Stock\MaterialController;
+
+use App\Http\Controllers\Stock\MaterialOperations;
+use App\Http\Controllers\Admin\MinchargeController;
+use App\Http\Controllers\Reports\ReportsController;
+
+use App\Http\Controllers\Stock\MainGroupController;
+use App\Http\Controllers\Stock\PurchasesController;
+use App\Http\Controllers\Stock\SuppliersController;
+use App\Http\Controllers\Menu\ReservationController;
+use App\Http\Controllers\Admin\CarServicesController;
+use App\Http\Controllers\Admin\InformationController;
+use App\Http\Controllers\Stock\materialManufacturing;
+use App\Http\Controllers\Stock\OpenBalanceController;
+use App\Http\Controllers\Admin\Item_DetailsController;
+use App\Http\Controllers\Menu\DailyExpensesController;
+use App\Http\Controllers\Stock\InDirectCostController;
 use App\Http\Controllers\Stock\BackToStoresControllers;
+use App\Http\Controllers\Reports\DailyReportsController;
+use App\Http\Controllers\Stock\ComponentItemsController;
+use App\Http\Controllers\Stock\GroupMaterialControllers;
+use App\Http\Controllers\Stock\MaterialRecipeController;
+use App\Http\Controllers\Admin\ExpensesCategoryController;
 use App\Http\Controllers\Stock\BackToSuppliersControllers;
 use App\Http\Controllers\Stock\OpenBalanceDailyController;
-use App\Http\Controllers\Stock\OpenBalanceController;
-use App\Http\Controllers\Stock\InDirectCostController;
-use App\Http\Controllers\Stock\OrdersControllers;
-
-use App\Http\Controllers\StockReports\ExchangesReportController;
-use App\Http\Controllers\StockReports\TransferReportController;
-use App\Http\Controllers\StockReports\StockReportsController;
-use App\Http\Controllers\StockReports\PurchasesReportController;
-use App\Http\Controllers\StockReports\ItemsPricingController;
-use App\Http\Controllers\StockReports\BackStoresReportsController;
-use App\Http\Controllers\StockReports\BackSuppliersReportsController;
-use App\Http\Controllers\StockReports\CardItemReportsController;
-use App\Http\Controllers\StockReports\HalkItemReportsController;
+use App\Http\Controllers\Reports\SalesCurrentDayController;
 use App\Http\Controllers\StockReports\HalkReportsController;
-use App\Http\Controllers\StockReports\ManufacturingReportsController;
-use App\Http\Controllers\StockReports\OperationsReportsController;
+
+use App\Http\Controllers\StockReports\ItemsPricingController;
+use App\Http\Controllers\StockReports\StockReportsController;
+use App\Http\Controllers\Stock\ComponentDetailsItemController;
+use App\Http\Controllers\StockReports\TransferReportController;
+use App\Http\Controllers\StockReports\CardItemReportsController;
+use App\Http\Controllers\StockReports\ExchangesReportController;
+use App\Http\Controllers\StockReports\HalkItemReportsController;
+use App\Http\Controllers\StockReports\PurchasesReportController;
 use App\Http\Controllers\StockReports\SuppliersReportsController;
+use App\Http\Controllers\StockReports\BackStoresReportsController;
+use App\Http\Controllers\StockReports\OperationsReportsController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,7 +88,8 @@ use App\Http\Controllers\StockReports\SuppliersReportsController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\StockReports\ManufacturingReportsController;
+use App\Http\Controllers\Admin\TablesController as AdminTablesController;
 
 define('TITLE', 'Web Point');
 Route::get('/', function () {
@@ -503,7 +504,7 @@ Route::group(
     'as' => 'stock.'
   ],
   function () {
-    Route::resource('stores', StockController::class);
+    Route::resource('stores', StoreController::class);
   }
 );
 
