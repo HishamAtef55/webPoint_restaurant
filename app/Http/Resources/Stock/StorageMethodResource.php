@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Stock;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StoreResource extends JsonResource
+class StorageMethodResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,10 @@ class StoreResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'address' => $this->address,
-            'phone' => $this->phone,
-            'storage_methods' => StorageMethodResource::collection($this->storgecapacity)
+            'store_id' => $this->store_id,
+            'type' => $this->type,
+            'unit' => $this->unit,
+            'capacity' => $this->capacity,
         ];
     }
 }

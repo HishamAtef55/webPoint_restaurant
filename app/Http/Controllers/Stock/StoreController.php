@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Models\Stores;
-use App\Models\material;
-use App\Models\storeCost;
+use App\Models\Stock\Store;
 use Illuminate\Http\Request;
-use App\Models\storage_capacity;
-use App\Http\Requests\StoreRequest;
+use App\Http\Requests\Stock\Stores\StoreRequest;
+use App\Http\Requests\Stock\Stores\UpdateRequest;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\StoreResource;
+use App\Http\Resources\Stock\StoreResource;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -22,8 +20,8 @@ class StoreController extends Controller
      */
     public function index()
     {
-        $lastStoreNr = Stores::latest()->first()->id ?? 1;
-        $stores = Stores::get();
+        $lastStoreNr = Store::latest()->first()->id + 1 ?? 1;
+        $stores = Store::get();
         return view('stock.Stores.index', compact([
             'stores',
             'lastStoreNr'
@@ -31,42 +29,37 @@ class StoreController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * store
+     * @param StoreRequest $request
+     * @return StoreResource
      */
     public function store(
         StoreRequest $request
     ): StoreResource {
-        $store = Stores::create($request->validated());
-        if ($store) {
+        $store = Store::create($request->validated());
+        if ($store && $request->storages) {
             foreach ($request->storages as $storage) {
-                storage_capacity::create([
-                    'store_id' => $store->id,
+                $store->storageCapacity()->create([
                     'type' => $storage['type'],
                     'unit' => $storage['unit'],
                     'capacity' => $storage['capacity'],
                 ]);
             }
         }
-        $stores = Stores::get();
         return StoreResource::make($store)
             ->additional([
-                'stores' => StoreResource::collection($stores),
                 'message' => "تم إانشاء المخزن بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * show
+     * @param  Store $store
+     * @return StoreResource
      */
     public function show(
-        Stores $store
+        Store $store
     ): StoreResource {
         return StoreResource::make($store)
             ->additional([
@@ -78,23 +71,39 @@ class StoreController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  UpdateRequest $request,
+     * @param  Store $store
+     * @return StoreResource
      */
-    public function update(Request $request, $id)
-    {
-        //
+    public function update(
+        UpdateRequest $request,
+        Store $store
+    ) {
+        $storeUpdated = $store->update($request->validated());
+        if ($storeUpdated && $request->storages) {
+            $store->storageCapacity()->delete();
+            foreach ($request->storages as $storage) {
+                $store->storageCapacity()->create([
+                    'type' => $storage['type'],
+                    'unit' => $storage['unit'],
+                    'capacity' => $storage['capacity'],
+                ]);
+            }
+        }
+        return StoreResource::make($store)
+            ->additional([
+                'message' => "تم تعديل المخزن بنجاح",
+                'status' => Response::HTTP_OK
+            ]);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * destroy.
+     * @param Store $store
+     * @return JsonResponse
      */
     public function destroy(
-        Stores $store
+        Store $store
     ): JsonResponse {
         if ($store->delete()) {
             return response()->json([

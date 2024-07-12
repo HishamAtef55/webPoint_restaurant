@@ -5,7 +5,7 @@
         <h2 class="page-title">{{ $title }}</h2>
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6" id="storeModal">
                     <div class="bg-light p-2 rounded shadow">
                         <div class="row">
                             <div class="col-md-6 mt-3">
@@ -195,8 +195,8 @@
                             <tbody>
                                 @if ($stores->isNotEmpty())
                                     @foreach ($stores as $store)
-                                        <tr>
-                                            <th>{{ $store->id }}</th>
+                                        <tr id="sid{{ $store->id }}">
+                                            <td>{{ $store->id }}</td>
                                             <td>{{ $store->name }}</td>
                                             <td>{{ $store->phone ?? '-' }}</td>
                                             <td>{{ $store->address ?? '-' }}</td>
@@ -234,8 +234,9 @@
         </div>
     </section>
 
-    <!-- Edit store odal -->
-    <div class="modal fade" id="storeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- view store odal -->
+    <div class="modal fade" id="viewModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -273,29 +274,242 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="bg-light p-2 rounded shadow mt-4">
-                            <!-- <h4>طريقة التخزين</h4> -->
+                        <div class="col-md-12">
+                            <div class="bg-light p-2 rounded shadow mt-4">
+                                <!-- <h4>طريقة التخزين</h4> -->
+                                <table class="store-table">
+                                    <table class="store-table">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input method-check" type="checkbox"
+                                                            value="تجميد" id="view_freeze_method" name="storage_method">
+                                                        <label class="form-check-label" for="view_freeze_method">
+                                                            تجميد
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="view_freeze_unit" class="select-label">الوحدة</label>
+                                                    <select class="form-select unit" id="view_freeze_unit"
+                                                        name="storage_unit">
+                                                        <option selected disabled>اختر نوع الوحدة</option>
+                                                        <option value="كيلو">كيلو</option>
+                                                        <option value="لتر">لتر</option>
+                                                        <option value="عدد">عدد</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-form">
+                                                        <input type="text" class="form-control" name="capacity"
+                                                            id="view_freeze_capacity">
+                                                        <label for="view_freeze_capacity"> السعة</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input method-check" type="checkbox"
+                                                            value="تبريد" id="view_cool_method" name="storage_method">
+                                                        <label class="form-check-label" for="view_cool_method">
+                                                            تبريد
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="view_cool_unit" class="select-label">الوحدة</label>
+                                                    <select class="form-select unit" id="view_cool_unit"
+                                                        name="storage_unit">
+                                                        <option selected disabled>اختر نوع الوحدة</option>
+                                                        <option value="كيلو">كيلو</option>
+                                                        <option value="لتر">لتر</option>
+                                                        <option value="عدد">عدد</option>
+                                                    </select>
+
+                                                </td>
+                                                <td>
+                                                    <div class="custom-form">
+                                                        <input type="text" class="form-control" name="capacity"
+                                                            id="view_cool_capacity">
+                                                        <label for="view_cool_capacity"> السعة</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input method-check" type="checkbox"
+                                                            value="أرضية" id="view_floor_method" name="storage_method">
+                                                        <label class="form-check-label" for="view_floor_method">
+                                                            أرضية
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="view_floor_unit" class="select-label">الوحدة</label>
+                                                    <select class="form-select unit" name="storage_unit"
+                                                        id="view_floor_unit">
+                                                        <option selected disabled>اختر نوع الوحدة</option>
+                                                        <option value="كيلو">كيلو</option>
+                                                        <option value="لتر">لتر</option>
+                                                        <option value="عدد">عدد</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-form">
+                                                        <input type="text" class="form-control" name="capacity"
+                                                            id="view_floor_capacity">
+                                                        <label for="view_floor_capacity"> السعة</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input method-check" type="checkbox"
+                                                            value="أرفف" id="view_shelf_method" name="storage_method">
+                                                        <label class="form-check-label" for="view_shelf_method">
+                                                            أرفف
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="view_shelf_unit" class="select-label">الوحدة</label>
+                                                    <select class="form-select unit" name="storage_unit"
+                                                        id="view_shelf_unit">
+                                                        <option selected disabled>اختر نوع الوحدة</option>
+                                                        <option value="كيلو">كيلو</option>
+                                                        <option value="لتر">لتر</option>
+                                                        <option value="عدد">عدد</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-form">
+                                                        <input type="text" class="form-control" name="capacity"
+                                                            id="view_shelf_capacity">
+                                                        <label for="view_shelf_capacity"> السعة</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input method-check" type="checkbox"
+                                                            value="اخري" id="view_other_method" name="storage_method">
+                                                        <label class="form-check-label" for="view_other_method">
+                                                            اخري
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <label for="view_other_unit" class="select-label">الوحدة</label>
+                                                    <select class="form-select unit" name="storage_unit"
+                                                        id="view_other_unit">
+                                                        <option selected disabled>اختر نوع الوحدة</option>
+                                                        <option value="كيلو">كيلو</option>
+                                                        <option value="لتر">لتر</option>
+                                                        <option value="عدد">عدد</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-form">
+                                                        <input type="text" class="form-control" name="capacity"
+                                                            id="view_other_capacity">
+                                                        <label for="view_other_capacity"> السعة</label>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- edit store odal -->
+    <div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="model-body">
+                    <div class="bg-light p-2 rounded shadow">
+                        <div class="row">
+                            <div class="col-md-6 mt-3">
+                                <div class="custom-form">
+                                    <input type="text" name="id" id="id" disabled>
+                                    <label for="id">رقم المخزن</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="custom-form position-relative">
+                                    <input type="text" name="name" id="name">
+                                    <label for="name">اسم المخزن</label>
+                                    <ul class="search-result"></ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="custom-form">
+                                    <input type="text" name="phone" id="phone">
+                                    <label for="phone">تليفون</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-3">
+                                <div class="custom-form">
+                                    <input type="text" name="address" id="address">
+                                    <label for="address">العنوان</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-light p-2 rounded shadow mt-4">
+
+                        <!-- <h4>طريقة التخزين</h4> -->
+                        <table class="store-table">
                             <table class="store-table">
                                 <tbody>
                                     <tr>
                                         <td>
                                             <div class="form-check">
                                                 <input class="form-check-input method-check" type="checkbox"
-                                                    value="تجميد" id="freeze_method" name="storage_method_model">
-                                                <label class="form-check-label" for="freeze_method">
+                                                    value="تجميد" id="edit_freeze_method" name="storage_method">
+                                                <label class="form-check-label" for="edit_freeze_method">
                                                     تجميد
                                                 </label>
                                             </div>
                                         </td>
                                         <td>
-                                            <label for="freeze" class="select-label">الوحدة</label>
-                                            <select class="form-select" name="storage_unit_model" id="freeze">
+                                            <label for="edit_freeze_unit" class="select-label">الوحدة</label>
+                                            <select class="form-select unit" id="edit_freeze_unit" name="storage_unit">
+                                                <option selected disabled>اختر نوع الوحدة</option>
+                                                <option value="كيلو">كيلو</option>
+                                                <option value="لتر">لتر</option>
+                                                <option value="عدد">عدد</option>
+                                            </select>
                                         </td>
                                         <td>
                                             <div class="custom-form">
-                                                <input type="text" class="form-control" name="storage_capacity_model"
-                                                    id="freeze_capacity">
-                                                <label for="freeze_capacity"> السعة</label>
+                                                <input type="text" class="form-control" name="capacity"
+                                                    id="edit_freeze_capacity">
+                                                <label for="edit_freeze_capacity"> السعة</label>
                                             </div>
                                         </td>
                                     </tr>
@@ -303,103 +517,122 @@
                                         <td>
                                             <div class="form-check">
                                                 <input class="form-check-input method-check" type="checkbox"
-                                                    value="تبريد" id="cool_method" name="storage_method_model">
-                                                <label class="form-check-label" for="cool_method">
+                                                    value="تبريد" id="edit_cool_method" name="storage_method">
+                                                <label class="form-check-label" for="edit_cool_method">
                                                     تبريد
                                                 </label>
                                             </div>
                                         </td>
                                         <td>
-                                            <label for="cool" class="select-label">الوحدة</label>
-                                            <select class="form-select unit"name="storage_unit_model" id="cool">
+                                            <label for="edit_cool_unit" class="select-label">الوحدة</label>
+                                            <select class="form-select unit" id="edit_cool_unit" name="storage_unit">
+                                                <option selected disabled>اختر نوع الوحدة</option>
+                                                <option value="كيلو">كيلو</option>
+                                                <option value="لتر">لتر</option>
+                                                <option value="عدد">عدد</option>
                                             </select>
 
                                         </td>
                                         <td>
                                             <div class="custom-form">
-                                                <input type="text" class="form-control" name="storage_capacity_model"
-                                                    id="cool_capacity">
-                                                <label for="cool_capacity"> السعة</label>
+                                                <input type="text" class="form-control" name="capacity"
+                                                    id="edit_cool_capacity">
+                                                <label for="edit_cool_capacity"> السعة</label>
                                             </div>
                                         </td>
                                     </tr>
+
                                     <tr>
                                         <td>
                                             <div class="form-check">
                                                 <input class="form-check-input method-check" type="checkbox"
-                                                    value="أرضية" id="floor_method" name="storage_method_model">
-                                                <label class="form-check-label" for="floor_method">
+                                                    value="أرضية" id="edit_floor_method" name="storage_method">
+                                                <label class="form-check-label" for="edit_floor_method">
                                                     أرضية
                                                 </label>
                                             </div>
                                         </td>
                                         <td>
-                                            <label for="floor" class="select-label">الوحدة</label>
-                                            <select class="form-select" name="storage_unit_model" id="floor">
+                                            <label for="edit_floor_unit" class="select-label">الوحدة</label>
+                                            <select class="form-select unit" name="storage_unit" id="edit_floor_unit">
+                                                <option selected disabled>اختر نوع الوحدة</option>
+                                                <option value="كيلو">كيلو</option>
+                                                <option value="لتر">لتر</option>
+                                                <option value="عدد">عدد</option>
                                             </select>
                                         </td>
                                         <td>
                                             <div class="custom-form">
-                                                <input type="text" class="form-control" name="storage_capacity_model"
-                                                    id="floor_capacity">
-                                                <label for="floor_capacity"> السعة</label>
+                                                <input type="text" class="form-control" name="capacity"
+                                                    id="edit_floor_capacity">
+                                                <label for="edit_floor_capacity"> السعة</label>
                                             </div>
                                         </td>
                                     </tr>
+
                                     <tr>
                                         <td>
                                             <div class="form-check">
                                                 <input class="form-check-input method-check" type="checkbox"
-                                                    value="أرفف" id="shelf_method" name="storage_method_model">
-                                                <label class="form-check-label" for="shelf_method">
+                                                    value="أرفف" id="edit_shelf_method" name="storage_method">
+                                                <label class="form-check-label" for="edit_shelf_method">
                                                     أرفف
                                                 </label>
                                             </div>
                                         </td>
                                         <td>
-                                            <label for="shelf" class="select-label">الوحدة</label>
-                                            <select class="form-select" name="storage_unit_model" id="shelf">
+                                            <label for="edit_shelf_unit" class="select-label">الوحدة</label>
+                                            <select class="form-select unit" name="storage_unit" id="edit_shelf_unit">
+                                                <option selected disabled>اختر نوع الوحدة</option>
+                                                <option value="كيلو">كيلو</option>
+                                                <option value="لتر">لتر</option>
+                                                <option value="عدد">عدد</option>
                                             </select>
                                         </td>
                                         <td>
                                             <div class="custom-form">
-                                                <input type="text" class="form-control" name="storage_capacity_model"
-                                                    id="shelf_capacity">
-                                                <label for="shelf_capacity"> السعة</label>
+                                                <input type="text" class="form-control" name="capacity"
+                                                    id="edit_shelf_capacity">
+                                                <label for="edit_shelf_capacity"> السعة</label>
                                             </div>
                                         </td>
                                     </tr>
+
                                     <tr>
                                         <td>
                                             <div class="form-check">
                                                 <input class="form-check-input method-check" type="checkbox"
-                                                    value="اخري" id="other_method" name="storage_method_model">
-                                                <label class="form-check-label" for="other_method">
+                                                    value="اخري" id="edit_other_method" name="storage_method">
+                                                <label class="form-check-label" for="edit_other_method">
                                                     اخري
                                                 </label>
                                             </div>
                                         </td>
                                         <td>
-                                            <label for="other" class="select-label">الوحدة</label>
-                                            <select class="form-select" name="storage_unit_model" id="other">
+                                            <label for="edit_other_unit" class="select-label">الوحدة</label>
+                                            <select class="form-select unit" name="storage_unit" id="edit_other_unit">
+                                                <option selected disabled>اختر نوع الوحدة</option>
+                                                <option value="كيلو">كيلو</option>
+                                                <option value="لتر">لتر</option>
+                                                <option value="عدد">عدد</option>
                                             </select>
                                         </td>
                                         <td>
                                             <div class="custom-form">
-                                                <input type="text" class="form-control" name="storage_capacity_model"
-                                                    id="other_capacity">
-                                                <label for="other_capacity"> السعة</label>
+                                                <input type="text" class="form-control" name="capacity"
+                                                    id="edit_other_capacity">
+                                                <label for="edit_other_capacity"> السعة</label>
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <div class="d-grid gap-2 mx-auto mt-4">
-                        </div>
+                        </table>
+
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="update_store">تعديل</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
                 </div>
             </div>
