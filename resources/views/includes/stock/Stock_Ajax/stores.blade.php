@@ -1,15 +1,22 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let id = $('#store_id');
-    let name = $('#store_name');
-    let phone = $('#store_phone');
-    let address = $('#store_address');
     let tbody = $('.table-data tbody');
-    let branch = 0;
-
+    // create store
     $('#save_store').on('click', function() {
-        let methodChecks = $('input[name="storage_method"]:checked');
+        let id = $('#store_id');
+        let name = $('#store_name');
+        let phone = $('#store_phone');
+        let address = $('#store_address');
+        let branch = 0;
+        let methodChecks = $('#storeModal input[name="storage_method"]:checked');
         let storages = [];
+        let button = $(this);
+        let spinner = $(
+            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
+        );
+        let originalHtml = button.html();
+
+
         methodChecks.each(function() {
             let type = $(this).val()
             let trMethod = $(this).parents('tr');
@@ -25,44 +32,188 @@
             }
         });
 
+        button.html(spinner);
+        button.prop('disabled', true);
         $.ajax({
-            url: "{{ route('save.store') }}",
-            method: 'post',
+            type: 'POST',
+            url: "{{ route('stock.stores.store') }}",
+            dataType: 'json',
             data: {
-                _token,
+                "_token": "{{ csrf_token() }}",
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
-                storages,
+                storages: storages,
             },
-            success: function(data) {
-                if (data.status == 'true') {
-                    let html = '';
-                    tbody.empty();
-                    data.stores.forEach(store => {
-                        html += `<tr>
-                            <th>${store.id}</th>
-                            <td>${store.name || '-'}</td>
-                            <td>${store.phone || '-'}</td>
-                            <td>${store.address || '-'}</td>
-                        </tr>`;
-                    })
-                    tbody.html(html);
-                    id.val(data.new_store);
-                    name.val('');
-                    phone.val('');
-                    address.val('');
-                    $('input[type="checkbox"]').each(function() {
-                        $(this).prop('checked', false)
-                    })
-                    $('.unit').each(function() {
-                        $(this).find(' option:first-child').prop('selected', true)
-                    })
-                    $('input[name="capacity"]').each(function() {
-                        $(this).val('')
-                    })
+            success: function(response) {
+                if (response.status == 200) {
+                    newStore = `<tr id=sid${response.data.id}>
+                            <th>${response.data.id}</th>
+                            <td>${response.data.name || '-'}</td>
+                            <td>${response.data.phone || '-'}</td>
+                            <td>${response.data.address || '-'}</td>
+                            <td>
+                                    <button title="تعديل" class="btn btn-success"
+                                        data-id="${response.data.id}" id="edit_store">
 
-                    successMsg(data.msg);
+                                        <i class="far fa-edit"></i>
+                                    </button>
+
+                                    <button title="عرض" data-id="${response.data.id}" id="view_store"
+                                        class="btn btn-primary">
+
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+
+                                    </button>
+                                    <button class="btn btn-danger" id="delete_store"
+                                        data-id="${response.data.id}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                            </td>
+                        </tr>`;
+                    $('tbody tr').each(function() {
+                        if ($(this).find('td').attr('colspan') == '5') {
+                            $(this).remove();
+                        }
+                    });
+                    tbody.append(newStore);
+                }
+                id.val(response.data.id += 1);
+                name.val('');
+                phone.val('');
+                address.val('');
+                $('#storeModal input[type="checkbox"]').each(function() {
+                    // Uncheck the checkbox
+                    $(this).prop('checked', false);
+
+                    // Find the associated select element and reset it
+                    $(this).closest('tr').find('.unit').val($(this).closest('tr').find(
+                        '.unit option:first').val()).change();
+
+                    // Find the associated input field and clear its value
+                    $(this).closest('tr').find('input[name="capacity"]').val('');
+                });
+                successMsg(response.message);
+                checkForm();
+            },
+            error: function(reject) {
+                let response = $.parseJSON(reject.responseText);
+                $.each(response.errors, function(key, val) {
+                    errorMsg(val[0])
+                });
+                button.html(originalHtml);
+                button.prop('disabled', false);
+            },
+            complete: function(response) {
+                button.html(originalHtml);
+                button.prop('disabled', false);
+            }
+        });
+    });
+
+    // delete store
+    $(document).on('click', '#delete_store', function() {
+        const id = $(this).data('id');
+        const row = $(this).closest('tr');
+        Swal.fire({
+            title: 'حذف !',
+            text: 'هل انت متأكد من حذف المخزن',
+            icon: 'warning',
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            confirmButtonColor: '#5cb85c',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'لا',
+            confirmButtonText: 'نعم',
+            preConfirm: () => {
+                return new Promise((resolve) => {
+                    $.ajax({
+                        type: 'DELETE',
+                        url: '{{ url('stock/stores', '') }}' + '/' + id,
+                        dataType: 'json',
+                        data: {
+                            "_token": "{{ csrf_token() }}",
+                            id: id,
+                        },
+                        success: function(response) {
+                            if (response.status == 200) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: response.message,
+                                    icon: 'success',
+                                    timer: 2000
+                                });
+                                row.remove();
+                                resolve();
+                            }
+                        },
+                        error: function(error) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: error.responseJSON.message,
+                                icon: 'error',
+                                timer: 5000
+                            });
+                            resolve();
+                        },
+                        complete: function() {
+                            if (tbody.find('tr').length === 0) {
+                                tbody.append(
+                                    '<tr><td colspan="5">لا توجد مخازن</td></tr>'
+                                );
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    });
+
+    // view store
+    $(document).on('click', '#view_store', function() {
+        resetModal('#viewModal');
+        const id = $(this).data('id');
+
+        $.ajax({
+            type: 'GET',
+            url: '{{ url('stock/stores', '') }}' + '/' + id,
+            dataType: 'json',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: id
+            },
+            success: function(response) {
+                if (response.status == 200) {
+                    const store = response.data;
+
+
+
+                    // Set new values
+                    $('#viewModal #id').val(store.id);
+                    $('#viewModal #name').val(store.name);
+                    $('#viewModal #phone').val(store.phone);
+                    $('#viewModal #address').val(store.address);
+
+                    // Show the modal first
+                    $('#viewModal').modal('show');
+                    store.storage_methods.forEach(method => {
+                        const methodElement = $(
+                            `#viewModal input[name="storage_method"][value="${method.type}"]`
+                        );
+                        methodElement.prop('checked', true);
+
+                        const selectElement = methodElement.closest('tr').find(
+                            'select[name="storage_unit"]'
+                        );
+                        selectElement.val(method.unit)
+                            .change();
+
+                        const capacityElement = methodElement.closest('tr')
+                            .find(
+                                'input[name="capacity"]'
+                            );
+                        capacityElement.val(method.capacity);
+                    });
                     checkForm();
                 }
             },
@@ -73,44 +224,83 @@
                 });
             }
         });
-    });
 
-    $('#store_name').on('keyup', function() {
-        let query = $(this).val()
-        searchDb('search_store', query, $(this));
-    });
+    })
+    // edit store
+    $(document).on('click', '#edit_store', function(params) {
+        resetModal('#editModal');
+        const id = $(this).data('id');
 
-    $(document).on('click', '.search-result li', function(e) {
-        e.stopPropagation();
-        getData('get_store', $(this).attr('data-id'), function(data) {
-            id.val(data.id);
-            name.val(data.name);
-            phone.val(data.phone);
-            address.val(data.address);
-            $('input[type="checkbox"]').each(function() {
-                $(this).prop('checked', false)
-            })
-            $('.unit').each(function() {
-                $(this).find(' option:first-child').prop('selected', true)
-            })
-            $('input[name="capacity"]').each(function() {
-                $(this).val('')
-            })
-            data.storgecapacity.forEach(storage => {
-                let tableRow = $(`.method-check[value='${storage.type}']`).parents('tr');
-                tableRow.find('input[type="checkbox"]').prop('checked', true);
-                tableRow.find('input[type="text"]').val(storage.capacity);
-                tableRow.find(`select option[value='${storage.unit}']`).prop('selected', true)
-            });
-            $('#save_store').addClass('d-none');
-            $('#update_store').removeClass('d-none');
-            $('.search-result').html('');
+        $.ajax({
+            type: 'GET',
+            url: '{{ url('stock/stores', '') }}' + '/' + id,
+            dataType: 'json',
+            data: {
+                "_token": "{{ csrf_token() }}",
+                id: id
+            },
+            success: function(response) {
+                if (response.status == 200) {
+                    const store = response.data;
+
+
+                    // Set new values
+                    $('#editModal #id').val(store.id);
+                    $('#editModal #name').val(store.name);
+                    $('#editModal #phone').val(store.phone);
+                    $('#editModal #address').val(store.address);
+
+                    // Show the modal first
+                    $('#editModal').modal('show');
+                    store.storage_methods.forEach(method => {
+                        const methodElement = $(
+                            `#editModal input[name="storage_method"][value="${method.type}"]`
+                        );
+                        methodElement.prop('checked', true);
+
+                        const selectElement = methodElement.closest('tr').find(
+                            'select[name="storage_unit"]'
+                        );
+                        selectElement.val(method.unit)
+                            .change();
+
+                        const capacityElement = methodElement.closest('tr')
+                            .find(
+                                'input[name="capacity"]'
+                            );
+                        capacityElement.val(method.capacity);
+                    });
+                    checkForm();
+                    $('#editModal').find('.modal-footer #update_store').removeAttr('data-id').data(
+                        'id', store.id)
+
+                }
+            },
+            error: function(reject) {
+                let response = $.parseJSON(reject.responseText);
+                $.each(response.errors, function(key, val) {
+                    errorMsg(val[0])
+                });
+            }
         });
-    });
+    })
 
-    $('#update_store').on('click', function() {
-        let methodChecks = $('input[name="storage_method"]:checked');
+    // update store 
+    $(document).on('click', '#update_store', function(params) {
+        const id = $(this).data('id');
+        let name = $('#editModal').find('#name');
+        let phone = $('#editModal').find('#phone');
+        let address = $('#editModal').find('#address');
+        let branch = 0;
+        let methodChecks = $('#editModal input[name="storage_method"]:checked');
         let storages = [];
+        let button = $(this);
+        let spinner = $(
+            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
+        );
+        let originalHtml = button.html();
+
+
         methodChecks.each(function() {
             let type = $(this).val()
             let trMethod = $(this).parents('tr');
@@ -126,55 +316,39 @@
             }
         });
 
+        button.html(spinner);
+        button.prop('disabled', true);
         $.ajax({
-            url: "{{ route('update.store') }}",
-            method: 'post',
+            type: 'PUT',
+            url: '{{ url('stock/stores', '') }}' + '/' + id,
+            dataType: 'json',
             data: {
-                _token,
-                id: id.val(),
+                "_token": "{{ csrf_token() }}",
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
-                storages,
+                storages: storages,
             },
-            success: function(data) {
-                if (data.status == 'true') {
-                    let html = '';
-                    tbody.empty();
-                    data.stores.forEach(store => {
-                        html += `<tr>
-                            <th>${store.id}</th>
-                            <td>${store.name || '-'}</td>
-                            <td>${store.phone || '-'}</td>
-                            <td>${store.address || '-'}</td>
-                        </tr>`;
-                    })
-                    tbody.html(html);
-                    id.val(data.new_store);
-                    name.val('');
-                    phone.val('');
-                    address.val('');
-                    $('input[type="checkbox"]').each(function() {
-                        $(this).prop('checked', false)
-                    })
-                    $('.unit').each(function() {
-                        $(this).find(' option:first-child').prop('selected', true)
-                    })
-                    $('input[name="capacity"]').each(function() {
-                        $(this).val('')
-                    })
-                    $('#save_store').removeClass('d-none');
-                    $('#update_store').addClass('d-none');
-                    successMsg(data.msg);
-                    checkForm();
+            success: function(response) {
+                if (response.status == 200) {
+                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data.id)
+                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.name)
+                    $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.phone)
+                    $('#sid' + response.data.id + ' td:nth-child(4)').text(response.data.address)
+                    button.html(originalHtml);
+                    button.prop('disabled', false);
+                    successMsg(response.message);
+                    $('#editModal').modal('hide');
                 }
             },
             error: function(reject) {
                 let response = $.parseJSON(reject.responseText);
                 $.each(response.errors, function(key, val) {
-                    errorMsg(val[0]);
+                    errorMsg(val[0])
                 });
+                button.html(originalHtml);
+                button.prop('disabled', false);
             }
         });
-    });
+    })
 </script>

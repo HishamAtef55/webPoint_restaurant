@@ -97,4 +97,22 @@
 
 
     checkForm();
+
+    // Function to reset modal content
+    function resetModal(modalId) {
+        // Clear all input fields
+        $(`${modalId} #id, ${modalId} #name, ${modalId} #phone, ${modalId} #address`).val('');
+
+        $(` ${modalId} input[type="checkbox"]`).each(function() {
+            // Uncheck the checkbox
+            $(this).prop('checked', false);
+
+            // Find the associated select element and reset it
+            $(this).closest('tr').find('.unit').val($(this).closest('tr').find(
+                '.unit option:first').val()).change();
+
+            // Find the associated input field and clear its value
+            $(this).closest('tr').find('input[name="capacity"]').val('');
+        });
+    }
 </script>

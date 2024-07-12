@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Stock\Stores;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,9 +25,9 @@ class StoreRequest extends FormRequest
     {
         return
             [
-                'name' => 'required', 'string', 'unique:stock_stores,name',
-                'phone' => 'required', 'integer',
-                'address' => 'required', 'string',
+                'name' => ['required', 'string', 'unique:stock_stores,name'],
+                'phone' => ['nullable', 'numeric'],
+                'address' => ['nullable', 'string'],
             ];
     }
 
@@ -36,8 +36,6 @@ class StoreRequest extends FormRequest
         return
             [
                 'name.required' => __('برجاء ادخال اسم المخزن'),
-                'phone.required' => __('برجاء ادخال رقم التليفون'),
-                'address.required' => __('برجاء ادخال العنوان'),
                 'name.unique'   => __('هذا المخزن موجود بالفعل'),
             ];
     }
