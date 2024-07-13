@@ -61,7 +61,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="3">لا يوجد أقسام</td>
+                                        <td colspan="3">لا توجد مجموعات رئيسية</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -131,5 +131,5 @@
             </div>
         </div>
     </div>
-    @include('includes.stock.Stock_Ajax.mainGroup')
+    @include('includes.stock.Stock_Ajax.mainGroups')
 @endsection

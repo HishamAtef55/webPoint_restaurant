@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Stock\MainGroups;
+namespace App\Http\Requests\Stock\SubGroups;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMainGroupRequest extends FormRequest
+class UpdateSubGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,17 +24,12 @@ class StoreMainGroupRequest extends FormRequest
     public function rules()
     {
         return
-            [
-                'name' => ['required', 'string', 'unique:stock_groups,name'],
-            ];
+            [];
     }
 
     public function messages()
     {
         return
-            [
-                'name.required' => __('برجاء ادخال اسم المجوعة'),
-                'name.unique'   => __('هذة المجموعة موجودة بالفعل'),
-            ];
+            [];
     }
 }

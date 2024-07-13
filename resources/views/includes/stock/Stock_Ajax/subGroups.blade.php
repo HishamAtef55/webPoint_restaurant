@@ -8,7 +8,6 @@
 
     $('#save_group').on('click', function() {
         $.ajax({
-            url: "{{route('save.groups')}}",
             method: 'post',
             data: {
                 _token,
@@ -20,7 +19,9 @@
             success: function(data) {
                 if (data.status == 'true') {
                     let optionName = main_group.find(`option[value="${main_group.val()}"]`).text()
-                    let html = $(`<tr><th>${id.val()}</th><td>${optionName}</td><td>${name.val()}</td><td>${from.val()}</td><td>${to.val()}</td></tr>`)
+                    let html = $(
+                        `<tr><th>${id.val()}</th><td>${optionName}</td><td>${name.val()}</td><td>${from.val()}</td><td>${to.val()}</td></tr>`
+                        )
                     $('tbody').find('tr.not-found').length ? $('tr.not-found').remove() : '';
                     $('tbody').append(html)
                     id.val(data.new_group);
@@ -78,7 +79,6 @@
 
     $('#update_group').on('click', function() {
         $.ajax({
-            url: "{{route('update.groups')}}",
             method: 'post',
             data: {
                 _token,

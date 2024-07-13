@@ -29,7 +29,7 @@
         button.html(spinner).prop('disabled', true);
         $.ajax({
             type: 'POST',
-            url: "{{ route('stock.maingroups.store') }}",
+            url: "{{ route('stock.main.groups.store') }}",
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -97,7 +97,7 @@
                 return new Promise((resolve) => {
                     $.ajax({
                         type: 'DELETE',
-                        url: '{{ url('stock/maingroups', '') }}' + '/' +
+                        url: '{{ url('stock/main/groups', '') }}' + '/' +
                             id,
                         dataType: 'json',
                         data: {
@@ -129,7 +129,7 @@
                         complete: function() {
                             if (tbody.find('tr').length === 0) {
                                 tbody.append(
-                                    '<tr><td colspan="5">لا يوجد موردين</td></tr>'
+                                    '<tr><td colspan="3">لا توجد مجموعات رئيسية</td></tr>'
                                 );
                             }
                         }
@@ -149,7 +149,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '{{ url('stock/maingroups', '') }}' + '/' + id,
+            url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -180,7 +180,7 @@
         // Call API
         $.ajax({
             type: 'GET',
-            url: '{{ url('stock/maingroups', '') }}' + '/' + id,
+            url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -218,7 +218,7 @@
         button.prop('disabled', true);
         $.ajax({
             type: 'PUT',
-            url: '{{ url('stock/maingroups', '') }}' + '/' + id,
+            url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
