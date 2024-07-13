@@ -54,6 +54,6 @@ class Store extends Model
      */
     public function sections(): HasMany
     {
-        return $this->hasMany(StockSection::class, 'store_id', 'id');
+        return $this->hasMany(Section::class, 'store_id', 'id');
     }
 }

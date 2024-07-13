@@ -28,7 +28,7 @@ class UpdateRequest extends FormRequest
             [
                 'name' => [
                     'nullable', 'string',
-                    // Rule::unique('stock_stores')->ignore($this->route('id'))
+                     Rule::unique('stock_stores')->ignore($this->route('store'))
                 ],
                 'phone' => ['nullable', 'numeric'],
                 'address' => ['nullable', 'string'],

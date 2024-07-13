@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Stock\Groups\GroupRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Requests\Stock\Sections\StoreSectionRequest;
+use App\Http\Requests\Stock\Sections\UpdateSectionRequest;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SectionController extends Controller
@@ -26,11 +27,11 @@ class SectionController extends Controller
      */
     public function index(): View
     {
-        $lastStoreNr = Store::latest()->first()?->id + 1 ?? 1;
+        $lastSectionNr = Section::latest()->first()?->id + 1 ?? 1;
         $branchs = Branch::get();
         $stores  = Store::get();
         $sections = Section::with('branch', 'branch')->get();
-        return view('stock.Section.index', compact(['lastStoreNr', 'branchs', 'stores', 'sections']));
+        return view('stock.Section.index', compact(['lastSectionNr', 'branchs', 'stores', 'sections']));
     }
 
     /**
@@ -62,7 +63,7 @@ class SectionController extends Controller
     ): SectionResource {
 
 
-        $validatedData = $request->validated(); // Validate the request data
+        $validatedData = $request->validated();
         $groupIds = array_map(function ($item) {
             return $item['id'];
         }, $validatedData['groupIds']);
@@ -70,7 +71,7 @@ class SectionController extends Controller
         $section->groups()->attach($groupIds);
         return SectionResource::make($section)
             ->additional([
-                'message' => "تم إانشاء المخزن بنجاح",
+                'message' => "تم إنشاء القسم بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
@@ -89,28 +90,28 @@ class SectionController extends Controller
                 'status' => Response::HTTP_OK
             ]);
     }
-
     /**
-     * Show the form for editing the specified resource.
+     * update
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UpdateSectionRequest $request
+     * @return SectionResource
      */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+    public function update(
+        UpdateSectionRequest $request,
+        Section $section
+    ): SectionResource {
+        $validatedData = $request->validated();
+        $groupIds = array_map(function ($item) {
+            return $item['id'];
+        }, $validatedData['groupIds']);
+        $section->groups()->detach();
+        $section->update($validatedData);
+        $section->groups()->attach($groupIds);
+        return SectionResource::make($section)
+            ->additional([
+                'message' => "تم تعديل القسم بنجاح",
+                'status' => Response::HTTP_OK
+            ]);
     }
 
     /**

@@ -2,61 +2,94 @@
 
 namespace App\Http\Controllers\Stock;
 
+
+use App\Models\Stock\Supplier;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SupplierRequest;
-use App\Models\Stores;
-use App\Traits\MainFunction;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Models\Suppliers;
+use App\Http\Requests\Stock\Suppliers\UpdateSupplierRequest;
+use App\Http\Resources\Stock\SupplierResource;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Requests\Stock\Suppliers\StoreSupplierRequest;
 
 class SuppliersController extends Controller
 {
-    use MainFunction;
-    public function __construct()
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
-        $this->middleware('auth');
+        $lastSupplierNr = Supplier::latest()->first()?->id + 1 ?? 1;
+        $supplires = Supplier::get();
+        return view('stock.Suppliers.index', compact('lastSupplierNr', 'supplires'));
     }
-    private function getNextUserId()
-    {
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_suppliers'");
-        $nextUserId = $statement[0]->Auto_increment;
-        return $nextUserId;
-    }
-    public function view_suppliers(){
-        $new_supplier = $this->getNextUserId();
-        $supplires = Suppliers::orderBy('id','DESC')->get();
-        return view('stock.stock.suppliers',compact('new_supplier','supplires'));
-    }
-    public function save_suppliers(SupplierRequest $request){
-        $save =Suppliers::create([
-            'name'=>$request->name,
-            'phone'=>$request->phone,
-            'address'=>$request->address,
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  StoreSupplierRequest $request
+     * @return SupplierResource
+     */
+    public function store(
+        StoreSupplierRequest $request
+    ): SupplierResource {
+        return SupplierResource::make(
+            Supplier::create($request->validated())
+        )->additional([
+            'message' => "تم إنشاء المورد بنجاح",
+            'status' => Response::HTTP_OK
         ]);
-        $new_supplier = $this->getNextUserId();
-        $supplires = Suppliers::orderBy('id','DESC')->get();
-        if($save){return response()->json(['status'=>'true','new_supplier'=>$new_supplier,'msg'=>'تم حفظ المورد بنجاح','suppliers'=>$supplires]);}
     }
-    public function search_suppliers(Request $request){
-        $query =  $request['query'];
-        $stores = Suppliers::where('name', 'LIKE', '%' . $query . "%")->select(['id','name'])->get();
-        return response()->json(['status'=>'true','msg'=>'All Data For Search','data'=>$stores]);
-    }
-    public function get_suppliers(Request $request){
-        $supplier = Suppliers::limit(1)->where(['id'=>$request->id])->first();
-        return response()->json(['status'=>'true','msg'=>'All Data For Search','data'=>$supplier]);
-    }
-    public function update_suppliers(Request $request){
-        if($request->name != null){
-            $save =Suppliers::where(['id'=>$request->id])->update([
-                'name'=>$request->name,
-                'phone'=>$request->phone,
-                'address'=>$request->address,
+
+    /**
+     * show
+     * @param Supplier $supplier
+     * @return StoreResource
+     */
+    public function show(
+        Supplier $supplier
+    ): SupplierResource {
+        return SupplierResource::make($supplier)
+            ->additional([
+                'message' => null,
+                'status' => Response::HTTP_OK
             ]);
-            $new_supplier = $this->getNextUserId();
-            $supplires = Suppliers::orderBy('id','DESC')->get();
-            if($save){return response()->json(['status'=>'true','new_supplier'=>$new_supplier,'msg'=>'تم تعديل المورد بنجاح','suppliers'=>$supplires]);}
+    }
+
+    /**
+     * update.
+     *
+     * @param  UpdateSupplierRequest $request
+     * @param  Supplier $supplier
+     * @return SupplierResource
+     */
+    public function update(
+        UpdateSupplierRequest $request,
+        Supplier $supplier
+    ): SupplierResource {
+        if ($supplier->update($request->validated())) {
+            return SupplierResource::make($supplier)
+                ->additional([
+                    'message' => 'تم تعديل بيانات المورد',
+                    'status' => Response::HTTP_OK
+                ]);
+        }
+    }
+
+    /**
+     * destroy.
+     * @param Supplier $supplier
+     * @return JsonResponse
+     */
+    public function destroy(
+        Supplier $supplier
+    ): JsonResponse {
+        if ($supplier->delete()) {
+            return response()->json([
+                'message' => 'تم حذف المورد',
+                'status' => Response::HTTP_OK
+            ]);
         }
     }
 }

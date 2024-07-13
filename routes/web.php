@@ -17,12 +17,11 @@ use App\Http\Controllers\Admin\ToGoController;
 use App\Http\Controllers\Menu\LoginController;
 use App\Http\Controllers\Menu\ShiftController;
 use App\Http\Controllers\Admin\AdminController;
+
+
 use App\Http\Controllers\Auth\LogoutController;
-
-
 use App\Http\Controllers\Menu\MovetoController;
 use App\Http\Controllers\Menu\TablesController;
-use App\Http\Controllers\Stock\StockController;
 use App\Http\Controllers\Stock\StoreController;
 use App\Http\Controllers\Admin\GenralController;
 use App\Http\Controllers\Admin\OthersController;
@@ -33,15 +32,15 @@ use App\Http\Controllers\Menu\DeliveryController;
 use App\Http\Controllers\Stock\OrdersControllers;
 use App\Http\Controllers\Stock\SectionController;
 use App\Http\Controllers\Admin\DeleveryController;
+
 use App\Http\Controllers\Admin\DiscountController;
-
 use App\Http\Controllers\Stock\ExchangeController;
-use App\Http\Controllers\Stock\MaterialController;
 
+use App\Http\Controllers\Stock\MaterialController;
 use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Admin\MinchargeController;
-use App\Http\Controllers\Reports\ReportsController;
 
+use App\Http\Controllers\Reports\ReportsController;
 use App\Http\Controllers\Stock\MainGroupController;
 use App\Http\Controllers\Stock\PurchasesController;
 use App\Http\Controllers\Stock\SuppliersController;
@@ -62,8 +61,8 @@ use App\Http\Controllers\Admin\ExpensesCategoryController;
 use App\Http\Controllers\Stock\BackToSuppliersControllers;
 use App\Http\Controllers\Stock\OpenBalanceDailyController;
 use App\Http\Controllers\Reports\SalesCurrentDayController;
-use App\Http\Controllers\StockReports\HalkReportsController;
 
+use App\Http\Controllers\StockReports\HalkReportsController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\Stock\ComponentDetailsItemController;
@@ -76,7 +75,6 @@ use App\Http\Controllers\StockReports\SuppliersReportsController;
 use App\Http\Controllers\StockReports\BackStoresReportsController;
 use App\Http\Controllers\StockReports\OperationsReportsController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,6 +86,7 @@ use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 use App\Http\Controllers\StockReports\ManufacturingReportsController;
 use App\Http\Controllers\Admin\TablesController as AdminTablesController;
 
@@ -504,30 +503,30 @@ Route::group(
     'as' => 'stock.'
   ],
   function () {
+    /*
+    * @route('stores)
+    */
     Route::resource('stores', StoreController::class);
+    /*
+    * @route('sections)
+    */
     Route::resource('sections', SectionController::class);
     Route::post('/sections/groups', [SectionController::class, 'getSectionGroups'])->name('sections.groups');
+    /*
+    * @route('suppliers)
+    */
+    Route::resource('suppliers', SuppliersController::class);
   }
 );
 
-################################## Sections ############################################
-// Route::group(['prefix' => 'stock', 'controller' => SectionController::class], function () {
-//   Route::get('/sections', 'view_section')->name('view.section');
-//   Route::post('/get_group', 'get_group')->name('get_group');
-//   Route::post('/save_section', 'save_section')->name('save_section');
-//   Route::post('/search_section', 'search_section')->name('search.section');
-//   Route::post('/get_section', 'get_section');
-//   Route::post('/update_section', 'update_section')->name('update.section');
-// });
-
 ################################## suppliers ###########################################
-Route::group(['prefix' => 'stock', 'controller' => SuppliersController::class], function () {
-  Route::get('/suppliers', 'view_suppliers')->name('view.suppliers');
-  Route::post('/save_suppliers', 'save_suppliers')->name('save.suppliers');
-  Route::post('/search_suppliers', 'search_suppliers');
-  Route::post('/get_suppliers', 'get_suppliers')->name('get.suppliers');
-  Route::post('/update_suppliers', 'update_suppliers')->name('update.suppliers');
-});
+// Route::group(['prefix' => 'stock', 'controller' => SuppliersController::class], function () {
+//   Route::get('/suppliers', 'view_suppliers')->name('view.suppliers');
+//   Route::post('/save_suppliers', 'save_suppliers')->name('save.suppliers');
+//   Route::post('/search_suppliers', 'search_suppliers');
+//   Route::post('/get_suppliers', 'get_suppliers')->name('get.suppliers');
+//   Route::post('/update_suppliers', 'update_suppliers')->name('update.suppliers');
+// });
 
 ##################################### Main Group ####################################
 Route::group(['prefix' => 'stock', 'controller' => MainGroupController::class], function () {

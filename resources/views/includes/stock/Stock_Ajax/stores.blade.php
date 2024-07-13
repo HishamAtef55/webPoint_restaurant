@@ -1,6 +1,31 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
     let tbody = $('.table-data tbody');
+    // Function to reset modal content
+    function resetModal(modalId) {
+        // Clear all input fields
+        $(`${modalId} #id, ${modalId} #name, ${modalId} #phone, ${modalId} #address`).val('');
+
+        $(` ${modalId} input[type="checkbox"]`).each(function() {
+            // Uncheck the checkbox
+            $(this).prop('checked', false);
+
+            // Find the associated select element and reset it
+            $(this).closest('tr').find('.unit').val($(this).closest('tr').find(
+                '.unit option:first').val()).change();
+
+            // Find the associated input field and clear its value
+            $(this).closest('tr').find('input[name="capacity"]').val('');
+        });
+    }
+    // Common function to handle AJAX errors
+    function handleAjaxError(reject) {
+        let response = $.parseJSON(reject.responseText);
+        $.each(response.errors, function(key, val) {
+            errorMsg(val[0]);
+        });
+    }
+
     // create store
     $(document).on('click', '#save_store', function() {
         let id = $('#store_id');
@@ -48,7 +73,7 @@
             success: function(response) {
                 if (response.status == 200) {
                     newStore = `<tr id=sid${response.data.id}>
-                            <th>${response.data.id}</th>
+                            <td>${response.data.id}</td>
                             <td>${response.data.name || '-'}</td>
                             <td>${response.data.phone || '-'}</td>
                             <td>${response.data.address || '-'}</td>
@@ -96,17 +121,9 @@
                 successMsg(response.message);
                 checkForm();
             },
-            error: function(reject) {
-                let response = $.parseJSON(reject.responseText);
-                $.each(response.errors, function(key, val) {
-                    errorMsg(val[0])
-                });
-                button.html(originalHtml);
-                button.prop('disabled', false);
-            },
+            error: handleAjaxError,
             complete: function(response) {
-                button.html(originalHtml);
-                button.prop('disabled', false);
+                button.html(originalHtml).prop('disabled', false);
             }
         });
     });
@@ -217,12 +234,7 @@
                     checkForm();
                 }
             },
-            error: function(reject) {
-                let response = $.parseJSON(reject.responseText);
-                $.each(response.errors, function(key, val) {
-                    errorMsg(val[0])
-                });
-            }
+            error: handleAjaxError,
         });
 
     })
@@ -276,12 +288,7 @@
 
                 }
             },
-            error: function(reject) {
-                let response = $.parseJSON(reject.responseText);
-                $.each(response.errors, function(key, val) {
-                    errorMsg(val[0])
-                });
-            }
+            error: handleAjaxError,
         });
     })
 
@@ -335,19 +342,13 @@
                     $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.name)
                     $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.phone)
                     $('#sid' + response.data.id + ' td:nth-child(4)').text(response.data.address)
-                    button.html(originalHtml);
-                    button.prop('disabled', false);
                     successMsg(response.message);
                     $('#editModal').modal('hide');
                 }
             },
-            error: function(reject) {
-                let response = $.parseJSON(reject.responseText);
-                $.each(response.errors, function(key, val) {
-                    errorMsg(val[0])
-                });
-                button.html(originalHtml);
-                button.prop('disabled', false);
+            error: handleAjaxError,
+            complete: function(response) {
+                button.html(originalHtml).prop('disabled', false);
             }
         });
     })

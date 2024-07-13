@@ -9,7 +9,7 @@
                     <form id="storeSection">
                         <div class="bg-light p-2 rounded shadow">
                             <div class="custom-form mt-3">
-                                <input type="text" name="section_id" id="section_id" value="{{ $lastStoreNr }}" disabled>
+                                <input type="text" name="section_id" id="section_id" value="{{ $lastSectionNr }}" disabled>
                                 <label for="section_id">رقم القسم</label>
                             </div>
                             <div class="custom-form mt-3 position-relative">

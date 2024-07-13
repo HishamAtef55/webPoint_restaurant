@@ -48,7 +48,7 @@ class StoreController extends Controller
         }
         return StoreResource::make($store)
             ->additional([
-                'message' => "تم إانشاء المخزن بنجاح",
+                'message' => "تم إنشاء المخزن بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
