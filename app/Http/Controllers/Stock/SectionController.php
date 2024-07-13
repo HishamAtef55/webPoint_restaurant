@@ -1,95 +1,131 @@
 <?php
 
 namespace App\Http\Controllers\Stock;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Http\Requests\SectionRequest;
-use App\Models\Branch;
 use App\Models\Group;
-use App\Models\Stores;
-use App\Models\stocksection;
-use App\Models\section_group;
-use App\Models\section_store;
+use App\Models\Branch;
+use Illuminate\View\View;
+use App\Models\Stock\Store;
+use Illuminate\Http\Request;
+use App\Models\Stock\Section;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Stock\GroupResource;
+use App\Http\Resources\Stock\SectionResource;
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Stock\Groups\GroupRequest;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Requests\Stock\Sections\StoreSectionRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SectionController extends Controller
 {
-    public function __construct(){
-        $this->middleware('auth');
-    }
-    private function getNextUserId()
+    /**
+     * index
+     *
+     * @return View
+     */
+    public function index(): View
     {
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_sections'");
-        $nextUserId = $statement[0]->Auto_increment;
-        return $nextUserId;
+        $lastStoreNr = Store::latest()->first()?->id + 1 ?? 1;
+        $branchs = Branch::get();
+        $stores  = Store::get();
+        $sections = Section::with('branch', 'branch')->get();
+        return view('stock.Section.index', compact(['lastStoreNr', 'branchs', 'stores', 'sections']));
     }
-    public function view_section(){
-        $new_section = $this->getNextUserId();
-        $branchs = Branch::get()->all();
-        $stores  = Stores::get()->all();
-        $sections = stocksection::with('sectionsBranch','sectionstore')->orderBy('id','DESC')->get();
-        return view('stock.stock.sections',compact(['new_section','branchs','stores','sections']));
-    }
-    public function get_group(Request $request){
-        $groups = Group::where(['branch_id'=>$request->branch])->select(['id','name'])->get();
-        return response()->json(['status'=>'true','groups'=>$groups]);
-    }
-    public function save_section(SectionRequest $request){
-        $section = stocksection::create([
-            'name'=>$request->name,
-            'branch'=>$request->branch,
-        ]);
-        if($section){
-            foreach ($request->groups as $group){
-                $savegroup = section_group::create([
-                    'section_id' =>$section->id,
-                    'group_id'   =>$group['id'],
-                    'group_name' =>$group['name'],
-                ]);
-            }
-            $savestoresec = section_store::create([
-                'store_id'=>$request->store,
-                'section_id'=>$section->id,
-            ]);
-            $new_section = $this->getNextUserId();
-            $sections = stocksection::with('sectionsBranch','sectionstore')->orderBy('id','DESC')->get();
-            return response()->json(['status'=>'true','msg'=>'تم حفظ القسم بنجاح','new_section'=>$new_section,'sections'=>$sections]);
-        }
-    }
-    public function search_section(Request $request){
-        $query = $request['query'];
-        $sections = stocksection::where(['branch'=>$request->branch])->where('name', 'LIKE', '%' . $query . "%")->select(['id','name'])->get();
-        if($sections){return response()->json(['status'=>'true','msg'=>'All Data For Search','data'=>$sections]);}
-    }
-    public function get_section(Request $request){
-        $data = stocksection::limit(1)->with(['sectiongroup','sectionstore'])->where('id',$request->id)->first();
-        return response()->json(['status'=>'true','msg'=>'All Data For Search','data'=>$data]);
 
-    }
-    public function update_section(SectionRequest $request){
-        $section = stocksection::where(['id'=>$request->id])->update([
-            'name'=>$request->name,
-            'branch'=>$request->branch,
-        ]);
-        if($section){
-            $del = section_group::where(['section_id'=>$request->id,])->delete();
-            foreach ($request->groups as $group){
-                    $savegroup = section_group::create([
-                        'section_id' =>$request->id,
-                        'group_id'   =>$group['id'],
-                        'group_name' =>$group['name'],
-                    ]);
-                }
-            $del = section_store::where(['section_id'=>$request->id,])->delete();
-            $savestoresec = section_store::create([
-                'store_id'=>$request->store,
-                'section_id'=>$request->id,
+    /**
+     * getSectionGroups
+     * @param GroupRequest $request
+     *
+     * @return AnonymousResourceCollection
+     */
+    public function getSectionGroups(
+        GroupRequest $request
+    ): AnonymousResourceCollection {
+
+        $groups = Group::where('branch_id', $request->branch_id)->get();
+        return GroupResource::collection($groups)
+            ->additional([
+                'message' => null,
+                'status' => Response::HTTP_OK
             ]);
-            $new_section = $this->getNextUserId();
-            $sections = stocksection::with('sectionsBranch','sectionstore')->orderBy('id','DESC')->get();
-            return response()->json(['status'=>'true','msg'=>'تم تعديل القسم بنجاح','new_section'=>$new_section,'sections'=>$sections]);
-        }
+    }
+
+    /**
+     * store
+     *
+     * @param StoreSectionRequest $request
+     * @return SectionResource
+     */
+    public function store(
+        StoreSectionRequest $request
+    ): SectionResource {
+
+
+        $validatedData = $request->validated(); // Validate the request data
+        $groupIds = array_map(function ($item) {
+            return $item['id'];
+        }, $validatedData['groupIds']);
+        $section = Section::create($validatedData);
+        $section->groups()->attach($groupIds);
+        return SectionResource::make($section)
+            ->additional([
+                'message' => "تم إانشاء المخزن بنجاح",
+                'status' => Response::HTTP_OK
+            ]);
+    }
+
+    /**
+     * show
+     * @param  Section $section
+     * @return StoreResource
+     */
+    public function show(
+        Section $section
+    ): SectionResource {
+        return SectionResource::make($section)
+            ->additional([
+                'message' => null,
+                'status' => Response::HTTP_OK
+            ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * destroy.
+     * @param Section $section
+     * @return JsonResponse
+     */
+    public function destroy(
+        Section $section
+    ): JsonResponse {
+        $section->groups()->detach();
+        $section->delete();
+        return response()->json([
+            'message' => 'تم حذف القسم',
+            'status' => Response::HTTP_OK
+        ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models\Stock;
 
 use App\Models\Stock\StorageCapacity;
+use App\Models\StockSection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -44,5 +45,15 @@ class Store extends Model
     public function storageCapacity(): HasMany
     {
         return $this->hasMany(StorageCapacity::class, 'store_id', 'id');
+    }
+
+    /**
+     * storageCapacity
+     *
+     * @return HasMany
+     */
+    public function sections(): HasMany
+    {
+        return $this->hasMany(StockSection::class, 'store_id', 'id');
     }
 }

@@ -505,18 +505,20 @@ Route::group(
   ],
   function () {
     Route::resource('stores', StoreController::class);
+    Route::resource('sections', SectionController::class);
+    Route::post('/sections/groups', [SectionController::class, 'getSectionGroups'])->name('sections.groups');
   }
 );
 
 ################################## Sections ############################################
-Route::group(['prefix' => 'stock', 'controller' => SectionController::class], function () {
-  Route::get('/sections', 'view_section')->name('view.section');
-  Route::post('/get_group', 'get_group')->name('get_group');
-  Route::post('/save_section', 'save_section')->name('save_section');
-  Route::post('/search_section', 'search_section')->name('search.section');
-  Route::post('/get_section', 'get_section');
-  Route::post('/update_section', 'update_section')->name('update.section');
-});
+// Route::group(['prefix' => 'stock', 'controller' => SectionController::class], function () {
+//   Route::get('/sections', 'view_section')->name('view.section');
+//   Route::post('/get_group', 'get_group')->name('get_group');
+//   Route::post('/save_section', 'save_section')->name('save_section');
+//   Route::post('/search_section', 'search_section')->name('search.section');
+//   Route::post('/get_section', 'get_section');
+//   Route::post('/update_section', 'update_section')->name('update.section');
+// });
 
 ################################## suppliers ###########################################
 Route::group(['prefix' => 'stock', 'controller' => SuppliersController::class], function () {

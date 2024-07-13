@@ -48,8 +48,8 @@
                     <li class="@if (Route::current()->getName() == 'stock.stores.index') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('stock.stores.index') }}"> المخازن </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'view.section') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('view.section') }}"> الاقسام </a>
+                    <li class="@if (Route::current()->getName() == 'stock.sections.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.sections.index') }}"> الاقسام </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'view.suppliers') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('view.suppliers') }}"> الموردين </a>

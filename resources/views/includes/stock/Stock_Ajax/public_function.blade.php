@@ -115,4 +115,12 @@
             $(this).closest('tr').find('input[name="capacity"]').val('');
         });
     }
+
+    function resetSectionsModel(modalId) {
+        // Clear all input fields
+        $(`${modalId} #id, ${modalId} #name`).val('');
+        $(`${modalId} select[name="store_id"], ${modalId} select[name="branch_id"]`).empty().append(
+            '<option selected disabled>اختر</option>');
+        $(`${modalId} .groups`).html('');
+    }
 </script>

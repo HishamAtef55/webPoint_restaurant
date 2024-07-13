@@ -2,7 +2,7 @@
 <script>
     let tbody = $('.table-data tbody');
     // create store
-    $('#save_store').on('click', function() {
+    $(document).on('click', '#save_store', function() {
         let id = $('#store_id');
         let name = $('#store_name');
         let phone = $('#store_phone');

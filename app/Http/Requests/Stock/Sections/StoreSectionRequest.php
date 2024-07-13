@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Stock\Sections;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SectionRequest extends FormRequest
+class StoreSectionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,11 @@ class SectionRequest extends FormRequest
     {
         return
             [
-                'name'   =>'required',
-                'branch' =>'required',
-                'store'  =>'required',
-                'groups'  =>'required',
+                'name'   => ['required', 'string', 'max:100', 'unique:stock_sections,name'],
+                'branch_id' => ['required', 'integer', 'exists:branchs,id'],
+                'store_id'  => ['required', 'integer', 'exists:stock_stores,id'],
+                'groupIds' => ['required', 'array'],
+                'groupIds.*' => ['exists:groups,id'],
             ];
     }
     public function messages()
@@ -38,7 +39,9 @@ class SectionRequest extends FormRequest
                 'name.required'   => __('برجاء ادخال اسم القسم'),
                 'branch.required' => __('برجاء اختيار اختيار الفرع'),
                 'store.required'  => __('برجاء اختيار المخزن'),
-                'groups.required'  => __('برجاء اختيار مجموعة'),
+                'groupIds.required'  => __('برجاء اختيار مجموعة'),
+                'name.unique'   => __('هذا القسم موجود بالفعل'),
+
             ];
     }
 }

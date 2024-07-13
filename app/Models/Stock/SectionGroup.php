@@ -2,19 +2,15 @@
 
 namespace App\Models\Stock;
 
-use App\Models\Stock\Store;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class StorageCapacity extends Model
+class SectionGroup extends Model
 {
     use HasFactory;
 
-    protected  $table = 'stock_storage_capacities';
-
-    protected $guarded = [];
-
+    protected  $table = 'stock_section_groups';
     /**
      * The attributes that are mass assignable.
      *
@@ -35,14 +31,4 @@ class StorageCapacity extends Model
      * @var array<string, string>
      */
     protected $casts = [];
-
-    /**
-     * storageCapacity
-     *
-     * @return BelongsTo
-     */
-    public function store(): BelongsTo
-    {
-        return $this->belongsTo(Store::class, 'store_id', 'id');
-    }
 }
