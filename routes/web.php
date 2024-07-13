@@ -10,15 +10,16 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Menu\PayController;
 use App\Http\Controllers\Stock\MaterialHalk;
+use App\Http\Controllers\Stock\MainGroupController;
 use App\Http\Controllers\Menu\CopyCloseShift;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\ToGoController;
 use App\Http\Controllers\Menu\LoginController;
 use App\Http\Controllers\Menu\ShiftController;
+
+
 use App\Http\Controllers\Admin\AdminController;
-
-
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Menu\MovetoController;
 use App\Http\Controllers\Menu\TablesController;
@@ -31,17 +32,16 @@ use App\Http\Controllers\Menu\CustomerController;
 use App\Http\Controllers\Menu\DeliveryController;
 use App\Http\Controllers\Stock\OrdersControllers;
 use App\Http\Controllers\Stock\SectionController;
+
 use App\Http\Controllers\Admin\DeleveryController;
-
 use App\Http\Controllers\Admin\DiscountController;
-use App\Http\Controllers\Stock\ExchangeController;
 
+use App\Http\Controllers\Stock\ExchangeController;
 use App\Http\Controllers\Stock\MaterialController;
 use App\Http\Controllers\Stock\MaterialOperations;
-use App\Http\Controllers\Admin\MinchargeController;
 
+use App\Http\Controllers\Admin\MinchargeController;
 use App\Http\Controllers\Reports\ReportsController;
-use App\Http\Controllers\Stock\MainGroupController;
 use App\Http\Controllers\Stock\PurchasesController;
 use App\Http\Controllers\Stock\SuppliersController;
 use App\Http\Controllers\Menu\ReservationController;
@@ -516,26 +516,23 @@ Route::group(
     * @route('suppliers)
     */
     Route::resource('suppliers', SuppliersController::class);
+
+    /*
+    * @route('maingroups)
+    */
+    Route::resource('maingroups', MainGroupController::class);
   }
 );
 
-################################## suppliers ###########################################
-// Route::group(['prefix' => 'stock', 'controller' => SuppliersController::class], function () {
-//   Route::get('/suppliers', 'view_suppliers')->name('view.suppliers');
-//   Route::post('/save_suppliers', 'save_suppliers')->name('save.suppliers');
-//   Route::post('/search_suppliers', 'search_suppliers');
-//   Route::post('/get_suppliers', 'get_suppliers')->name('get.suppliers');
-//   Route::post('/update_suppliers', 'update_suppliers')->name('update.suppliers');
-// });
 
 ##################################### Main Group ####################################
-Route::group(['prefix' => 'stock', 'controller' => MainGroupController::class], function () {
-  Route::get('/main_groups', 'view_groups')->name('view.main_groups');
-  Route::post('/save_main_groups', 'save_groups')->name('save.main_groups');
-  Route::post('/search_main_groups', 'search_groups');
-  Route::post('/get_main_groups', 'get_groups')->name('get.main_groups');
-  Route::post('/update_main_groups', 'update_groups')->name('update.main_groups');
-});
+// Route::group(['prefix' => 'stock', 'controller' => MainGroupController::class], function () {
+//   Route::get('/main_groups', 'view_groups')->name('view.main_groups');
+//   Route::post('/save_main_groups', 'save_groups')->name('save.main_groups');
+//   Route::post('/search_main_groups', 'search_groups');
+//   Route::post('/get_main_groups', 'get_groups')->name('get.main_groups');
+//   Route::post('/update_main_groups', 'update_groups')->name('update.main_groups');
+// });
 #################################### Group Materials ################################
 Route::group(['prefix' => 'stock', 'controller' => GroupMaterialControllers::class], function () {
   Route::get('/groups', 'view_groups')->name('view.groups');

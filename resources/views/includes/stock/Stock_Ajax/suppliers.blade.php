@@ -252,4 +252,22 @@
             }
         });
     })
+
+    // $('#supplier_name').on('keyup', function() {
+    //     let query = $(this).val()
+    //     searchDb('search_suppliers', query, $(this));
+    // });
+
+    // $(document).on('click', '.search-result li', function(e) {
+    //     e.stopPropagation();
+    //     getData('get_suppliers', $(this).attr('data-id'), function(data) {
+    //         id.val(data.id);
+    //         name.val(data.name);
+    //         phone.val(data.phone);
+    //         address.val(data.address);
+    //         $('#save_supplier').addClass('d-none');
+    //         $('#update_supplier').removeClass('d-none');
+    //         $('.search-result').html('');
+    //     });
+    // });
 </script>

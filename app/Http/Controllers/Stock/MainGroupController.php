@@ -2,43 +2,95 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\MainGroupRequest;
-use App\Models\MainGroup;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Stock\MainGroup;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Stock\StoreResource;
+use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\Stock\MainGroupResource;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Requests\Stock\MainGroups\StoreMainGroupRequest;
+use App\Http\Requests\Stock\MainGroups\UpdateMainGroupRequest;
 
 class MainGroupController extends Controller
 {
-    public function __construct(){
-        $this->middleware('auth');
-    }
-    private function getNextId()
+    /**
+     * index
+     *
+     * @return View
+     */
+    public function index(): View
     {
-        $statement  = DB::select("SHOW TABLE STATUS LIKE 'stock_main_groups'");
-        $nextUserId = $statement[0]->Auto_increment;
-        return $nextUserId;
-    }
-    public function view_groups(){
-        $new_id = $this->getNextId();
-        $groups = MainGroup::get()->all();
-        return view('stock.stock.mainGroup',compact('new_id','groups'));
-    }
-    public function save_groups(MainGroupRequest $request){
-        $save = MainGroup::create(['name'=>$request->name]);
-        if($save){return response()->json(['status'=>'true','msg'=>'تم حفظ المجموعة','new_group'=>$this->getNextId()]);}
-    }
-    public function search_groups(Request $request){
-        $data = MainGroup::where('name','like','%'.$request['query'].'%')->get();
-        if($data){return response()->json(['status'=>'true','msg'=>'All Data For Search','data'=>$data]);}
-    }
-    public function get_groups(Request $request){
-        $data = MainGroup::limit(1)->where('id',$request->id)->first();
-        return response()->json(['status'=>'true','msg'=>'All Data For Search','data'=>$data]);
-    }
-    public function update_groups(MainGroupRequest $request){
-        $update = MainGroup::limit(1)->where(['id'=>$request->id])->update(['name'=>$request->name]);
-        if($update){return response()->json(['status'=>'true','msg'=>'تم تعديل المجموعة','new_group'=>$this->getNextId()]);}
+        $lastGroupNr = MainGroup::latest()->first()?->id + 1 ?? 1;
+        $groups = MainGroup::get();
+        return view('stock.MainGroups.index', compact('lastGroupNr', 'groups'));
     }
 
+    /**
+     * store
+     * @param StoreMainGroupRequest $request
+     * @return MainGroupResource
+     */
+    public function store(
+        StoreMainGroupRequest $request
+    ): MainGroupResource {
+        return MainGroupResource::make(
+            MainGroup::create($request->validated())
+        )
+            ->additional([
+                'message' => "تم إنشاء المجوعة الرئيسية بنجاح بنجاح",
+                'status' => Response::HTTP_OK
+            ]);
+    }
+
+    /**
+     * show
+     * @param  MainGroup $maingroup
+     * @return MainGroupResource
+     */
+    public function show(
+        MainGroup $maingroup
+    ): MainGroupResource {
+        return MainGroupResource::make($maingroup)
+            ->additional([
+                'message' => null,
+                'status' => Response::HTTP_OK
+            ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  UpdateMainGroupRequest $request,
+     * @param  MainGroup $maingroup
+     * @return StoreResource
+     */
+    public function update(
+        UpdateMainGroupRequest $request,
+        MainGroup $maingroup
+    ): MainGroupResource {
+        $maingroup->update($request->validated());
+        return MainGroupResource::make($maingroup)
+            ->additional([
+                'message' => "تم تعديل المجموعة الرئسية بنجا بنجاح",
+                'status' => Response::HTTP_OK
+            ]);
+    }
+
+    /**
+     * destroy.
+     * @param  MainGroup $maingroup
+     * @return JsonResponse
+     */
+    public function destroy(
+        MainGroup $maingroup
+    ): JsonResponse {
+        if ($maingroup->delete()) {
+            return response()->json([
+                'message' => 'تم حذف المجموعة الرئيسية بنجاح',
+                'status' => Response::HTTP_OK
+            ]);
+        }
+    }
 }

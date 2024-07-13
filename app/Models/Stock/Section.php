@@ -13,7 +13,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Section extends Model
 {
     use HasFactory;
-
+    
+    /**
+     * table
+     *
+     * @var string
+     */
     protected  $table = 'stock_sections';
 
     /**

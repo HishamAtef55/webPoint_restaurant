@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Stock\Stores;
+namespace App\Http\Requests\Stock\MainGroups;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class UpdateMainGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,10 +27,17 @@ class UpdateRequest extends FormRequest
             [
                 'name' => [
                     'required', 'string',
-                    Rule::unique('stock_stores')->ignore($this->route('store'))
+                    // Rule::unique('stock_stores')->ignore($this->route('store'))
                 ],
-                'phone' => ['nullable', 'numeric'],
-                'address' => ['nullable', 'string'],
+            ];
+    }
+
+    public function messages()
+    {
+        return
+            [
+                'name.required' => __('برجاء ادخال اسم المجوعة'),
+                'name.unique'   => __('هذة المجموعة موجودة بالفعل'),
             ];
     }
 }
