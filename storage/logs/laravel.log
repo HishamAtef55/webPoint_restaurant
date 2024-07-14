@@ -16202,3 +16202,7 @@
 [stacktrace]
 #0 {main}
 "} 
+[2024-07-15 01:29:15] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 

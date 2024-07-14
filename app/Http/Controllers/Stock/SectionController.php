@@ -30,7 +30,7 @@ class SectionController extends Controller
         $lastSectionNr = Section::latest()->first()?->id + 1 ?? 1;
         $branchs = Branch::get();
         $stores  = Store::get();
-        $sections = Section::with('branch', 'branch')->get();
+        $sections = Section::with('branch', 'branch')->paginate(5);
         return view('stock.Section.index', compact(['lastSectionNr', 'branchs', 'stores', 'sections']));
     }
 

@@ -41,6 +41,7 @@
                     newMainGroup = `<tr id=sid${response.data.id}>
                             <td>${response.data.id}</td>
                             <td>${response.data.name}</td>
+                            <td>${response.data.serial_Nr}</td>
                                                     <td>
                                     <button title="تعديل" class="btn btn-success"
                                         data-id="${response.data.id}" id="edit_main_group">
@@ -115,6 +116,15 @@
                                 row.remove();
                                 resolve();
                             }
+                            if (response.status == 422) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    timer: 5000
+                                });
+                                resolve();
+                            }
                         },
                         error: function(error) {
                             Swal.fire({
@@ -162,6 +172,7 @@
                     // Set new values
                     $('#viewModal #id').val(mainGroup.id);
                     $('#viewModal #name').val(mainGroup.name);
+                    $('#viewModal #serial_nr').val(mainGroup.serial_Nr);
 
                     checkForm();
                 }
@@ -193,6 +204,7 @@
                     // Set new values
                     $('#editModal #id').val(mainGroup.id);
                     $('#editModal #name').val(mainGroup.name);
+                    $('#editModal #serial_nr').val(mainGroup.serial_Nr);
 
                     checkForm();
                     $('#editModal').find('.modal-footer #update_main_group').removeAttr('data-id')

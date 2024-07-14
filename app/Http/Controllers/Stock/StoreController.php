@@ -21,7 +21,7 @@ class StoreController extends Controller
     public function index()
     {
         $lastStoreNr = Store::latest()->first()?->id + 1 ?? 1;
-        $stores = Store::get();
+        $stores = Store::paginate(5);
         return view('stock.Stores.index', compact([
             'stores',
             'lastStoreNr'

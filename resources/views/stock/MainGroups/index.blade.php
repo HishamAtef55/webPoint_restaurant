@@ -30,16 +30,18 @@
                         <table class="table table-light text-center table-data">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
+                                    {{-- <th scope="col">#</th> --}}
                                     <th scope="col">المجموعة</th>
+                                    <th scope="col">الرقم التسلسلى</th>
                                     <th scope="col">تحكم</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($groups as $group)
                                     <tr id="sid{{ $group->id }}">
-                                        <td scope="row">{{ $group->id }}</td>
+                                        {{-- <td scope="row">{{ $group->id }}</td> --}}
                                         <td>{{ $group->name }}</td>
+                                        <td>{{ $group->serial_nr }}</td>
                                         <td>
                                             <button title="تعديل" class="btn btn-success" data-id="{{ $group->id }}"
                                                 id="edit_main_group">
@@ -66,6 +68,10 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        </table>
+                        <div class="mt-3 d-flex justify-content-center">
+                            {{ $groups->links() }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,6 +96,11 @@
                         <div class="custom-form mt-3 position-relative">
                             <input type="text" id="name" disabled>
                             <label for="name">اسم المجموعة </label>
+                        </div>
+
+                        <div class="custom-form mt-3 position-relative">
+                            <input type="text" id="serial_nr" disabled>
+                            <label for="serial_nr">الرقم التسلسى</label>
                         </div>
                     </div>
                 </div>
@@ -121,6 +132,11 @@
                         <div class="custom-form mt-3 position-relative">
                             <input type="text" id="name">
                             <label for="name">اسم المجموعة </label>
+                        </div>
+
+                        <div class="custom-form mt-3 position-relative">
+                            <input type="text" id="serial_nr" disabled>
+                            <label for="serial_nr">الرقم التسلسى</label>
                         </div>
                     </div>
                 </div>

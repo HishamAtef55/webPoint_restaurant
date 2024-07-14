@@ -21,7 +21,7 @@ class SuppliersController extends Controller
     public function index()
     {
         $lastSupplierNr = Supplier::latest()->first()?->id + 1 ?? 1;
-        $supplires = Supplier::get();
+        $supplires = Supplier::paginate(5);
         return view('stock.Suppliers.index', compact('lastSupplierNr', 'supplires'));
     }
 
