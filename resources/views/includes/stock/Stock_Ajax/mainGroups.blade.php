@@ -39,7 +39,6 @@
 
                 if (response.status == 200) {
                     newMainGroup = `<tr id=sid${response.data.id}>
-                            <td>${response.data.id}</td>
                             <td>${response.data.name}</td>
                             <td>${response.data.serial_Nr}</td>
                                                     <td>
