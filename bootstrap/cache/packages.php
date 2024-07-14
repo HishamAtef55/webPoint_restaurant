@@ -78,4 +78,11 @@
       0 => 'Spatie\\Permission\\PermissionServiceProvider',
     ),
   ),
+  'staudenmeir/laravel-cte' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Staudenmeir\\LaravelCte\\DatabaseServiceProvider',
+    ),
+  ),
 );

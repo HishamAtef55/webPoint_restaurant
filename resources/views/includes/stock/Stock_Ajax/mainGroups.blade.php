@@ -29,7 +29,7 @@
         button.html(spinner).prop('disabled', true);
         $.ajax({
             type: 'POST',
-            url: "{{ route('stock.maingroups.store') }}",
+            url: "{{ route('stock.main.groups.store') }}",
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -41,6 +41,7 @@
                     newMainGroup = `<tr id=sid${response.data.id}>
                             <td>${response.data.id}</td>
                             <td>${response.data.name}</td>
+                            <td>${response.data.serial_Nr}</td>
                                                     <td>
                                     <button title="تعديل" class="btn btn-success"
                                         data-id="${response.data.id}" id="edit_main_group">
@@ -97,7 +98,7 @@
                 return new Promise((resolve) => {
                     $.ajax({
                         type: 'DELETE',
-                        url: '{{ url('stock/maingroups', '') }}' + '/' +
+                        url: '{{ url('stock/main/groups', '') }}' + '/' +
                             id,
                         dataType: 'json',
                         data: {
@@ -115,6 +116,15 @@
                                 row.remove();
                                 resolve();
                             }
+                            if (response.status == 422) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: response.message,
+                                    icon: 'error',
+                                    timer: 5000
+                                });
+                                resolve();
+                            }
                         },
                         error: function(error) {
                             Swal.fire({
@@ -129,7 +139,7 @@
                         complete: function() {
                             if (tbody.find('tr').length === 0) {
                                 tbody.append(
-                                    '<tr><td colspan="5">لا يوجد موردين</td></tr>'
+                                    '<tr><td colspan="3">لا توجد مجموعات رئيسية</td></tr>'
                                 );
                             }
                         }
@@ -149,7 +159,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '{{ url('stock/maingroups', '') }}' + '/' + id,
+            url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -162,6 +172,7 @@
                     // Set new values
                     $('#viewModal #id').val(mainGroup.id);
                     $('#viewModal #name').val(mainGroup.name);
+                    $('#viewModal #serial_nr').val(mainGroup.serial_Nr);
 
                     checkForm();
                 }
@@ -180,7 +191,7 @@
         // Call API
         $.ajax({
             type: 'GET',
-            url: '{{ url('stock/maingroups', '') }}' + '/' + id,
+            url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",
@@ -193,6 +204,7 @@
                     // Set new values
                     $('#editModal #id').val(mainGroup.id);
                     $('#editModal #name').val(mainGroup.name);
+                    $('#editModal #serial_nr').val(mainGroup.serial_Nr);
 
                     checkForm();
                     $('#editModal').find('.modal-footer #update_main_group').removeAttr('data-id')
@@ -218,7 +230,7 @@
         button.prop('disabled', true);
         $.ajax({
             type: 'PUT',
-            url: '{{ url('stock/maingroups', '') }}' + '/' + id,
+            url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
                 "_token": "{{ csrf_token() }}",

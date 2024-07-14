@@ -4,7 +4,7 @@ namespace App\Http\Resources\Stock;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MainGroupResource extends JsonResource
+class StockGroupResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,6 +17,9 @@ class MainGroupResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'parent_id' => $this->parent_id ?? null,
+            'serial_Nr' => $this->serial_nr,
+            'parent_name' => $this->parent ? $this->parent->name : null,
         ];
     }
 }

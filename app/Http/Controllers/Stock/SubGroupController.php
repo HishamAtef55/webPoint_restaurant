@@ -2,44 +2,43 @@
 
 namespace App\Http\Controllers\Stock;
 
-use Illuminate\View\View;
 use Illuminate\Http\Request;
 use App\Models\Stock\StockGroup;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Stock\StoreResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Stock\StockGroupResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Http\Requests\Stock\MainGroups\StoreMainGroupRequest;
-use App\Http\Requests\Stock\MainGroups\UpdateMainGroupRequest;
+use App\Http\Requests\Stock\SubGroups\StoreSubGroupRequest;
+use App\Http\Requests\Stock\SubGroups\UpdateSubGroupRequest;
 
-class MainGroupController extends Controller
+class SubGroupController extends Controller
 {
     /**
-     * index
+     * Display a listing of the resource.
      *
-     * @return View
+     * @return \Illuminate\Http\Response
      */
-    public function index(): View
+    public function index()
     {
-        $lastGroupNr = StockGroup::isRoot()->latest()->first()?->id + 1 ?? 1;
-        $groups = StockGroup::isRoot()->paginate(5);
-        return view('stock.MainGroups.index', compact('lastGroupNr', 'groups'));
+        $lastSubGroupNr = StockGroup::hasParent()->latest()->first()?->id + 1 ?? 1;
+        $mainGroups = StockGroup::isRoot()->get();
+        $subGroups = StockGroup::hasParent()->orderBy('serial_nr', 'asc')->paginate(5);
+        return view('stock.SubGroups.index', compact('lastSubGroupNr', 'mainGroups', 'subGroups'));
     }
 
     /**
      * store
-     * @param StoreMainGroupRequest $request
+     * @param StoreSubGroupRequest $request
      * @return StockGroupResource
      */
     public function store(
-        StoreMainGroupRequest $request
+        StoreSubGroupRequest $request
     ): StockGroupResource {
         return StockGroupResource::make(
             StockGroup::create($request->validated())
         )
             ->additional([
-                'message' => "تم إنشاء المجوعة الرئيسية بنجاح",
+                'message' => "تم إنشاء المجوعة الفرعية بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
@@ -62,18 +61,18 @@ class MainGroupController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  UpdateMainGroupRequest $request,
+     * @param  UpdateSubGroupRequest $request,
      * @param  StockGroup $stockGroup
-     * @return StoreResource
+     * @return StockGroupResource
      */
     public function update(
-        UpdateMainGroupRequest $request,
+        UpdateSubGroupRequest $request,
         StockGroup $stockGroup
     ): StockGroupResource {
         $stockGroup->update($request->validated());
         return StockGroupResource::make($stockGroup)
             ->additional([
-                'message' => "تم تعديل المجموعةالرئيسية بنجاح",
+                'message' => "تم تعديل المجموعةالفرعية بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
@@ -86,15 +85,9 @@ class MainGroupController extends Controller
     public function destroy(
         StockGroup $stockGroup
     ): JsonResponse {
-        if ($stockGroup->hasChildren()) {
-            return response()->json([
-                'message' => 'لايمكن حذف المجموعة لانها تحتوى على مجموعات فرعية',
-                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
-            ]);
-        }
         if ($stockGroup->delete()) {
             return response()->json([
-                'message' => 'تم حذف المجموعةالرئيسية بنجاح',
+                'message' => 'تم حذف المجموعةالفرعية بنجاح',
                 'status' => Response::HTTP_OK
             ]);
         }

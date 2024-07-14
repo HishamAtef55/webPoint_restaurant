@@ -25,7 +25,7 @@ class StoreMainGroupRequest extends FormRequest
     {
         return
             [
-                'name' => ['required', 'string', 'unique:stock_main_groups,name'],
+                'name' => ['required', 'string', 'unique:stock_groups,name'],
             ];
     }
 

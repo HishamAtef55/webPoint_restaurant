@@ -77,6 +77,9 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        <div class="mt-3 d-flex justify-content-center">
+                            {{ $supplires->links() }}
+                        </div>
                     </div>
                 </div>
             </div>

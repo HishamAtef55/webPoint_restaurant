@@ -2,26 +2,28 @@
 
 namespace App\Models\Stock;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\HasSerialNumber;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
-class MainGroup extends Model
+class StockGroup extends Model
 {
-    use HasFactory;
-        
+    use HasFactory, HasRecursiveRelationships, HasSerialNumber;
+
     /**
      * table
      *
      * @var string
      */
-    protected $table = 'stock_main_groups';
+    protected $table = 'stock_groups';
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'branch_id', 'store_id'
+        'name', 'parent_id', 'serial_nr'
     ];
 
     /**
@@ -37,4 +39,14 @@ class MainGroup extends Model
      * @var array<string, string>
      */
     protected $casts = [];
+
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
+    public function hasChildren(): bool
+    {
+        return (bool) $this->children->count();
+    }
 }

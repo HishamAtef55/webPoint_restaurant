@@ -54,13 +54,14 @@
                     <li class="@if (Route::current()->getName() == 'stock.suppliers.index') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('stock.suppliers.index') }}"> الموردين </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'stock.maingroups.index') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('stock.maingroups.index') }}"> المجموعات
+                    <li class="@if (Route::current()->getName() == 'stock.main.groups.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.main.groups.index') }}"> المجموعات
                             الرئيسية
                         </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'view.groups') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('view.groups') }}"> المجموعات الفرعية </a>
+                    <li class="@if (Route::current()->getName() == 'stock.sub.groups.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.sub.groups.index') }}"> المجموعات
+                            الفرعية </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'view.material') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ Route('view.material') }}"> الخامات </a>

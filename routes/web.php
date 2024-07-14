@@ -10,7 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Menu\PayController;
 use App\Http\Controllers\Stock\MaterialHalk;
-use App\Http\Controllers\Stock\MainGroupController;
+use App\Http\Controllers\Stock\SubGroupController;
 use App\Http\Controllers\Menu\CopyCloseShift;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Admin\ItemController;
@@ -42,6 +42,7 @@ use App\Http\Controllers\Stock\MaterialOperations;
 
 use App\Http\Controllers\Admin\MinchargeController;
 use App\Http\Controllers\Reports\ReportsController;
+use App\Http\Controllers\Stock\MainGroupController;
 use App\Http\Controllers\Stock\PurchasesController;
 use App\Http\Controllers\Stock\SuppliersController;
 use App\Http\Controllers\Menu\ReservationController;
@@ -59,9 +60,9 @@ use App\Http\Controllers\Stock\GroupMaterialControllers;
 use App\Http\Controllers\Stock\MaterialRecipeController;
 use App\Http\Controllers\Admin\ExpensesCategoryController;
 use App\Http\Controllers\Stock\BackToSuppliersControllers;
+
 use App\Http\Controllers\Stock\OpenBalanceDailyController;
 use App\Http\Controllers\Reports\SalesCurrentDayController;
-
 use App\Http\Controllers\StockReports\HalkReportsController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 use App\Http\Controllers\StockReports\StockReportsController;
@@ -73,8 +74,6 @@ use App\Http\Controllers\StockReports\HalkItemReportsController;
 use App\Http\Controllers\StockReports\PurchasesReportController;
 use App\Http\Controllers\StockReports\SuppliersReportsController;
 use App\Http\Controllers\StockReports\BackStoresReportsController;
-use App\Http\Controllers\StockReports\OperationsReportsController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,6 +85,8 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\StockReports\OperationsReportsController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 use App\Http\Controllers\StockReports\ManufacturingReportsController;
 use App\Http\Controllers\Admin\TablesController as AdminTablesController;
@@ -518,9 +519,38 @@ Route::group(
     Route::resource('suppliers', SuppliersController::class);
 
     /*
-    * @route('maingroups)
+    * @route('main/groups)
     */
-    Route::resource('maingroups', MainGroupController::class);
+    Route::group(
+      [
+        'prefix' => 'main',
+        'as' => 'main.'
+      ],
+      function () {
+        Route::resource('groups', MainGroupController::class, [
+          'parameters' => [
+            'groups' => 'stockGroup'
+          ],
+        ]);
+      }
+    );
+    /*
+    * @route('sub/groups)
+    */
+
+    Route::group(
+      [
+        'prefix' => 'sub',
+        'as' => 'sub.'
+      ],
+      function () {
+        Route::get('groups', [SubGroupController::class, 'index'])->name('groups.index');
+        Route::post('groups', [SubGroupController::class, 'store'])->name('groups.store');
+        Route::get('groups/{stockGroup}', [SubGroupController::class, 'show'])->name('groups.show');
+        Route::put('groups/{stockGroup}', [SubGroupController::class, 'update'])->name('groups.update');
+        Route::delete('groups/{stockGroup}', [SubGroupController::class, 'destroy'])->name('groups.destroy');
+      }
+    );
   }
 );
 
@@ -534,13 +564,13 @@ Route::group(
 //   Route::post('/update_main_groups', 'update_groups')->name('update.main_groups');
 // });
 #################################### Group Materials ################################
-Route::group(['prefix' => 'stock', 'controller' => GroupMaterialControllers::class], function () {
-  Route::get('/groups', 'view_groups')->name('view.groups');
-  Route::post('/save_groups', 'save_groups')->name('save.groups');
-  Route::post('/search_groups', 'search_groups');
-  Route::post('/get_groups', 'get_groups')->name('get.groups');
-  Route::post('/update_groups', 'update_groups')->name('update.groups');
-});
+// Route::group(['prefix' => 'stock', 'controller' => GroupMaterialControllers::class], function () {
+//   Route::get('/groups', 'view_groups')->name('view.groups');
+//   Route::post('/save_groups', 'save_groups')->name('save.groups');
+//   Route::post('/search_groups', 'search_groups');
+//   Route::post('/get_groups', 'get_groups')->name('get.groups');
+//   Route::post('/update_groups', 'update_groups')->name('update.groups');
+// });
 
 ################################# Material ###########################################
 Route::group(['prefix' => 'stock', 'controller' => MaterialController::class], function () {
