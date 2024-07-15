@@ -65,7 +65,7 @@
                             </td>
                             </tr>`;
                     $('tbody tr').each(function() {
-                        if ($(this).find('td').attr('colspan') == '5') {
+                        if ($(this).find('td').attr('colspan') == '4') {
                             $(this).remove();
                         }
                     });
