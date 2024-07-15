@@ -1,6 +1,9 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
     const tbody = $('.table-data tbody');
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
     $(document).ready(function() {
         $('input').attr('autocomplete', 'off');
     });
@@ -17,13 +20,23 @@
         modal.find('input').val('');
     }
 
+    // Common function to error response message
+    function handleResponseMessageError(message, title, icon) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            timer: 5000
+        });
+    }
+
+
     // store section
     $(document).on('submit', '#storeSupplier', function(e) {
         e.preventDefault();
         const form = $(this);
         const button = form.find('button[type="submit"]');
-        const spinner =
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>';
+
         const originalHtml = button.html();
 
         button.html(spinner).prop('disabled', true);
@@ -43,8 +56,8 @@
                     newSection = `<tr id=sid${response.data.id}>
                             <td>${response.data.id}</td>
                             <td>${response.data.name}</td>
-                            <td>${response.data.phone}</td>
-                            <td>${response.data.address}</td>
+                            <td>${response.data.phone || '-'}</td>
+                            <td>${response.data.address || '-'}</td>
                                                     <td>
                                     <button title="تعديل" class="btn btn-success"
                                         data-id="${response.data.id}" id="edit_supplier">
@@ -112,24 +125,16 @@
                         },
                         success: function(response) {
                             if (response.status == 200) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    timer: 2000
-                                });
+                                handleResponseMessageError(response.message,
+                                    'تم الحذف', 'success')
+
                                 row.remove();
                                 resolve();
                             }
                         },
                         error: function(error) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: error.responseJSON
-                                    .message,
-                                icon: 'error',
-                                timer: 5000
-                            });
+                            handleResponseMessageError(error.responseJSON
+                                .message, 'خطأ', 'error')
                             resolve();
                         },
                         complete: function() {
@@ -150,7 +155,10 @@
         const id = $(this).data('id');
         const viewModal = $('#viewModal');
         resetModalForm(viewModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // call Api
 
         $.ajax({
@@ -174,7 +182,10 @@
                     checkForm();
                 }
             },
-            error: handleAjaxError
+            error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
 
@@ -184,7 +195,10 @@
         const id = $(this).data('id');
         const editModal = $('#editModal');
         resetModalForm(editModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // Call API
         $.ajax({
             type: 'GET',
@@ -210,7 +224,10 @@
                             'id', supplier.id)
                 }
             },
-            error: handleAjaxError
+            error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
     });
@@ -220,9 +237,6 @@
     $(document).on('click', '#update_supplier', function(params) {
         const id = $(this).data('id');
         let button = $(this);
-        let spinner = $(
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-        );
         let originalHtml = button.html();
         button.html(spinner);
         button.prop('disabled', true);

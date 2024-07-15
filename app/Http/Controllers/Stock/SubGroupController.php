@@ -72,7 +72,7 @@ class SubGroupController extends Controller
         $stockGroup->update($request->validated());
         return StockGroupResource::make($stockGroup)
             ->additional([
-                'message' => "تم تعديل المجموعةالفرعية بنجاح",
+                'message' => "تم تعديل المجموعة الفرعية بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
@@ -87,7 +87,7 @@ class SubGroupController extends Controller
     ): JsonResponse {
         if ($stockGroup->delete()) {
             return response()->json([
-                'message' => 'تم حذف المجموعةالفرعية بنجاح',
+                'message' => 'تم حذف المجموعة الفرعية بنجاح',
                 'status' => Response::HTTP_OK
             ]);
         }

@@ -30,8 +30,8 @@ class UpdateSupplierRequest extends FormRequest
                     'required', 'string',
                     Rule::unique('stock_suppliers')->ignore($this->route('supplier'))
                 ],
-                'phone' => ['required', 'numeric'],
-                'address' => ['required', 'string'],
+                'phone' => ['nullable', 'numeric'],
+                'address' => ['nullable', 'string'],
             ];
     }
 

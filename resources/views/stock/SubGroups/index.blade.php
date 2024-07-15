@@ -30,14 +30,6 @@
                                 </select>
                             </div>
 
-                            {{-- <div class="custom-form mt-3">
-                            <input type="text" name="group_from" id="group_from">
-                            <label for="group_from">بداية الترقيم</label>
-                        </div>
-                        <div class="custom-form mt-3">
-                            <input type="text" name="group_to" id="group_to">
-                            <label for="group_to">نهاية الترقيم</label>
-                        </div> --}}
                         </div>
 
                         <div class="d-grid gap-2  mt-3">
@@ -106,6 +98,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">عرض بيانات المجموعة الفرعية</h5>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -133,14 +127,6 @@
                             </select>
                         </div>
 
-                        {{-- <div class="custom-form mt-3">
-                            <input type="text" name="group_from" id="group_from">
-                            <label for="group_from">بداية الترقيم</label>
-                        </div>
-                        <div class="custom-form mt-3">
-                            <input type="text" name="group_to" id="group_to">
-                            <label for="group_to">نهاية الترقيم</label>
-                        </div> --}}
                     </div>
 
                 </div>
@@ -159,6 +145,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">تعديل بيانات المجموعة الفرعية</h5>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -190,14 +178,6 @@
                             </select>
                         </div>
 
-                        {{-- <div class="custom-form mt-3">
-                            <input type="text" name="group_from" id="group_from">
-                            <label for="group_from">بداية الترقيم</label>
-                        </div>
-                        <div class="custom-form mt-3">
-                            <input type="text" name="group_to" id="group_to">
-                            <label for="group_to">نهاية الترقيم</label>
-                        </div> --}}
                     </div>
 
                 </div>

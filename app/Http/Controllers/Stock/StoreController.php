@@ -105,6 +105,12 @@ class StoreController extends Controller
     public function destroy(
         Store $store
     ): JsonResponse {
+        if ($store->hasSection()) {
+            return response()->json([
+                'message' => 'لايمكن حذف المخزن لانة يحتوى على أقسام',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ]);
+        }
         if ($store->delete()) {
             return response()->json([
                 'message' => 'تم حذف المخزن',

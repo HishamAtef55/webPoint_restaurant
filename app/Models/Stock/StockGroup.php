@@ -10,7 +10,7 @@ use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 class StockGroup extends Model
 {
     use HasFactory, HasRecursiveRelationships, HasSerialNumber;
-
+    
     /**
      * table
      *

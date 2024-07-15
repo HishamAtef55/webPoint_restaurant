@@ -26,8 +26,8 @@ class StoreSupplierRequest extends FormRequest
         return
             [
                 'name' => ['required', 'string', 'unique:stock_suppliers,name'],
-                'phone' => ['required', 'numeric'],
-                'address' => ['required', 'string'],
+                'phone' => ['nullable', 'numeric'],
+                'address' => ['nullable', 'string'],
             ];
     }
 
@@ -36,8 +36,6 @@ class StoreSupplierRequest extends FormRequest
         return
             [
                 'name.required' => __('برجاء ادخال اسم المورد'),
-                'phone.required' => __('برجاء ادخال رقم الهاتف'),
-                'address.required' => __('برجاء ادخال العنوان'),
                 'name.unique'   => __('هذا المورد موجود بالفعل'),
             ];
     }

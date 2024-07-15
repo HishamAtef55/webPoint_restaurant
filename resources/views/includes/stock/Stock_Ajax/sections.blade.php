@@ -6,6 +6,9 @@
 
     let preventChangeEvent = false; // Flag to control change event execution
     const tbody = $('.table-data tbody');
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
 
     // Common function to handle AJAX errors
     function handleAjaxError(reject) {
@@ -20,9 +23,21 @@
         modal.find('input, select').val('');
         modal.find('.groups').html('');
     }
+
+    // Common function to error response message
+    function handleResponseMessageError(message, title, icon) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            timer: 5000
+        });
+    }
+
     // get sections groups 
 
     $(document).on('change', '#branch', function() {
+        if (preventChangeEvent) return;
         let id = $('#branch').val()
         let groupsDiv = $('.groups');
         $.ajax({
@@ -63,11 +78,10 @@
             id: $(el).attr('id').replace('group-', '')
         })).get();
         const button = form.find('button[type="submit"]');
-        const spinner =
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>';
         const originalHtml = button.html();
 
         button.html(spinner).prop('disabled', true);
+
         $.ajax({
             type: 'POST',
             url: "{{ route('stock.sections.store') }}",
@@ -82,6 +96,18 @@
             success: function(response) {
 
                 if (response.status == 200) {
+                    // Set the flag to prevent the change event
+                    preventChangeEvent = true;
+                    // Reset select elements to their first option
+                    const firstStoreOptionValue = $('#storeSection select[name="store_id"]').find(
+                        'option:first').val();
+                    $('#storeSection select[name="store_id"]').val(firstStoreOptionValue).change();
+
+                    const firstBranchOptionValue = $('#storeSection select[name="branch_id"]').find(
+                        'option:first').val();
+                    $('#storeSection select[name="branch_id"]').val(firstBranchOptionValue)
+                        .change();
+
                     newSection = `<tr id=sid${response.data.id}>
                             <td>${response.data.id}</td>
                             <td>${response.data.name}</td>
@@ -112,8 +138,9 @@
                         }
                     });
                     tbody.append(newSection);
+                    let storeModel = $('#storeSection');
+                    resetModalForm(storeModel)
                     $('#section_id').val(response.data.id + 1);
-                    $('#section_name').val('');
                     $('.groups input[type="checkbox"]').prop('checked', false);
                     successMsg(response.message);
                     checkForm();
@@ -122,6 +149,7 @@
             error: handleAjaxError,
             complete: function() {
                 button.html(originalHtml).prop('disabled', false);
+
             }
         });
     });
@@ -153,24 +181,16 @@
                         },
                         success: function(response) {
                             if (response.status == 200) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    timer: 2000
-                                });
+                                handleResponseMessageError(response.message,
+                                    'تم الحذف', 'success')
+
                                 row.remove();
                                 resolve();
                             }
                         },
                         error: function(error) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: error.responseJSON
-                                    .message,
-                                icon: 'error',
-                                timer: 5000
-                            });
+                            handleResponseMessageError(error.responseJSON
+                                .message, 'خطأ', 'error')
                             resolve();
                         },
                         complete: function() {
@@ -191,7 +211,10 @@
         const id = $(this).data('id');
         const viewModal = $('#viewModal');
         resetModalForm(viewModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // call Api
 
         $.ajax({
@@ -221,8 +244,8 @@
                     section.groups.forEach(group => {
                         groupsContent += `
                                 <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" value="${group.name}" id="group-${group.id}" name="groups" checked>
-                                    <label class="form-check-label" for="group-${group.id}">
+                                    <input class="form-check-input" type="checkbox" value="${group.name}" id="edit-model-group-${group.id}" name="groups" checked>
+                                    <label class="form-check-label" for="edit-model-group-${group.id}">
                                         ${group.name}
                                     </label>
                                 </div>`;
@@ -233,7 +256,10 @@
                     checkForm();
                 }
             },
-            error: handleAjaxError
+            error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
 
@@ -243,7 +269,10 @@
         const id = $(this).data('id');
         const editModal = $('#editModal');
         resetModalForm(editModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // Set the flag to prevent the change event
         preventChangeEvent = true;
         // Reset select elements to their first option
@@ -265,7 +294,6 @@
             success: function(response) {
                 if (response.status == 200) {
                     const section = response.data;
-
                     $('#editModal').modal('show');
 
                     // Set new values
@@ -284,20 +312,24 @@
                     if (branchOption) {
                         $('#editModal select[name="branch_id"]').val(branchOption).change()
                     }
-
                     let groupsContent = '';
-
-                    // Set the groups
-                    section.groups.forEach(group => {
+                    let arr = []
+                    section.groups.forEach(function(group) {
+                        arr.push(group.name)
+                    });
+                    response.groups.forEach(group => {
+                        const isChecked = arr.includes(group.name) ? 'checked' : '';
                         groupsContent += `
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" value="${group.name}" id="group-${group.id}" name="groups" checked>
-                            <label class="form-check-label" for="group-${group.id}">
+                            <input class="form-check-input" type="checkbox" value="${group.name}" id="edit-model-group-${group.id}" name="groups" ${isChecked}>
+                            <label class="form-check-label" for="edit-model-group-${group.id}">
                                 ${group.name}
                             </label>
                         </div>`;
                     });
                     $('#editModal .groups').html(groupsContent);
+
+
                     $('#editModal').find('.modal-footer #update_section').removeAttr('data-id')
                         .data(
                             'id', section.id)
@@ -311,6 +343,7 @@
             complete: function() {
                 // Unset the flag after setting new values
                 preventChangeEvent = false;
+                button.html(originalHtml).prop('disabled', false);
             }
 
         });
@@ -327,14 +360,11 @@
         let groupsChecked = $('#editModal input[name="groups"]:checked');
         let groups = [];
         let button = $(this);
-        let spinner = $(
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-        );
         let originalHtml = button.html();
 
         groupsChecked.each(function() {
             let groupName = $(this).val()
-            let groupId = $(this).attr('id').replace('group-', '')
+            let groupId = $(this).attr('id').replace('edit-model-group-', '')
             groups.push({
                 id: groupId
             });
@@ -373,7 +403,6 @@
 
 
     function bindBranchChangeEvent() {
-
         $(document).on('change', '#branch_id', function() {
             if (preventChangeEvent) return;
             let branch = $('#editModal select[name="branch_id"]');
@@ -394,8 +423,8 @@
                         for (const group in response.data) {
                             groupsContent += `
                             <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" value="${response.data[group].name}" id="group-${response.data[group].id}" name="groups">
-                                <label class="form-check-label" for="group-${response.data[group].id}">
+                                <input class="form-check-input" type="checkbox" value="${response.data[group].name}" id="edit-model-group-${response.data[group].id}" name="groups">
+                                <label class="form-check-label" for="edit-model-group-${response.data[group].id}">
                                     ${response.data[group].name}
                                 </label>
                             </div>`;

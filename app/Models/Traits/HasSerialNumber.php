@@ -9,8 +9,8 @@ trait HasSerialNumber
 {
 
     public const INTIAL_MAIN_STOCK_GROUP_NR = '01';
-    public const INTIAL_SUB_STOCK_GROUP_NR = '001';
-    
+    public const INTIAL_SUB_STOCK_GROUP_NR = '1';
+
     /**
      * booted
      *
@@ -25,7 +25,9 @@ trait HasSerialNumber
         });
 
         static::updating(function (StockGroup $stockGroup) {
-            $stockGroup->setSerialNr();
+            if ($stockGroup->parent_id) {
+                $stockGroup->serial_nr = self::generateSubGroupStartSerial($stockGroup->parent_id);
+            }
         });
     }
 
@@ -67,15 +69,25 @@ trait HasSerialNumber
      */
     private static function generateSubGroupStartSerial($parentId)
     {
-        $parentGroup = StockGroup::find($parentId); 
+        $parentGroup = StockGroup::find($parentId);
         $subGroup = $parentGroup->children()->latest('serial_nr')->first();
         if ($subGroup) {
+
             $stockGroupSerialNr = $subGroup->serial_nr;
-            $lastThreeDigits = substr($stockGroupSerialNr, -3); //01001
-            $nextSerialNr = (int)$lastThreeDigits + 1; // 002
+            $lastDigits = substr($stockGroupSerialNr, -1); //01001
+            $nextSerialNr = (int)$lastDigits + 1;
+            \Log::debug([
+                "lastDigits" => $lastDigits,
+                "nextSerialNr" => $nextSerialNr,
+            ]);
         } else {
-            $nextSerialNr = static::INTIAL_SUB_STOCK_GROUP_NR; // 001
+            $nextSerialNr = static::INTIAL_SUB_STOCK_GROUP_NR; // 1
         }
-        return $parentGroup->serial_nr . str_pad($nextSerialNr, strlen(static::INTIAL_SUB_STOCK_GROUP_NR), '0', STR_PAD_LEFT);
+        \Log::debug([
+            "parentGroup" => $parentGroup->serial_nr,
+            "nextSerialNr" => $nextSerialNr,
+            $parentGroup->serial_nr . $nextSerialNr
+        ]);
+        return $parentGroup->serial_nr . $nextSerialNr;
     }
 }

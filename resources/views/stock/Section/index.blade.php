@@ -18,7 +18,7 @@
                             </div>
                             <div>
                                 <label for="store" class="select-label">اسم المخزن</label>
-                                <select class="form-select unit" id="store">
+                                <select class="form-select unit" name="store_id" id="store">
                                     <option selected disabled>اختر المخزن</option>
                                     @foreach ($stores as $store)
                                         <option value="{{ $store->id }}">{{ $store->name }}</option>
@@ -27,7 +27,7 @@
                             </div>
                             <div>
                                 <label for="branch" class="select-label">اسم الفرع</label>
-                                <select class="form-select unit" id="branch">
+                                <select class="form-select unit" name="branch_id" id="branch">
                                     <option selected disabled>اختر الفرع</option>
                                     @foreach ($branchs as $branch)
                                         <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -61,7 +61,7 @@
                             <tbody>
                                 @forelse ($sections as $section)
                                     <tr id="sid{{ $section->id }}">
-                                        <th scope="row">{{ $section->id }}</th>
+                                        <td scope="row">{{ $section->id }}</td>
                                         <td>{{ $section->name }}</td>
                                         <td>{{ $section->branch->name }}</td>
                                         <td>{{ $section->store->name }}</td>
@@ -107,6 +107,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">عرض بيانات القسم</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -157,6 +158,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">تعديل بيانات القسم</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -168,7 +170,7 @@
                                 <label for="id">رقم القسم</label>
                             </div>
                             <div class="custom-form mt-3 position-relative">
-                                <input type="text" id="name" disabled>
+                                <input type="text" id="name">
                                 <label for="name">اسم القسم</label>
                             </div>
                             <div>

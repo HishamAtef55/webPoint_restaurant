@@ -1,6 +1,9 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
     const tbody = $('.table-data tbody');
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
     $(document).ready(function() {
         $('input').attr('autocomplete', 'off');
     });
@@ -17,13 +20,21 @@
         modal.find('input').val('');
     }
 
+    // Common function to error response message
+    function handleResponseMessageError(message, title, icon) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            timer: 5000
+        });
+    }
+
     // store mainGroups
     $(document).on('submit', '#storeMainGroup', function(e) {
         e.preventDefault();
         const form = $(this);
         const button = form.find('button[type="submit"]');
-        const spinner =
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>';
         const originalHtml = button.html();
 
         button.html(spinner).prop('disabled', true);
@@ -106,22 +117,15 @@
                         },
                         success: function(response) {
                             if (response.status == 200) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    timer: 2000
-                                });
+                                handleResponseMessageError(response.message,
+                                    'تم الحذف', 'success')
+
                                 row.remove();
                                 resolve();
                             }
                             if (response.status == 422) {
-                                Swal.fire({
-                                    title: 'Error!',
-                                    text: response.message,
-                                    icon: 'error',
-                                    timer: 5000
-                                });
+                                handleResponseMessageError(response.message,
+                                    'خطأ', 'error')
                                 resolve();
                             }
                         },
@@ -153,7 +157,10 @@
         const id = $(this).data('id');
         const viewModal = $('#viewModal');
         resetModalForm(viewModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // call Api
 
         $.ajax({
@@ -176,7 +183,10 @@
                     checkForm();
                 }
             },
-            error: handleAjaxError
+            error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
 
@@ -186,7 +196,10 @@
         const id = $(this).data('id');
         const editModal = $('#editModal');
         resetModalForm(editModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // Call API
         $.ajax({
             type: 'GET',
@@ -211,7 +224,10 @@
                             'id', mainGroup.id)
                 }
             },
-            error: handleAjaxError
+            error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
     });
@@ -221,9 +237,6 @@
     $(document).on('click', '#update_main_group', function(params) {
         const id = $(this).data('id');
         let button = $(this);
-        let spinner = $(
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-        );
         let originalHtml = button.html();
         button.html(spinner);
         button.prop('disabled', true);
@@ -237,8 +250,8 @@
             },
             success: function(response) {
                 if (response.status == 200) {
-                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data.id)
-                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.name)
+                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data.name)
+                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.serial_Nr)
                     successMsg(response.message);
                     $('#editModal').modal('hide');
                 }

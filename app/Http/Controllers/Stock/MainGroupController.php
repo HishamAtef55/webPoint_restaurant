@@ -73,7 +73,7 @@ class MainGroupController extends Controller
         $stockGroup->update($request->validated());
         return StockGroupResource::make($stockGroup)
             ->additional([
-                'message' => "تم تعديل المجموعةالرئيسية بنجاح",
+                'message' => "تم تعديل المجموعة الرئيسية بنجاح",
                 'status' => Response::HTTP_OK
             ]);
     }
@@ -94,7 +94,7 @@ class MainGroupController extends Controller
         }
         if ($stockGroup->delete()) {
             return response()->json([
-                'message' => 'تم حذف المجموعةالرئيسية بنجاح',
+                'message' => 'تم حذف المجموعة الرئيسية بنجاح',
                 'status' => Response::HTTP_OK
             ]);
         }

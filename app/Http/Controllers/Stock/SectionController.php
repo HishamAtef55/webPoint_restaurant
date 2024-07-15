@@ -87,6 +87,7 @@ class SectionController extends Controller
         return SectionResource::make($section)
             ->additional([
                 'message' => null,
+                'groups' => GroupResource::collection(Group::where('branch_id', $section->branch_id)->get()),
                 'status' => Response::HTTP_OK
             ]);
     }

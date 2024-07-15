@@ -1,6 +1,9 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
     const tbody = $('.table-data tbody');
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
     $(document).ready(function() {
         $('input').attr('autocomplete', 'off');
     });
@@ -10,6 +13,16 @@
         let response = $.parseJSON(reject.responseText);
         $.each(response.errors, function(key, val) {
             errorMsg(val[0]);
+        });
+    }
+
+    // Common function to error response message
+    function handleResponseMessageError(message, title, icon) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            timer: 5000
         });
     }
 
@@ -24,8 +37,6 @@
         e.preventDefault();
         const form = $(this);
         const button = form.find('button[type="submit"]');
-        const spinner =
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>';
         const originalHtml = button.html();
 
         button.html(spinner).prop('disabled', true);
@@ -116,24 +127,16 @@
                         },
                         success: function(response) {
                             if (response.status == 200) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    timer: 2000
-                                });
+                                handleResponseMessageError(response.message,
+                                    'تم الحذف', 'success')
+
                                 row.remove();
                                 resolve();
                             }
                         },
                         error: function(error) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: error.responseJSON
-                                    .message,
-                                icon: 'error',
-                                timer: 5000
-                            });
+                            handleResponseMessageError(error.responseJSON
+                                .message, 'خطأ', 'error')
                             resolve();
                         },
                         complete: function() {
@@ -154,7 +157,10 @@
         const id = $(this).data('id');
         const viewModal = $('#viewModal');
         resetModalForm(viewModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         // call Api
 
         $.ajax({
@@ -180,6 +186,9 @@
                 }
             },
             error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
 
@@ -189,7 +198,10 @@
         const id = $(this).data('id');
         const editModal = $('#editModal');
         resetModalForm(editModal);
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
 
         // Reset select elements to their first option
         const firstMainGroupOptionValue = $('#editModal select[name="parent_group_id"]').find('option:first')
@@ -232,6 +244,9 @@
                 }
             },
             error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
 
         });
     });
@@ -241,9 +256,6 @@
     $(document).on('click', '#update_sub_group', function(params) {
         const id = $(this).data('id');
         let button = $(this);
-        let spinner = $(
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-        );
         let originalHtml = button.html();
 
         button.html(spinner);
@@ -259,11 +271,10 @@
             },
             success: function(response) {
                 if (response.status == 200) {
-                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data.id)
-                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data
+                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data
                         .parent_name)
-                    $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.name)
-                    $('#sid' + response.data.id + ' td:nth-child(4)').text(response.data.serial_Nr)
+                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.name)
+                    $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.serial_Nr)
                     successMsg(response.message);
                     $('#editModal').modal('hide');
                 }
@@ -274,24 +285,4 @@
             }
         });
     })
-
-    // $('#group_name').on('keyup', function() {
-    //     let query = $(this).val()
-    //     let groupMain = $('#main_group').val()
-    //     searchDb('search_groups', query, $(this), groupMain);
-    // });
-
-    // $(document).on('click', '.search-result li', function(e) {
-    //     e.stopPropagation();
-    //     getData('get_groups', $(this).attr('data-id'), function(data) {
-    //         id.val(data.id);
-    //         name.val(data.name);
-    //         from.val(data.start_serial);
-    //         to.val(data.end_serial);
-    //         $('#save_group').addClass('d-none');
-    //         $('#update_group').removeClass('d-none');
-    //         $('.search-result').html('');
-    //         checkForm();
-    //     });
-    // });
 </script>

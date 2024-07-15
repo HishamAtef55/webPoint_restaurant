@@ -1,6 +1,9 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
     let tbody = $('.table-data tbody');
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
     // Function to reset modal content
     function resetModal(modalId) {
         // Clear all input fields
@@ -25,6 +28,15 @@
             errorMsg(val[0]);
         });
     }
+    // Common function to error response message
+    function handleResponseMessageError(message, title, icon) {
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            timer: 5000
+        });
+    }
 
     // create store
     $(document).on('click', '#save_store', function() {
@@ -36,9 +48,6 @@
         let methodChecks = $('#storeModal input[name="storage_method"]:checked');
         let storages = [];
         let button = $(this);
-        let spinner = $(
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-        );
         let originalHtml = button.html();
 
 
@@ -153,24 +162,23 @@
                             id: id,
                         },
                         success: function(response) {
+
                             if (response.status == 200) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: response.message,
-                                    icon: 'success',
-                                    timer: 2000
-                                });
+                                handleResponseMessageError(response.message,
+                                    'تم الحذف', 'success')
+
                                 row.remove();
+                                resolve();
+                            }
+                            if (response.status == 422) {
+                                handleResponseMessageError(response.message,
+                                    'خطأ', 'error')
                                 resolve();
                             }
                         },
                         error: function(error) {
-                            Swal.fire({
-                                title: 'Error!',
-                                text: error.responseJSON.message,
-                                icon: 'error',
-                                timer: 5000
-                            });
+                            handleResponseMessageError(error.responseJSON
+                                .message, 'خطأ', 'error')
                             resolve();
                         },
                         complete: function() {
@@ -190,7 +198,10 @@
     $(document).on('click', '#view_store', function() {
         resetModal('#viewModal');
         const id = $(this).data('id');
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         $.ajax({
             type: 'GET',
             url: '{{ url('stock/stores', '') }}' + '/' + id,
@@ -235,6 +246,9 @@
                 }
             },
             error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
         });
 
     })
@@ -242,7 +256,10 @@
     $(document).on('click', '#edit_store', function(params) {
         resetModal('#editModal');
         const id = $(this).data('id');
-
+        let button = $(this);
+        let originalHtml = button.html();
+        button.html(spinner);
+        button.prop('disabled', true);
         $.ajax({
             type: 'GET',
             url: '{{ url('stock/stores', '') }}' + '/' + id,
@@ -289,6 +306,9 @@
                 }
             },
             error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
         });
     })
 
@@ -302,9 +322,6 @@
         let methodChecks = $('#editModal input[name="storage_method"]:checked');
         let storages = [];
         let button = $(this);
-        let spinner = $(
-            '<div class="spinner-border text-light" role="status"><span class="sr-only">Loading...</span></div>'
-        );
         let originalHtml = button.html();
 
 
