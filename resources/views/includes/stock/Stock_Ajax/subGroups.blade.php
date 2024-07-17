@@ -1,6 +1,6 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    const tbody = $('.table-data tbody');
+    const tbody = $('table.table-data tbody');
     let spinner = $(
         '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
     );
@@ -194,7 +194,7 @@
 
     })
     // edit section
-    $(document).on('click', '#edit_sub_group', function(params) {
+    $(document).on('click', '#edit_sub_group', function() {
         const id = $(this).data('id');
         const editModal = $('#editModal');
         resetModalForm(editModal);
@@ -253,7 +253,7 @@
 
 
     // update section 
-    $(document).on('click', '#update_sub_group', function(params) {
+    $(document).on('click', '#update_sub_group', function() {
         const id = $(this).data('id');
         let button = $(this);
         let originalHtml = button.html();
@@ -285,4 +285,192 @@
             }
         });
     })
+
+    // handle filter subgroups
+    $(document).on('change', '#storeSubGroup select[name="parent_group_id"]', function() {
+        let button = $(this);
+        let selectedValue = button.val()
+        const url = '{{ url('stock/sub/groups') }}/' + selectedValue + '/filter';
+        const initialParams = {
+            "_token": "{{ csrf_token() }}",
+            "parent_id": selectedValue,
+            "page": 1 // Start with page 1
+        };
+        const queryString = $.param(initialParams);
+
+
+        let selectedText = button.find('option:selected').text()
+        if (!selectedValue) return;
+        $.ajax({
+            type: 'GET',
+            url: `${url}?${queryString}`,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 200) {
+                    const groups = response.data.data; // Access the paginated data
+                    const pagination = response.data; // Contains pagination info
+                    const $pagination = $('.pagination');
+
+                    // Clear existing table rows
+                    tbody.empty();
+
+                    if (!groups.length) {
+                        tbody.append(
+                            '<tr><td colspan="4">لا توجد مجموعات فرعية</td></tr>'
+                        );
+                    }
+                    // Update table rows
+                    groups.forEach(group => {
+                        const newRowContent = `
+                    <tr id="sid${group.id}">
+                        <td>${selectedText}</td>
+                        <td>${group.name}</td>
+                        <td>${group.serial_nr}</td>
+                        <td>
+                            <button title="تعديل" class="btn btn-success" data-id="${group.id}" id="edit_sub_group">
+                                <i class="far fa-edit"></i>
+                            </button>
+                            <button title="عرض" data-id="${group.id}" id="view_sub_group" class="btn btn-primary">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-danger" id="delete_sub_group" data-id="${group.id}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+
+                        tbody.append(newRowContent);
+                    });
+
+                    // Clear existing pagination links
+                    $pagination.empty();
+
+                    // Update pagination links
+
+                    updatePaginationLinks(pagination.links);
+
+
+
+
+                }
+                if (response.status == 422) {
+                    // Handle validation errors
+                    return false;
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error: ' + status + error);
+            },
+        });
+
+    })
+    // Handle pagination click event
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        let selectedOption = $('#storeSubGroup select[name="parent_group_id"]')
+        let selectedValue = selectedOption.val()
+        let selectedText = selectedOption.find('option:selected').text()
+        const pageUrl = $(this).attr('href');
+        $.ajax({
+            type: 'GET',
+            url: pageUrl,
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 200) {
+                    const groups = response.data.data; // Access the paginated data
+                    const pagination = response.data; // Contains pagination info
+                    const tbody = $('table.table-data tbody');
+                    const $pagination = $('.pagination');
+
+                    // Clear existing table rows
+                    tbody.empty();
+                    if (!groups.length) {
+                        tbody.append(
+                            '<tr><td colspan="4">لا توجد مجموعات فرعية</td></tr>'
+                        );
+                    }
+                    // Update table rows
+                    groups.forEach(group => {
+                        const newRowContent = `
+                    <tr id="sid${group.id}">
+                        <td>${selectedText}</td>
+                        <td>${group.name}</td>
+                        <td>${group.serial_nr}</td>
+                        <td>
+                            <button title="تعديل" class="btn btn-success" data-id="${group.id}" id="edit_sub_group">
+                                <i class="far fa-edit"></i>
+                            </button>
+                            <button title="عرض" data-id="${group.id}" id="view_sub_group" class="btn btn-primary">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-danger" id="delete_sub_group" data-id="${group.id}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`
+                        tbody.append(newRowContent);
+                    });
+
+
+
+
+                    updatePaginationLinks(pagination.links);
+
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error: ' + status + error);
+            }
+        });
+    });
+
+    function updatePaginationLinks(links) {
+        const $pagination = $('.pagination');
+        $pagination.empty();
+
+        const parent_id = $('#storeSubGroup select[name="parent_group_id"]').val();
+        const _token = "{{ csrf_token() }}";
+        const currentPage = getCurrentPageNumber();
+
+        links.forEach(link => {
+            
+            
+            console.log(link.label)
+            if (link.label === '&laquo; Previous' || link.label === 'Next &raquo;') {
+                return; // Skip this iteration
+            }
+
+            const params = {
+                "parent_id": parent_id,
+                "_token": _token,
+            };
+
+            // Only include "page" parameter if it's not the current page
+            if (link.page && link.page !== currentPage) {
+                params["page"] = link.page;
+            }
+
+            const queryString = $.param(params);
+
+            // Ensure link.url is defined and not null
+            let pageUrl = link.url || '';
+
+            // Construct pageUrl without adding ? if link.url already contains query parameters
+            if (pageUrl.includes('?')) {
+                pageUrl += `&${queryString}`;
+            } else {
+                pageUrl += `?${queryString}`;
+            }
+
+            $pagination.append(
+                `<li class="page-item ${link.active ? 'active' : ''}" aria-current="page"><a class="page-link" href="${pageUrl}">${link.label}</a></li>`
+            );
+        });
+    }
+
+    function getCurrentPageNumber() {
+        // Extract current page number from URL or default to 1
+        const urlParams = new URLSearchParams(window.location.search);
+        return parseInt(urlParams.get('page')) || 1;
+    }
 </script>

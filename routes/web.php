@@ -545,6 +545,8 @@ Route::group(
       ],
       function () {
         Route::get('groups', [SubGroupController::class, 'index'])->name('groups.index');
+        Route::get('groups/{stockGroup}/filter', [SubGroupController::class, 'filter'])->name('groups.filter');
+
         Route::post('groups', [SubGroupController::class, 'store'])->name('groups.store');
         Route::get('groups/{stockGroup}', [SubGroupController::class, 'show'])->name('groups.show');
         Route::put('groups/{stockGroup}', [SubGroupController::class, 'update'])->name('groups.update');

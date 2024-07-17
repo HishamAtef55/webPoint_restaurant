@@ -20,6 +20,7 @@ class StockGroupResource extends JsonResource
             'parent_id' => $this->parent_id ?? null,
             'serial_Nr' => $this->serial_nr,
             'parent_name' => $this->parent ? $this->parent->name : null,
+            'children' => self::collection($this->children),
         ];
     }
 }

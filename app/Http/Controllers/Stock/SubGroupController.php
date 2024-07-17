@@ -8,8 +8,10 @@ use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Stock\StockGroupResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Requests\Stock\SubGroups\FilterSubGroup;
 use App\Http\Requests\Stock\SubGroups\StoreSubGroupRequest;
 use App\Http\Requests\Stock\SubGroups\UpdateSubGroupRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class SubGroupController extends Controller
 {
@@ -91,5 +93,24 @@ class SubGroupController extends Controller
                 'status' => Response::HTTP_OK
             ]);
         }
+    }
+
+    /**
+     * filter.
+     * @param  FilterSubGroup $request
+     * @return JsonResponse
+     */
+    public function filter(
+        FilterSubGroup $request,
+    ): JsonResponse {
+        $groups = StockGroup::where('parent_id', $request->parent_id)
+            ->orderBy('serial_nr', 'asc')->paginate(5);
+        // ->get();
+
+        return response()->json([
+            'data' => $groups,
+            'message' => null,
+            'status' => Response::HTTP_OK
+        ]);
     }
 }
