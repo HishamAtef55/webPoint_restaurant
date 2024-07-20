@@ -1,12 +1,8 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    const tbody = $('table.table-data tbody');
-    let spinner = $(
-        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
-    );
-
     $(document).ready(function() {
-        $('input').attr('autocomplete', 'off');
+        bindBranchChangeEvent(); // Bind change event when the document is ready
+        bindGroupsChangeEvent();
     });
 
     // handle csrf request header
@@ -34,6 +30,14 @@
             timer: 5000
         });
     }
+
+    let preventChangeEvent = false; // Flag to control change event execution
+    let preventGroupsChangeEvent = false; // Flag to control change event execution
+
+    const tbody = $('table.table-data tbody');
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
 
 
 
@@ -87,16 +91,10 @@
         let selectedText = slectedMainGroupEle.find('option:selected').text();
         if (!selectedValue) return;
 
-        const url = '{{ url('stock/material/sections') }}/' + selectedValue + '/filter';
-        const initialParams = {
-            "branch_id": selectedValue,
-        };
-        const queryString = $.param(initialParams);
-
 
         $.ajax({
             type: "GET",
-            url: `${url}?${queryString}`,
+            url: '{{ url('stock/material/sections') }}/' + selectedValue + '/filter',
             dataType: 'json',
             success: function(response) {
                 if (response.status === 200) {
@@ -174,8 +172,8 @@
                 if (response.status == 200) {
                     newMaterial = `<tr id=sid${response.data.id}>
                             <td>${response.data.id}</td>
-                            <td>${response.data.name}</td>
                             <td>${response.data.group.name}</td>
+                            <td>${response.data.name}</td>
                                                     <td>
                                     <button title="تعديل" class="btn btn-success"
                                         data-id="${response.data.id}" id="edit_material">
@@ -282,9 +280,7 @@
             dataType: 'json',
             success: function(response) {
                 if (response.status == 200) {
-                    const material = response.data;
-                    console.log(material)
-                    updateModelForm(viewModal, material)
+                    updateModelForm(viewModal, response)
                     checkForm();
                 }
             },
@@ -299,50 +295,38 @@
     // edit section
     $(document).on('click', '#edit_material', function() {
         const id = $(this).data('id');
-        const editModal = $('#editModal');
-        resetModalForm(editModal);
+        const viewModal = $('#editModal');
+        // Set the flag to prevent the change event
+        resetModalForm(viewModal);
+        preventChangeEvent = true;
+        preventGroupsChangeEvent = true;
         let button = $(this);
         let originalHtml = button.html();
         button.html(spinner);
         button.prop('disabled', true);
 
-
-        // Call API
         $.ajax({
             type: 'GET',
             url: '{{ url('stock/materials', '') }}' + '/' + id,
             dataType: 'json',
-            data: {},
             success: function(response) {
                 if (response.status == 200) {
-                    const subGroup = response.data;
+                    updateModelForm(viewModal, response)
+                    $('#editModal').find('.modal-footer #update_material').removeAttr('data-id')
+                        .data('id', response.data.id)
 
-                    $('#editModal').modal('show');
-                    console.log(response)
-                    return false;
-                    // Set new values
-                    $('#editModal #id').val(subGroup.id);
-                    $('#editModal #name').val(subGroup.name);
-                    $('#editModal #serialNr').val(subGroup.serial_Nr);
-
-                    // Set the store value
-                    let mainGroupOption = $('#editModal select[name="parent_group_id"]').find(
-                        `option:contains(${subGroup.parent_name})`).val();
-                    if (mainGroupOption) {
-                        $('#editModal select[name="parent_group_id"]').val(mainGroupOption)
-                            .change();
-                    }
-
-                    $('#editModal').find('.modal-footer #update_sub_group').removeAttr('data-id')
-                        .data(
-                            'id', subGroup.id)
-                    // Perform any additional form checks
                     checkForm();
                 }
+                // Unset the flag after setting new values
+                preventChangeEvent = false;
+                preventGroupsChangeEvent = false;
             },
             error: handleAjaxError,
             complete: function() {
                 button.html(originalHtml).prop('disabled', false);
+                // Unset the flag after setting new values
+                preventChangeEvent = false;
+                preventGroupsChangeEvent = false;
             }
 
         });
@@ -350,38 +334,56 @@
 
 
     // update section 
-    // $(document).on('click', '#update_sub_group', function() {
-    //     const id = $(this).data('id');
-    //     let button = $(this);
-    //     let originalHtml = button.html();
-
-    //     button.html(spinner);
-    //     button.prop('disabled', true);
-    //     $.ajax({
-    //         type: 'PUT',
-    //         url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
-    //         dataType: 'json',
-    //         data: {
-    //             "_token": "{{ csrf_token() }}",
-    //             name: $('#editModal #name').val(),
-    //             parent_id: $('#editModal #parent_group_id').val(),
-    //         },
-    //         success: function(response) {
-    //             if (response.status == 200) {
-    //                 $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data
-    //                     .parent_name)
-    //                 $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.name)
-    //                 $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.serial_Nr)
-    //                 successMsg(response.message);
-    //                 $('#editModal').modal('hide');
-    //             }
-    //         },
-    //         error: handleAjaxError,
-    //         complete: function() {
-    //             button.html(originalHtml).prop('disabled', false);
-    //         }
-    //     });
-    // })
+    $(document).on('click', '#update_material', function() {
+        const id = $(this).data('id');
+        let button = $(this);
+        let originalHtml = button.html();
+        const form = $('#editModal');
+        button.html(spinner).prop('disabled', true);
+        const formData = collectMaterialData(form);
+        console.log(formData)
+        $.ajax({
+            type: 'PUT',
+            url: '{{ url('stock/materials', '') }}' + '/' + id,
+            dataType: 'json',
+            data: {
+                name: formData.name,
+                cost: formData.cost,
+                price: formData.price,
+                unit: formData.unit,
+                // 
+                group_id: formData.subGroupId,
+                branch_id: formData.branchId,
+                // 
+                min_store: formData.storeLimitMin,
+                max_store: formData.storeLimitMax,
+                min_section: formData.sectionLimitMin,
+                max_section: formData.sectionLimitMax,
+                // 
+                loss_ratio: formData.lossRatio,
+                expire_date: formData.expireDate,
+                storage_type: formData.storageType,
+                // 
+                material_type: formData.selectedMaterialType,
+                sectionIds: formData.sections,
+            },
+            success: function(response) {
+                console.log(response)
+                if (response.status == 200) {
+                    $('#sid' + response + ' td:nth-child(1)').text(response.data
+                        .id)
+                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.group.name)
+                    $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.name)
+                    successMsg(response.message);
+                    $('#editModal').modal('hide');
+                }
+            },
+            error: handleAjaxError,
+            complete: function() {
+                button.html(originalHtml).prop('disabled', false);
+            }
+        });
+    })
 
     // collect saving new material data
     function collectMaterialData(form) {
@@ -406,9 +408,15 @@
         // 
         let selectedMaterialType = form.find("input[name='materialType']:checked").val();
         const sectionsChecked = form.find('input[name="sections"]:checked');
-        const sections = sectionsChecked.map((_, el) => ({
-            id: $(el).attr('id').replace('section-', '')
-        })).get();
+        if (form.is('#editModal')) {
+            const sections = sectionsChecked.map((_, el) => ({
+                id: $(el).attr('id').replace('edit-model-section-', '')
+            })).get();
+        } else {
+            const sections = sectionsChecked.map((_, el) => ({
+                id: $(el).attr('id').replace('section-', '')
+            })).get();
+        }
 
         return {
             name: name,
@@ -483,75 +491,226 @@
         sections.html('')
     }
 
-    function updateModelForm(model, data) {
-        //    view mdoel
+    function updateModelForm(model, response) {
+
+        //   view model
         model.modal('show');
         // update values
 
-        $(model).find("input[name='id']").val(data.id);
+        $(model).find("input[name='id']").val(response.data.id);
 
-        $(model).find('select[name="main_group_id"]').append(
-            `<option class="form-select" value="${data.group.parent_id}" selected>${data.group.parent_name}</option>`
-        );
 
         $(model).find('select[name="sub_group_id"]').append(
-            `<option class="form-select" value="${data.group.id}" selected>${data.group.name}</option>`
+            `<option class="form-select" value="${response.data.group.id}" selected>${response.data.group.name}</option>`
         );
 
-        $(model).find('select[name="branch_id"]').append(
-            `<option class="form-select" value="${data.branch.id}" selected>${data.branch.name}</option>`
-        );
+        // select option
+        let selectBranchEle = $(model).find('select[name="branch_id"]')
+        let selectMainGroupEle = $(model).find('select[name="main_group_id"]')
 
+        let branchOption = selectBranchEle.find(
+            `option:contains(${response.data.branch.name})`).val();
+        let mainGroupOption = selectMainGroupEle.find(
+            `option:contains(${response.data.group.parent_name})`).val();
 
-        $(model).find('input[name="name"]').val(data.name);
-        $(model).find('input[name="cost"]').val(data.cost);
-        $(model).find('input[name="price"]').val(data.price);
+        if (branchOption) {
+            selectBranchEle.val(branchOption).change();
+
+        } else {
+            selectBranchEle.append(
+                `<option class="form-select" value="${response.data.branch.id}" selected>${response.data.branch.name}</option>`
+
+            )
+        }
+
+        if (mainGroupOption) {
+            selectMainGroupEle.val(mainGroupOption).change();
+        } else {
+            selectMainGroupEle.append(
+                `<option class="form-select" value="${response.data.group.parent_id}" selected>${response.data.group.parent_name}</option>`
+
+            )
+        }
+        // 
+        $(model).find('input[name="name"]').val(response.data.name);
+        $(model).find('input[name="cost"]').val(response.data.cost);
+        $(model).find('input[name="price"]').val(response.data.price);
 
         $(model).find('select[name="unit"]').append(
-            `<option class="form-select" value="${data.unit}" selected>${data.unit}</option>`
+            `<option class="form-select" value="${response.data.unit ?? ''}" selected>${response.data.unit ?? ''}</option>`
         );
 
-        let materialType = `
-                    <input class="form-check-input material-type" type="radio"
-                        value="${data.material_type}" id="view_model_${data.material_type}"
-                        name="materialType" checked>
-                    <label class="form-check-label" for="view_model_${data.material_type}">
-                        ${data.material_type}
-                    </label>`;
+        if (model.is('#editModal')) {
+            $(model).find(
+                `input[name="materialType"][value="${response.data.material_type}"]`
+            ).prop('checked', true);
 
-        $(model).find('.view_model_material_type').html(materialType);
+        } else {
+
+            let materialType = `
+                        <input class="form-check-input material-type" type="radio"
+                            value="${response.data.material_type}" id="view_model_${response.data.material_type}"
+                            name="materialType" checked>
+                        <label class="form-check-label" for="view_model_${response.data.material_type}">
+                            ${response.data.material_type}
+                        </label>`;
+
+            $(model).find('.view_model_material_type').html(materialType);
+        }
 
 
-        $(model).find('input[name="store_limit_min"]').val(data.min_store);
-        $(model).find('input[name="store_limit_max"]').val(data.max_store);
-        $(model).find('input[name="section_limit_min"]').val(data.min_section);
-        $(model).find('input[name="section_limit_max"]').val(data.max_section);
+        $(model).find('input[name="store_limit_min"]').val(response.data.min_store);
+        $(model).find('input[name="store_limit_max"]').val(response.data.max_store);
+        $(model).find('input[name="section_limit_min"]').val(response.data.min_section);
+        $(model).find('input[name="section_limit_max"]').val(response.data.max_section);
 
-        $(model).find('input[name="serial_nr"]').val(data.serial_nr);
-        $(model).find('input[name="loss_ratio"]').val(data.loss_ratio);
+        $(model).find('input[name="serial_nr"]').val(response.data.serial_nr);
+        $(model).find('input[name="loss_ratio"]').val(response.data.loss_ratio);
         $(model).find('select[name="storage_type"]').append(
-            `<option class="form-select" value="${data.storage_type}" selected>${data.storage_type}</option>`
+            `<option class="form-select" value="${response.data.storage_type ?? ''}" selected>${response.data.storage_type ?? ''}</option>`
         );
-        $(model).find('input[name="expire_date"]').val(data.expire_date);
+        $(model).find('input[name="expire_date"]').val(response.data.expire_date);
 
         // Append sections
         let sectionsContent = '';
-        data.sections.forEach(function(section) {
-            sectionsContent += `
+        if (model.is('#viewModal')) {
+            response.data.sections.forEach(function(section) {
+                sectionsContent += `
                         <div class='col-md-4 d-flex align-items-center mt-2 '>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" 
                                 value="${section.name}" 
                                 id="section-${section.id}"
-                                name="sections">
+                                name="sections" checked>
                                 <label class="form-check-label"
                                 for="section-${section.id}">
                                     ${section.name}
                                 </label>
                             </div>
                         </div>`;
-        })
-
+            })
+        } else {
+            let arr = []
+            response.data.sections.forEach(function(section) {
+                arr.push(section.name)
+            });
+            response.sections.forEach(el => {
+                const isChecked = arr.includes(el.name) ? 'checked' : '';
+                sectionsContent +=
+                    `<div class='col-md-4 d-flex align-items-center mt-2 '>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                value="${el.name}"
+                                id="edit-model-section-${el.id}"
+                                name="sections" ${isChecked}>
+                                <label class="form-check-label"
+                                for="edit-model-section-${el.id}">
+                                ${el.name}
+                                </label>
+                            </div>
+                        </div>`;
+            });
+        }
         $(model).find('.section_id').html(sectionsContent);
+    }
+
+    function bindBranchChangeEvent() {
+        $(document).on('change', '#editModal select[name="branch_id"]', function() {
+            if (preventChangeEvent) return;
+            let slectedMainGroupEle = $(this)
+
+            let sectionCheckboxEle = $('#editModal .section_id')
+            let selectedValue = slectedMainGroupEle.val();
+            let selectedText = slectedMainGroupEle.find('option:selected').text();
+            if (!selectedValue) return;
+
+            const url = '{{ url('stock/material/sections') }}/' + selectedValue + '/filter';
+            const initialParams = {
+                "branch_id": selectedValue,
+            };
+            const queryString = $.param(initialParams);
+
+
+            $.ajax({
+                type: "GET",
+                url: '{{ url('stock/material/sections') }}/' + selectedValue + '/filter',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        const sections = response.data;
+                        let sectionsContent = '';
+                        sectionCheckboxEle.html('');
+                        if (!sections.length) {
+                            sectionsContent =
+                                `<div class='col-md-12 d-flex align-items-center mt-2 '>
+                                    <p>لاتوجد أقسام متاحة</p>
+                            </div>`;
+                        }
+                        sections.forEach(function(section) {
+                            sectionsContent += `
+                        <div class='col-md-4 d-flex align-items-center mt-2 '>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                value="${section.name}" 
+                                id="edit-mode-section-${section.id}"
+                                name="sections">
+                                <label class="form-check-label"
+                                for="edit-mode-section-${section.id}">
+                                    ${section.name}
+                                </label>
+                            </div>
+                        </div>`;
+                        })
+                        sectionCheckboxEle.html(sectionsContent);
+
+                    }
+
+                },
+                error: handleAjaxError,
+            })
+        })
+    }
+
+    function bindGroupsChangeEvent() {
+        $(document).on('change', '#editModal select[name="main_group_id"]', function() {
+            let slectedMainGroupEle = $(this)
+            let slectedSubMainGroupEle = $('#editModal select[name="sub_group_id"]')
+            let selectedValue = slectedMainGroupEle.val();
+            let selectedText = slectedMainGroupEle.find('option:selected').text();
+            if (!selectedValue) return;
+
+            const url = '{{ url('stock/material/groups') }}/' + selectedValue + '/filter';
+            const initialParams = {
+                "parent_id": selectedValue,
+            };
+            const queryString = $.param(initialParams);
+
+
+            $.ajax({
+                type: "GET",
+                url: `${url}?${queryString}`,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        slectedSubMainGroupEle.html('');
+                        const subGroups = response.data;
+                        slectedSubMainGroupEle.prop('disabled', false)
+
+                        if (!subGroups.length) {
+                            slectedSubMainGroupEle.append(
+                                '<option value="">لاتوجد مجموعات فرعية</option>');
+                            return;
+                        }
+                        subGroups.forEach(group => {
+                            const newGroupsOptions =
+                                `<option value="${group.id}">${group.name}</option>`
+                            slectedSubMainGroupEle.append(newGroupsOptions)
+                        });
+                    }
+
+                },
+                error: handleAjaxError,
+            })
+        });
     }
 </script>

@@ -562,7 +562,7 @@ Route::group(
     */
     Route::resource('materials', MaterialController::class);
     Route::get('material/groups/{stockGroup}/filter', FilterSubGroupController::class)->name('material.groups.filter');
-    Route::get('material/sections/{stockGroup}/filter', FilterSectionController::class)->name('material.sections.filter');
+    Route::get('material/sections/{branch}/filter', FilterSectionController::class)->name('material.sections.filter');
   }
 );
 

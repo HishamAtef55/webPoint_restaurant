@@ -42,7 +42,7 @@
                                     <div class="custom-form position-relative">
                                         <input type="text" name="name" id="name">
                                         <label for="name">اسم الخامة</label>
-                                        <ul class="search-result"></ul>
+
                                     </div>
                                 </div>
                                 <div class="col">
@@ -236,7 +236,7 @@
                         <div class="row align-items-end">
                             <div class="col">
                                 <div class="custom-form position-relative">
-                                    <input type="text" name="id" id="edit_model_id"
+                                    <input type="text" name="id" id="view_model_id"
                                         value="{{ $lastMaterialNr }}" disabled>
                                     <label for="view_model_id">رقم الخامة</label>
                                 </div>
@@ -252,8 +252,7 @@
                             <div class="col flex-grow-1">
                                 <div>
                                     <label for="view_model_sub_group" class="select-label">المجموعة الفرعية</label>
-                                    <select disabled class="form-select" name="sub_group_id" id="view_model_sub_group">
-                                        <option selected disabled>اختر المجموعة الفرعية</option>
+                                    <select class="form-select" name="sub_group_id" id="view_model_sub_group">
                                     </select>
                                 </div>
                             </div>
@@ -264,7 +263,6 @@
                                 <div class="custom-form position-relative">
                                     <input type="text" name="name" id="view_model_name">
                                     <label for="view_model_name">اسم الخامة</label>
-                                    <ul class="search-result"></ul>
                                 </div>
                             </div>
                             <div class="col">
@@ -365,10 +363,7 @@
                             <div>
                                 <label class="select-label" for="view_model_branch_id"> الفروع</label>
                                 <select name="branch_id" id="view_model_branch_id">
-                                    <option selected disabled>اختر الفرع </option>
-                                    @foreach ($branchs as $branch)
-                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                    @endforeach
+
                                 </select>
                             </div>
                         </div>
@@ -429,19 +424,17 @@
                             <div class="col flex-grow-1">
                                 <div>
                                     <label for="edit_model_sub_group" class="select-label">المجموعة الفرعية</label>
-                                    <select disabled class="form-select" name="sub_group_id" id="edit_model_sub_group">
-                                        <option selected disabled>اختر المجموعة الفرعية</option>
+                                    <select class="form-select" name="sub_group_id" id="edit_model_sub_group">
                                     </select>
                                 </div>
                             </div>
                         </div>
-                        <hr class="mb-0" />
+                        <hr />
                         <div class="row align-items-end">
                             <div class="col">
                                 <div class="custom-form position-relative">
                                     <input type="text" name="name" id="edit_model_name">
                                     <label for="edit_model_name">اسم الخامة</label>
-                                    <ul class="search-result"></ul>
                                 </div>
                             </div>
                             <div class="col">
@@ -458,7 +451,7 @@
                             </div>
 
                         </div>
-                        <hr class="mb-0" />
+                        <hr />
                         <div class="row">
                             <div class="col">
                                 <div>
@@ -484,7 +477,7 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="mb-0" />
+                        <hr />
                         <div class="row align-items-end">
                             <div class="col">
                                 <div class="custom-form mt-3">
@@ -505,7 +498,7 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="mb-0" />
+                        <hr />
                         <div class="row align-items-end">
                             <div class="col">
                                 <div>
@@ -527,7 +520,7 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="mb-0" />
+                        <hr />
                         <div class="row">
                             @foreach ($materialTypes as $type)
                                 <div class="col-md-4 d-flex align-items-center mt-2">
@@ -555,7 +548,7 @@
                                 </select>
                             </div>
                         </div>
-                        <hr class="mb-0" />
+                        <hr />
                         <h3>الأقسام</h3>
                         <div class="row section_id"
                             style="height:100px;

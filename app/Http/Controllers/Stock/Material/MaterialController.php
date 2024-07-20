@@ -8,13 +8,15 @@ use App\Models\Branch;
 use App\Enums\StorageType;
 use App\Enums\MaterialType;
 use Illuminate\Http\Request;
+use App\Models\Stock\Section;
 use App\Models\Stock\material;
 use App\Models\Stock\StockGroup;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Stock\SectionResource;
 use App\Http\Resources\Stock\MaterialResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Stock\Material\StoreMaterialRequest;
-use Illuminate\Http\JsonResponse;
 
 class MaterialController extends Controller
 {
@@ -71,21 +73,35 @@ class MaterialController extends Controller
             $material
         )->additional([
             'message' => null,
+            'sections' => SectionResource::collection(Section::where('branch_id', $material->branch_id)->get()),
             'status' => Response::HTTP_OK
         ]);
     }
 
 
     /**
-     * Update the specified resource in storage.
+     * Update.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Material  $material
+     * @param  StoreMaterialRequest  $request
+     * @return MaterialResource
      */
-    public function update(Request $request, $id)
-    {
-        //
+    public function update(
+        StoreMaterialRequest $request,
+        Material $material
+    ) {
+        $validatedData = $request->validated();
+        $sectionIds = array_map(function ($item) {
+            return $item['id'];
+        }, $validatedData['sectionIds']);
+        $material->sections()->detach();
+        $material->update($validatedData);
+        $material->sections()->attach($sectionIds);
+        return SectionResource::make($material)
+            ->additional([
+                'message' => "تم تعديل الخامة بنجاح",
+                'status' => Response::HTTP_OK
+            ]);
     }
 
     /**
