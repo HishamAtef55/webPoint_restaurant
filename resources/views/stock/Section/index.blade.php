@@ -37,7 +37,9 @@
                         </div>
                         <div class="bg-light p-2 rounded shadow mt-2">
                             <h3>المجموعات</h3>
-                            <div class="groups">
+                            <div class="groups"
+                                style="height:100px;
+                                overflow-y: scroll;  padding:5px;">
                             </div>
                         </div>
 

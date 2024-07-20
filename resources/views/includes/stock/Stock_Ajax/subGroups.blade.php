@@ -7,7 +7,13 @@
     $(document).ready(function() {
         $('input').attr('autocomplete', 'off');
     });
+    // handle csrf request header
 
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
     // Common function to handle AJAX errors
     function handleAjaxError(reject) {
         let response = $.parseJSON(reject.responseText);
@@ -45,7 +51,6 @@
             url: "{{ route('stock.sub.groups.store') }}",
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#storeSubGroup #name').val(),
                 parent_id: $('#storeSubGroup #parent_group_id').val(),
             },
@@ -122,7 +127,7 @@
                             id,
                         dataType: 'json',
                         data: {
-                            "_token": "{{ csrf_token() }}",
+
                             id: id,
                         },
                         success: function(response) {
@@ -131,6 +136,11 @@
                                     'تم الحذف', 'success')
 
                                 row.remove();
+                                resolve();
+                            }
+                            if (response.status == 422) {
+                                handleResponseMessageError(response.message,
+                                    'خطأ', 'error')
                                 resolve();
                             }
                         },
@@ -168,7 +178,6 @@
             url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -214,7 +223,6 @@
             url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -265,7 +273,6 @@
             url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#editModal #name').val(),
                 parent_id: $('#editModal #parent_group_id').val(),
             },
@@ -433,8 +440,8 @@
         const currentPage = getCurrentPageNumber();
 
         links.forEach(link => {
-            
-            
+
+
             console.log(link.label)
             if (link.label === '&laquo; Previous' || link.label === 'Next &raquo;') {
                 return; // Skip this iteration

@@ -10,6 +10,13 @@
         '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
     );
 
+    // handle csrf request header
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
     // Common function to handle AJAX errors
     function handleAjaxError(reject) {
         let response = $.parseJSON(reject.responseText);
@@ -45,7 +52,6 @@
             url: "{{ route('stock.sections.groups') }}",
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 branch_id: id
             },
             success: function(response) {
@@ -87,7 +93,6 @@
             url: "{{ route('stock.sections.store') }}",
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#section_name').val(),
                 store_id: $('#store').val(),
                 branch_id: $('#branch').val(),
@@ -176,7 +181,7 @@
                             id,
                         dataType: 'json',
                         data: {
-                            "_token": "{{ csrf_token() }}",
+
                             id: id,
                         },
                         success: function(response) {
@@ -222,7 +227,6 @@
             url: '{{ url('stock/sections', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -288,7 +292,6 @@
             url: '{{ url('stock/sections', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -376,7 +379,6 @@
             url: '{{ url('stock/sections', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: name.val(),
                 store_id: store.val(),
                 branch_id: branch.val(),
@@ -413,7 +415,7 @@
                 url: "{{ route('stock.sections.groups') }}",
                 dataType: 'json',
                 data: {
-                    "_token": "{{ csrf_token() }}",
+
                     branch_id: id
                 },
                 success: function(response) {

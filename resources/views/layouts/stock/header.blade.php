@@ -63,8 +63,8 @@
                         <a class="text-muted py-1 d-block" href="{{ route('stock.sub.groups.index') }}"> المجموعات
                             الفرعية </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'view.material') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ Route('view.material') }}"> الخامات </a>
+                    <li class="@if (Route::current()->getName() == 'stock.materials.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ Route('stock.materials.index') }}"> الخامات </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'view_components_items') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ Route('view_components_items') }}"> مكونات الاصناف

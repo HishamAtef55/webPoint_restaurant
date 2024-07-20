@@ -2,15 +2,16 @@
 
 namespace App\Models\Stock;
 
-use App\Models\Traits\HasSerialNumber;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Groups\HasSerialNumber;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class StockGroup extends Model
 {
     use HasFactory, HasRecursiveRelationships, HasSerialNumber;
-    
+
     /**
      * table
      *
@@ -48,5 +49,15 @@ class StockGroup extends Model
     public function hasChildren(): bool
     {
         return (bool) $this->children->count();
+    }
+
+    /**
+     * storageCapacity
+     *
+     * @return HasMany
+     */
+    public function materials(): HasMany
+    {
+        return $this->hasMany(Material::class, 'id', 'group_id');
     }
 }

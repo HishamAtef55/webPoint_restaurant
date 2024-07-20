@@ -15,6 +15,14 @@
         });
     }
 
+    // handle csrf request header
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
+
     // Common function to reset modal form
     function resetModalForm(modal) {
         modal.find('input').val('');
@@ -43,7 +51,6 @@
             url: "{{ route('stock.main.groups.store') }}",
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#group_name').val(),
             },
             success: function(response) {
@@ -112,7 +119,7 @@
                             id,
                         dataType: 'json',
                         data: {
-                            "_token": "{{ csrf_token() }}",
+
                             id: id,
                         },
                         success: function(response) {
@@ -168,7 +175,6 @@
             url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -206,7 +212,6 @@
             url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -245,7 +250,6 @@
             url: '{{ url('stock/main/groups', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#editModal #name').val(),
             },
             success: function(response) {

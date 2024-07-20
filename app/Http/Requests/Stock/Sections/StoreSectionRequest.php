@@ -37,7 +37,7 @@ class StoreSectionRequest extends FormRequest
         return
             [
                 'name.required'   => __('برجاء ادخال اسم القسم'),
-                'branch.required' => __('برجاء اختيار اختيار الفرع'),
+                'branch.required' => __('برجاء اختيار الفرع'),
                 'store.required'  => __('برجاء اختيار المخزن'),
                 'groupIds.required'  => __('برجاء اختيار مجموعة'),
                 'name.unique'   => __('هذا القسم موجود بالفعل'),

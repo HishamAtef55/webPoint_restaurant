@@ -10,20 +10,18 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Menu\PayController;
 use App\Http\Controllers\Stock\MaterialHalk;
-use App\Http\Controllers\Stock\SubGroupController;
 use App\Http\Controllers\Menu\CopyCloseShift;
 use App\Http\Controllers\Menu\MenuController;
 use App\Http\Controllers\Admin\ItemController;
 use App\Http\Controllers\Admin\ToGoController;
 use App\Http\Controllers\Menu\LoginController;
 use App\Http\Controllers\Menu\ShiftController;
-
-
 use App\Http\Controllers\Admin\AdminController;
+
+
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Menu\MovetoController;
 use App\Http\Controllers\Menu\TablesController;
-use App\Http\Controllers\Stock\StoreController;
 use App\Http\Controllers\Admin\GenralController;
 use App\Http\Controllers\Admin\OthersController;
 use App\Http\Controllers\Stock\MaterialTransfer;
@@ -31,21 +29,17 @@ use App\Http\Controllers\Admin\OpenDayController;
 use App\Http\Controllers\Menu\CustomerController;
 use App\Http\Controllers\Menu\DeliveryController;
 use App\Http\Controllers\Stock\OrdersControllers;
-use App\Http\Controllers\Stock\SectionController;
-
 use App\Http\Controllers\Admin\DeleveryController;
 use App\Http\Controllers\Admin\DiscountController;
-
 use App\Http\Controllers\Stock\ExchangeController;
-use App\Http\Controllers\Stock\MaterialController;
-use App\Http\Controllers\Stock\MaterialOperations;
 
+use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Admin\MinchargeController;
+
 use App\Http\Controllers\Reports\ReportsController;
-use App\Http\Controllers\Stock\MainGroupController;
 use App\Http\Controllers\Stock\PurchasesController;
-use App\Http\Controllers\Stock\SuppliersController;
 use App\Http\Controllers\Menu\ReservationController;
+
 use App\Http\Controllers\Admin\CarServicesController;
 use App\Http\Controllers\Admin\InformationController;
 use App\Http\Controllers\Stock\materialManufacturing;
@@ -53,27 +47,29 @@ use App\Http\Controllers\Stock\OpenBalanceController;
 use App\Http\Controllers\Admin\Item_DetailsController;
 use App\Http\Controllers\Menu\DailyExpensesController;
 use App\Http\Controllers\Stock\InDirectCostController;
+use App\Http\Controllers\Stock\Stores\StoreController;
 use App\Http\Controllers\Stock\BackToStoresControllers;
 use App\Http\Controllers\Reports\DailyReportsController;
 use App\Http\Controllers\Stock\ComponentItemsController;
-use App\Http\Controllers\Stock\GroupMaterialControllers;
 use App\Http\Controllers\Stock\MaterialRecipeController;
+use App\Http\Controllers\Stock\Groups\SubGroupController;
 use App\Http\Controllers\Admin\ExpensesCategoryController;
 use App\Http\Controllers\Stock\BackToSuppliersControllers;
-
+use App\Http\Controllers\Stock\Groups\MainGroupController;
 use App\Http\Controllers\Stock\OpenBalanceDailyController;
+
+use App\Http\Controllers\Stock\Sections\SectionController;
 use App\Http\Controllers\Reports\SalesCurrentDayController;
+use App\Http\Controllers\Stock\Material\MaterialController;
 use App\Http\Controllers\StockReports\HalkReportsController;
+use App\Http\Controllers\Stock\Suppliers\SuppliersController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\Stock\ComponentDetailsItemController;
 use App\Http\Controllers\StockReports\TransferReportController;
+use App\Http\Controllers\Stock\Material\FilterSectionController;
 use App\Http\Controllers\StockReports\CardItemReportsController;
 use App\Http\Controllers\StockReports\ExchangesReportController;
-use App\Http\Controllers\StockReports\HalkItemReportsController;
-use App\Http\Controllers\StockReports\PurchasesReportController;
-use App\Http\Controllers\StockReports\SuppliersReportsController;
-use App\Http\Controllers\StockReports\BackStoresReportsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,6 +81,11 @@ use App\Http\Controllers\StockReports\BackStoresReportsController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\StockReports\HalkItemReportsController;
+use App\Http\Controllers\StockReports\PurchasesReportController;
+use App\Http\Controllers\Stock\Material\FilterSubGroupController;
+use App\Http\Controllers\StockReports\SuppliersReportsController;
+use App\Http\Controllers\StockReports\BackStoresReportsController;
 use App\Http\Controllers\StockReports\OperationsReportsController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\StockReports\BackSuppliersReportsController;
@@ -493,8 +494,7 @@ Route::group(['prefix' => 'Reports'], function () {
   });
 });
 
-############################ Start Routes in Cost Control ###################
-################################## Stores ############################################
+################################## stock Routes ############################################
 Route::group(
   [
     'middleware' => [
@@ -508,11 +508,13 @@ Route::group(
     * @route('stores)
     */
     Route::resource('stores', StoreController::class);
+
     /*
     * @route('sections)
     */
     Route::resource('sections', SectionController::class);
     Route::post('/sections/groups', [SectionController::class, 'getSectionGroups'])->name('sections.groups');
+
     /*
     * @route('suppliers)
     */
@@ -534,6 +536,7 @@ Route::group(
         ]);
       }
     );
+
     /*
     * @route('sub/groups)
     */
@@ -553,38 +556,28 @@ Route::group(
         Route::delete('groups/{stockGroup}', [SubGroupController::class, 'destroy'])->name('groups.destroy');
       }
     );
+
+    /*
+    * @route('material')
+    */
+    Route::resource('materials', MaterialController::class);
+    Route::get('material/groups/{stockGroup}/filter', FilterSubGroupController::class)->name('material.groups.filter');
+    Route::get('material/sections/{stockGroup}/filter', FilterSectionController::class)->name('material.sections.filter');
   }
 );
 
 
-##################################### Main Group ####################################
-// Route::group(['prefix' => 'stock', 'controller' => MainGroupController::class], function () {
-//   Route::get('/main_groups', 'view_groups')->name('view.main_groups');
-//   Route::post('/save_main_groups', 'save_groups')->name('save.main_groups');
-//   Route::post('/search_main_groups', 'search_groups');
-//   Route::post('/get_main_groups', 'get_groups')->name('get.main_groups');
-//   Route::post('/update_main_groups', 'update_groups')->name('update.main_groups');
-// });
-#################################### Group Materials ################################
-// Route::group(['prefix' => 'stock', 'controller' => GroupMaterialControllers::class], function () {
-//   Route::get('/groups', 'view_groups')->name('view.groups');
-//   Route::post('/save_groups', 'save_groups')->name('save.groups');
-//   Route::post('/search_groups', 'search_groups');
-//   Route::post('/get_groups', 'get_groups')->name('get.groups');
-//   Route::post('/update_groups', 'update_groups')->name('update.groups');
-// });
-
 ################################# Material ###########################################
-Route::group(['prefix' => 'stock', 'controller' => MaterialController::class], function () {
-  Route::get('/material', 'view_material')->name('view.material');
-  Route::post('/get_sub_group', 'get_sub_group')->name('get_sub_group');
-  Route::post('/get_group_code', 'get_group_code')->name('get_group_code');
-  Route::post('/get_sections_branch', 'get_sections_branch')->name('get_sections_branch');
-  Route::post('/save_material', 'save_material')->name('save_material');
-  Route::post('/search_material_using_name', 'search_material_using_name')->name('search_material_using_name');
-  Route::post('/get_material_in_ul', 'get_material_in_ul')->name('get_material_in_ul');
-  Route::post('/update_material', 'update_material')->name('update_material');
-});
+// Route::group(['prefix' => 'stock', 'controller' => MaterialController::class], function () {
+//   Route::get('/material', 'view_material')->name('view.material');
+//   Route::post('/get_sub_group', 'get_sub_group')->name('get_sub_group');
+//   Route::post('/get_group_code', 'get_group_code')->name('get_group_code');
+//   Route::post('/get_sections_branch', 'get_sections_branch')->name('get_sections_branch');
+//   Route::post('/save_material', 'save_material')->name('save_material');
+//   Route::post('/search_material_using_name', 'search_material_using_name')->name('search_material_using_name');
+//   Route::post('/get_material_in_ul', 'get_material_in_ul')->name('get_material_in_ul');
+//   Route::post('/update_material', 'update_material')->name('update_material');
+// });
 
 ################################## Component Items ###################################
 Route::group(['prefix' => 'stock', 'controller' => ComponentItemsController::class], function () {

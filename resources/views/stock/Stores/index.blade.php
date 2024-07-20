@@ -237,7 +237,7 @@
         </div>
     </section>
 
-    <!-- view store odal -->
+    <!-- view store modal -->
     <div class="modal fade" id="viewModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -445,7 +445,7 @@
 
 
 
-    <!-- edit store odal -->
+    <!-- edit store modal -->
     <div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">

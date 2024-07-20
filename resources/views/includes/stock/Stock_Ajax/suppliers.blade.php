@@ -14,6 +14,13 @@
             errorMsg(val[0]);
         });
     }
+    // handle csrf request header
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
 
     // Common function to reset modal form
     function resetModalForm(modal) {
@@ -45,7 +52,6 @@
             url: "{{ route('stock.suppliers.store') }}",
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#supplier_name').val(),
                 phone: $('#supplier_phone').val(),
                 address: $('#supplier_address').val(),
@@ -120,7 +126,7 @@
                             id,
                         dataType: 'json',
                         data: {
-                            "_token": "{{ csrf_token() }}",
+
                             id: id,
                         },
                         success: function(response) {
@@ -166,7 +172,6 @@
             url: '{{ url('stock/suppliers', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -205,7 +210,6 @@
             url: '{{ url('stock/suppliers', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -245,7 +249,6 @@
             url: '{{ url('stock/suppliers', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: $('#editModal #name').val(),
                 phone: $('#editModal #phone').val(),
                 address: $('#editModal #address').val(),

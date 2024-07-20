@@ -4,6 +4,14 @@
     let spinner = $(
         '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
     );
+
+    // handle csrf request header
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
     // Function to reset modal content
     function resetModal(modalId) {
         // Clear all input fields
@@ -73,7 +81,6 @@
             url: "{{ route('stock.stores.store') }}",
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
@@ -158,7 +165,7 @@
                         url: '{{ url('stock/stores', '') }}' + '/' + id,
                         dataType: 'json',
                         data: {
-                            "_token": "{{ csrf_token() }}",
+
                             id: id,
                         },
                         success: function(response) {
@@ -207,7 +214,6 @@
             url: '{{ url('stock/stores', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -265,7 +271,6 @@
             url: '{{ url('stock/stores', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 id: id
             },
             success: function(response) {
@@ -347,7 +352,6 @@
             url: '{{ url('stock/stores', '') }}' + '/' + id,
             dataType: 'json',
             data: {
-                "_token": "{{ csrf_token() }}",
                 name: name.val(),
                 phone: phone.val(),
                 address: address.val(),
