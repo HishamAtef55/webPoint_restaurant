@@ -69,6 +69,7 @@ class MaterialController extends Controller
     public function show(
         Material $material
     ): MaterialResource {
+
         return MaterialResource::make(
             $material
         )->additional([

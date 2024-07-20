@@ -6,9 +6,9 @@ namespace App\Enums;
 enum Unit: string
 {
 
-    case KILO = 'كيلو';
-    case LITRE = 'لتر';
-    case NUMBER = 'عدد';
+    case KILO = 'kilo';
+    case LITRE = 'litre';
+    case NUMBER = 'number';
 
     public function toString(): string
     {
@@ -26,5 +26,14 @@ enum Unit: string
             Unit::LITRE,
             Unit::NUMBER,
         ];
+    }
+
+    public static function view(Unit $unit): string
+    {
+        return match ($unit) {
+            self::KILO => 'كيلو',
+            self::LITRE => 'لتر',
+            self::NUMBER => 'عدد'
+        };
     }
 }

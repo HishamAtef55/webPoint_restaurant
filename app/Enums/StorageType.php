@@ -6,11 +6,11 @@ namespace App\Enums;
 enum StorageType: string
 {
 
-    case FREEZE = 'تجميد';
-    case COOLING = 'تبريد';
-    case FLOOR = 'أرضية';
-    case SHELVES = 'أرفف';
-    case OHTER = 'اخرى';
+    case FREEZE = 'freeze';
+    case COOLING = 'cooling';
+    case FLOOR = 'floor';
+    case SHELVES = 'shelves';
+    case OHTER = 'other';
 
     public function toString(): string
     {
@@ -32,5 +32,16 @@ enum StorageType: string
             StorageType::SHELVES,
             StorageType::OHTER,
         ];
+    }
+
+    public static function view($storageType): string
+    {
+        return match ($storageType) {
+            self::FREEZE => 'تجميد',
+            self::COOLING => 'تبريد',
+            self::FLOOR => 'أرضية',
+            self::SHELVES => 'أرفف',
+            self::OHTER => 'اخرى'
+        };
     }
 }

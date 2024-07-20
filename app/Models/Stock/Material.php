@@ -2,7 +2,13 @@
 
 namespace App\Models\Stock;
 
+use App\Enums\Unit;
 use App\Models\Branch;
+use App\Casts\UnitCast;
+use App\Casts\StorageCast;
+use App\Enums\StorageType;
+use App\Casts\MaterialCast;
+use App\Enums\MaterialType;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Material\HasSerialNumber;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,7 +49,13 @@ class Material extends Model
      *
      * @var array<string, string>
      */
-    protected $casts = [];
+    protected $casts = [
+        'unit' => UnitCast::class,
+        'storage_type' => StorageCast::class,
+        'material_type' => MaterialCast::class,
+
+
+    ];
 
     /**
      * guarded
@@ -81,6 +93,28 @@ class Material extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+
+    public function unitTranslate()
+    {
+        return [
+            'name_en' => $this->unit->value,
+            'name_ar' => Unit::view($this->unit),
+        ];
+    }
+    public function storageTranslate()
+    {
+        return [
+            'name_en' => $this->storage_type->value,
+            'name_ar' => StorageType::view($this->storage_type),
+        ];
+    }
+    public function materialTranslate()
+    {
+        return [
+            'name_en' => $this->material_type->value,
+            'name_ar' => MaterialType::view($this->material_type),
+        ];
     }
 
     public function components()
