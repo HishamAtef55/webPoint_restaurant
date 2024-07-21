@@ -53,6 +53,8 @@ class MaterialController extends Controller
             return $item['id'];
         }, $validatedData['sectionIds']);
         $material = Material::create($validatedData);
+        $material->serial_nr = $request->generateMaterialSerialNr($material);
+        $material->save();
         $material->sections()->attach($sectionIds);
         return MaterialResource::make($material)
             ->additional([
@@ -96,7 +98,9 @@ class MaterialController extends Controller
         $sectionIds = array_map(function ($item) {
             return $item['id'];
         }, $validatedData['sectionIds']);
+        $material->serial_nr = $request->updateMaterialSerialNr();
         $material->update($validatedData);
+        $material->save();
         $material->sections()->sync($sectionIds);
         return MaterialResource::make($material)
             ->additional([

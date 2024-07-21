@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Stock\Material;
 
-use App\Enums\MaterialType;
-use App\Enums\StorageType;
 use App\Enums\Unit;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\StorageType;
+use App\Enums\MaterialType;
+use App\Models\Stock\Material;
+use App\Models\Stock\StockGroup;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMaterialRequest extends FormRequest
 {
+    public const INTIAL_MATERIAL_NR = '001';
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -52,8 +55,31 @@ class StoreMaterialRequest extends FormRequest
         return
             [
                 'name.required'   => __('برجاء ادخال اسم الخامة'),
+                'name.unique'   => __('اسم الخامة موجود بالفعل'),
                 'group_id.required' => __('برجاء اختيار المجموعة'),
                 'sectionIds.required'  => __('برجاء اختيار الأقسام'),
             ];
+    }
+
+
+    /**
+     * generateMaterialSerialNr
+     *
+     * @param  Material $material
+     * @return void
+     */
+    public function generateMaterialSerialNr($material)
+    {
+        $stockGroup = StockGroup::find($material->group_id);
+        $material = Material::where('group_id', $material->group_id)->latest('serial_nr')->first();
+        if ($material) {
+
+            $stockGroupSerialNr = $material->serial_nr;
+            $lastDigits = substr($stockGroupSerialNr, -1); //01001
+            $nextSerialNr = (int)$lastDigits + 1;
+        } else {
+            $nextSerialNr =  static::INTIAL_MATERIAL_NR; // 01
+        }
+        return $stockGroup->serial_nr . str_pad($nextSerialNr, strlen(self::INTIAL_MATERIAL_NR), '0', STR_PAD_LEFT);
     }
 }

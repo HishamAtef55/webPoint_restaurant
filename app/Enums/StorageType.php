@@ -34,14 +34,21 @@ enum StorageType: string
         ];
     }
 
-    public static function view($storageType): string
+    public static function view($storageType): array
     {
-        return match ($storageType) {
-            self::FREEZE => 'تجميد',
-            self::COOLING => 'تبريد',
-            self::FLOOR => 'أرضية',
-            self::SHELVES => 'أرفف',
-            self::OHTER => 'اخرى'
-        };
+        $storage = self::tryFrom($storageType);
+
+        if (!$storage) {
+            // Handle the case where the unit value is invalid or not found
+            return [
+                'name' => '',
+                'value' => '',
+            ];
+        }
+
+        return [
+            'name' => $storage->toString(),
+            'value' => $storage->value,
+        ];
     }
 }

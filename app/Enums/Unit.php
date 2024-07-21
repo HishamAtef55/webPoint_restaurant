@@ -28,12 +28,21 @@ enum Unit: string
         ];
     }
 
-    public static function view(Unit $unit): string
+    public static function view($unitValue): array
     {
-        return match ($unit) {
-            self::KILO => 'كيلو',
-            self::LITRE => 'لتر',
-            self::NUMBER => 'عدد'
-        };
+        $unit = self::tryFrom($unitValue);
+
+        if (!$unit) {
+            // Handle the case where the unit value is invalid or not found
+            return [
+                'name' => '',
+                'value' => '',
+            ];
+        }
+
+        return [
+            'name' => $unit->toString(),
+            'value' => $unit->value,
+        ];
     }
 }

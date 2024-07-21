@@ -462,7 +462,7 @@
         const expire_date = $(formElement).find("input[name='expire_date']")
         //   branch select
         const branchSelect = $(formElement).find('select[name="branch_id"]');
-        const firstBranchOptionValue = branchSelect.find('option:first').val();
+        const firstBranchOptionValue = branchSelect.val('');
         //   unit select
         const unitSelect = $(formElement).find('select[name="unit"]');
         const firstUnitOptionValue = unitSelect.find('option:first').val();
@@ -475,7 +475,11 @@
         const storageTypeSelect = $(formElement).find('select[name="storage_type"]');
         const firstStorageTypeOptionValue = storageTypeSelect.find('option:first').val();
         // material type checkbox
-        $(formElement).find('input[type="radio"], input[type="checkbox"]').prop('checked', false);
+        $(formElement).find('input[type="radio"]').prop('checked', false),
+
+            $(formElement).find('input[type="checkbox"]').prop('checked', false);
+
+        $(formElement).find('.view_model_material_type').html('')
 
         const sections = $(formElement).find('.section_id')
         // set values
@@ -512,18 +516,25 @@
         // select option
         let selectBranchEle = $(model).find('select[name="branch_id"]')
         let selectMainGroupEle = $(model).find('select[name="main_group_id"]')
+        let selectUnitEle = $(model).find('select[name="unit"]')
+        let selectStorageEle = $(model).find('select[name="storage_type"]')
+
 
         let branchOption = selectBranchEle.find(
             `option:contains(${response.data.branch.name})`).val();
         let mainGroupOption = selectMainGroupEle.find(
             `option:contains(${response.data.group.parent_name})`).val();
+        let unitOption = selectUnitEle.find(
+            `option:contains(${response.data.unit.name})`).val();
+        let storageOption = selectStorageEle.find(
+            `option:contains(${response.data.storage_type.name})`).val();
 
         if (branchOption) {
             selectBranchEle.val(branchOption).change();
 
         } else {
             selectBranchEle.append(
-                `<option  value="${response.data.branch.id}" selected>${response.data.branch.name}</option>`
+                `<option value="${response.data.branch.id}" selected>${response.data.branch.name}</option>`
             )
         }
 
@@ -535,31 +546,48 @@
 
             )
         }
+        if (unitOption) {
+            selectUnitEle.val(unitOption).change();
+        } else {
+            selectUnitEle.append(
+                `<option value="${response.data.unit.value ?? '' }" selected>${response.data.unit.name ?? '' }</option>`
+
+            )
+        }
+
+        if (storageOption) {
+            selectStorageEle.val(storageOption).change();
+        } else {
+            selectStorageEle.append(
+                `<option class="form-select" value="${response.data.storage_type.value ?? ''}" selected>${response.data.storage_type.name ?? ''}</option>`
+
+            )
+        }
         // 
         $(model).find('input[name="name"]').val(response.data.name);
         $(model).find('input[name="cost"]').val(response.data.cost);
         $(model).find('input[name="price"]').val(response.data.price);
 
-        $(model).find('select[name="unit"]').append(
-            `<option value="${response.data.unit.name_en ?? ''}" selected>${response.data.unit.name_ar ?? ''}</option>`
-        );
+
 
         if (model.is('#editModal')) {
             $(model).find(
-                `input[name="materialType"][value="${response.data.material_type.name_en}"]`
+                `input[name="materialType"][value="${response.data.material_type.value}"]`
             ).prop('checked', true);
 
         } else {
-
-            let materialType = `
+            if (response.data.material_type.value) {
+                let materialType = `
                         <input class="form-check-input material-type" type="radio"
-                            value="${response.data.material_type.name_en}" id="view_model_${response.data.material_type.name_en}"
+                            value="${response.data.material_type.value}" id="view_model_${response.data.material_type.name}"
                             name="materialType" checked>
-                        <label class="form-check-label" for="view_model_${response.data.material_type.name_en}">
-                            ${response.data.material_type.name_ar}
+                        <label class="form-check-label" for="view_model_${response.data.material_type.value}">
+                            ${response.data.material_type.name}
                         </label>`;
 
-            $(model).find('.view_model_material_type').html(materialType);
+                $(model).find('.view_model_material_type').html(materialType);
+            }
+
         }
 
 
@@ -570,9 +598,7 @@
 
         $(model).find('input[name="serial_nr"]').val(response.data.serial_nr);
         $(model).find('input[name="loss_ratio"]').val(response.data.loss_ratio);
-        $(model).find('select[name="storage_type"]').append(
-            `<option class="form-select" value="${response.data.storage_type.name_en ?? ''}" selected>${response.data.storage_type.name_ar ?? ''}</option>`
-        );
+
         $(model).find('input[name="expire_date"]').val(response.data.expire_date);
 
         // Append sections

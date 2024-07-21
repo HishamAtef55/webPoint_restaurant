@@ -52,21 +52,12 @@ class StockGroup extends Model
     }
 
     /**
-     * hasMaterials
-     *
-     * @return boolean
-     */
-    public function hasMaterials(): bool
-    {
-        return (bool) $this->materials->count();
-    }
-    /**
      * storageCapacity
      *
      * @return HasMany
      */
     public function materials(): HasMany
     {
-        return $this->hasMany(Material::class, 'id', 'group_id');
+        return $this->hasMany(Material::class, 'group_id', 'id');
     }
 }

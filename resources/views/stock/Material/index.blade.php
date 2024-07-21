@@ -242,7 +242,7 @@
                                     <label for="view_model_id">رقم الخامة</label>
                                 </div>
                             </div>
-                            <div class="col flex-grow-1">
+                            <div class="col-md-3 flex-grow-1">
                                 <div>
                                     <label for="view_model_main_group" class="select-label">المجموعة الرئيسية</label>
                                     <select id="view_model_main_group" name="main_group_id">
@@ -250,7 +250,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col flex-grow-1">
+                            <div class="col-md-3 flex-grow-1">
                                 <div>
                                     <label for="view_model_sub_group" class="select-label">المجموعة الفرعية</label>
                                     <select class="form-select" name="sub_group_id" id="view_model_sub_group">
@@ -411,7 +411,7 @@
                                     <label for="edit_model_id">رقم الخامة</label>
                                 </div>
                             </div>
-                            <div class="col flex-grow-1">
+                            <div class="col-md-3 flex-grow-1">
                                 <div>
                                     <label for="edit_model_main_group" class="select-label">المجموعة الرئيسية</label>
                                     <select id="edit_model_main_group" name="main_group_id">
@@ -422,7 +422,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col flex-grow-1">
+                            <div class="col-md-3 flex-grow-1">
                                 <div>
                                     <label for="edit_model_sub_group" class="select-label">المجموعة الفرعية</label>
                                     <select class="form-select" name="sub_group_id" id="edit_model_sub_group">
@@ -460,7 +460,7 @@
                                     <select id="edit_model_unit" name="unit">
                                         <option selected disabled>اختر وحدة القياس</option>
                                         @foreach ($units as $unit)
-                                            <option value="{{ $unit->value }}">{{ $unit->value }}</option>
+                                            <option value="{{ $unit->value }}">{{ $unit->toString() }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -507,7 +507,7 @@
                                     <select id="edit_model_storage_type" name="storage_type">
                                         <option selected disabled>اختر نوع التخزين</option>
                                         @foreach ($storageTypes as $storageType)
-                                            <option value="{{ $storageType->value }}">{{ $storageType->value }}
+                                            <option value="{{ $storageType->value }}">{{ $storageType->toString() }}
                                             </option>
                                         @endforeach
                                     </select>

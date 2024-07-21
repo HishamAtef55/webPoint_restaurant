@@ -95,7 +95,7 @@ class SubGroupController extends Controller
     public function destroy(
         StockGroup $stockGroup
     ): JsonResponse {
-        if ($stockGroup->hasMaterials()) {
+        if ($stockGroup->materials()->exists()) {
             return response()->json([
                 'message' => 'لايمكن حذف المجموعة الفرعية لانها تحتوى على خامات',
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY

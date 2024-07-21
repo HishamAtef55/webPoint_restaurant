@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Material extends Model
 {
-    use HasFactory, HasSerialNumber;
+    use HasFactory;
 
     /**
      * table
@@ -50,9 +50,9 @@ class Material extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'unit' => UnitCast::class,
-        'storage_type' => StorageCast::class,
-        'material_type' => MaterialCast::class,
+        // 'unit' => UnitCast::class,
+        // 'storage_type' => StorageCast::class,
+        // 'material_type' => MaterialCast::class,
     ];
 
     /**
@@ -91,36 +91,5 @@ class Material extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id', 'id');
-    }
-
-    public function unitTranslate()
-    {
-        return [
-            'name_en' => $this->unit->value,
-            'name_ar' => Unit::view($this->unit),
-        ];
-    }
-    public function storageTranslate()
-    {
-        return [
-            'name_en' => $this->storage_type->value,
-            'name_ar' => StorageType::view($this->storage_type),
-        ];
-    }
-    public function materialTranslate()
-    {
-        return [
-            'name_en' => $this->material_type->value,
-            'name_ar' => MaterialType::view($this->material_type),
-        ];
-    }
-
-    public function components()
-    {
-        return $this->hasMany(ComponentsItems::class, 'material_id', 'code');
-    }
-    public function materialRecipe()
-    {
-        return $this->belongsTo(mainMaterialRecipe::class, 'code', 'material');
     }
 }

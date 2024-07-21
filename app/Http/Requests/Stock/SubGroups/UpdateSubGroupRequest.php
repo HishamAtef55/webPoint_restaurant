@@ -52,11 +52,7 @@ class UpdateSubGroupRequest extends FormRequest
 
         $stockGroup = $this->route('stockGroup');
         $newParentId = $this->input('parent_id');
-        \Log::debug([
-            "stockGroup" => $stockGroup,
-            "newParentId" => $newParentId,
-        ]);
-        if ($stockGroup->parent_id === $newParentId) {
+        if ($stockGroup->parent_id == $newParentId) {
             return $stockGroup->serial_nr;
         } else {
             $parentGroup = StockGroup::find($this->parent_id);

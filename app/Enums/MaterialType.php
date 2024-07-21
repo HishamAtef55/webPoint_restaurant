@@ -29,13 +29,21 @@ enum MaterialType: string
         ];
     }
 
-    public static function view($materialType): string
+    public static function view($materialValue): array
     {
-        return match ($materialType) {
-            self::MANUFACTURED_MATERIAL => 'خامة مصنعة',
-            self::DAILY_INVENTORY => 'جرد يومى',
-            self::PACKAGE => 'باكدج',
-            self::All_GROUPS => 'جميع المجموعات'
-        };
+        $material = self::tryFrom($materialValue);
+
+        if (!$material) {
+            // Handle the case where the unit value is invalid or not found
+            return [
+                'name' => '',
+                'value' => '',
+            ];
+        }
+
+        return [
+            'name' => $material->toString(),
+            'value' => $material->value,
+        ];
     }
 }
