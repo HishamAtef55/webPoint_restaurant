@@ -17,6 +17,7 @@ use App\Http\Resources\Stock\SectionResource;
 use App\Http\Resources\Stock\MaterialResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\Stock\Material\StoreMaterialRequest;
+use App\Http\Requests\Stock\Material\UpdateMaterialRequest;
 
 class MaterialController extends Controller
 {
@@ -33,7 +34,7 @@ class MaterialController extends Controller
         $branchs = Branch::get();
         $materialTypes = MaterialType::values();
         $lastMaterialNr = Material::latest()->first()?->id + 1 ?? 1;
-        $materials = material::with('group', 'branch')->orderBy('id', 'DESC')->paginate(5);
+        $materials = material::with('group', 'branch')->paginate(5);
         return view('stock.Material.index', compact('mainGroup', 'units', 'storageTypes', 'branchs', 'materials', 'lastMaterialNr', 'materialTypes'));
     }
 
@@ -84,21 +85,20 @@ class MaterialController extends Controller
      * Update.
      *
      * @param  Material  $material
-     * @param  StoreMaterialRequest  $request
+     * @param  UpdateMaterialRequest  $request
      * @return MaterialResource
      */
     public function update(
-        StoreMaterialRequest $request,
+        UpdateMaterialRequest $request,
         Material $material
-    ) {
+    ): MaterialResource {
         $validatedData = $request->validated();
         $sectionIds = array_map(function ($item) {
             return $item['id'];
         }, $validatedData['sectionIds']);
-        $material->sections()->detach();
         $material->update($validatedData);
-        $material->sections()->attach($sectionIds);
-        return SectionResource::make($material)
+        $material->sections()->sync($sectionIds);
+        return MaterialResource::make($material)
             ->additional([
                 'message' => "تم تعديل الخامة بنجاح",
                 'status' => Response::HTTP_OK

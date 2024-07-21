@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Stock\Material;
 
-use App\Enums\MaterialType;
-use App\Enums\StorageType;
 use App\Enums\Unit;
-use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\StorageType;
+use App\Enums\MaterialType;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Foundation\Http\FormRequest;
 
-class StoreMaterialRequest extends FormRequest
+class UpdateMaterialRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +30,10 @@ class StoreMaterialRequest extends FormRequest
     {
         return
             [
-                'name'   => ['required', 'string', 'max:100', 'unique:stock_materials,name'],
+                'name'   => [
+                    'required', 'string', 'max:100',
+                    Rule::unique('stock_materials')->ignore($this->route('material'))
+                ],
                 'cost' => ['nullable', 'integer'],
                 'price' => ['nullable', 'integer'],
                 'unit' => ['nullable', 'string', new Enum(Unit::class)],

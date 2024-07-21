@@ -37,8 +37,12 @@ class SubGroupController extends Controller
     public function store(
         StoreSubGroupRequest $request
     ): StockGroupResource {
+
+        $stockGroup = StockGroup::create($request->validated());
+        $stockGroup->serial_nr = $request->setSerialNr($request->parent_id);
+        $stockGroup->save();
         return StockGroupResource::make(
-            StockGroup::create($request->validated())
+            $stockGroup
         )
             ->additional([
                 'message' => "تم إنشاء المجوعة الفرعية بنجاح",
@@ -72,9 +76,12 @@ class SubGroupController extends Controller
         UpdateSubGroupRequest $request,
         StockGroup $stockGroup
     ): StockGroupResource {
+        $stockGroup->serial_nr = $request->updateSerialNr();
         $stockGroup->update($request->validated());
+        $stockGroup->save();
         return StockGroupResource::make($stockGroup)
             ->additional([
+                'serial_nr' => $request->updateSerialNr(),
                 'message' => "تم تعديل المجموعة الفرعية بنجاح",
                 'status' => Response::HTTP_OK
             ]);
@@ -88,7 +95,7 @@ class SubGroupController extends Controller
     public function destroy(
         StockGroup $stockGroup
     ): JsonResponse {
-        if ($stockGroup->materials()) {
+        if ($stockGroup->hasMaterials()) {
             return response()->json([
                 'message' => 'لايمكن حذف المجموعة الفرعية لانها تحتوى على خامات',
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY

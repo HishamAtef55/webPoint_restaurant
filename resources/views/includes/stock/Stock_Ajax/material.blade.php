@@ -142,7 +142,6 @@
         button.html(spinner).prop('disabled', true);
         const storeModel = $('#storeMaterial');
         const formData = collectMaterialData(form);
-
         $.ajax({
             type: 'POST',
             url: "{{ route('stock.materials.store') }}",
@@ -169,6 +168,7 @@
                 sectionIds: formData.sections,
             },
             success: function(response) {
+                console.log(response);
                 if (response.status == 200) {
                     newMaterial = `<tr id=sid${response.data.id}>
                             <td>${response.data.id}</td>
@@ -341,7 +341,6 @@
         const form = $('#editModal');
         button.html(spinner).prop('disabled', true);
         const formData = collectMaterialData(form);
-        console.log(formData)
         $.ajax({
             type: 'PUT',
             url: '{{ url('stock/materials', '') }}' + '/' + id,
@@ -368,9 +367,8 @@
                 sectionIds: formData.sections,
             },
             success: function(response) {
-                console.log(response)
                 if (response.status == 200) {
-                    $('#sid' + response + ' td:nth-child(1)').text(response.data
+                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data
                         .id)
                     $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.group.name)
                     $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.name)
@@ -408,15 +406,22 @@
         // 
         let selectedMaterialType = form.find("input[name='materialType']:checked").val();
         const sectionsChecked = form.find('input[name="sections"]:checked');
-        if (form.is('#editModal')) {
-            const sections = sectionsChecked.map((_, el) => ({
-                id: $(el).attr('id').replace('edit-model-section-', '')
-            })).get();
+        let sections;
+        if (!sectionsChecked.length) {
+            sections = [];
         } else {
-            const sections = sectionsChecked.map((_, el) => ({
-                id: $(el).attr('id').replace('section-', '')
-            })).get();
+            if (form.is('#editModal')) {
+                sections = sectionsChecked.map((_, el) => ({
+                    id: $(el).attr('id').replace('edit-model-section-', '')
+                })).get();
+            } else {
+                sections = sectionsChecked.map((_, el) => ({
+                    id: $(el).attr('id').replace('section-', '')
+                })).get();
+            }
         }
+
+
 
         return {
             name: name,
@@ -501,7 +506,7 @@
 
 
         $(model).find('select[name="sub_group_id"]').append(
-            `<option class="form-select" value="${response.data.group.id}" selected>${response.data.group.name}</option>`
+            `<option  value="${response.data.group.id}" selected>${response.data.group.name}</option>`
         );
 
         // select option
@@ -518,8 +523,7 @@
 
         } else {
             selectBranchEle.append(
-                `<option class="form-select" value="${response.data.branch.id}" selected>${response.data.branch.name}</option>`
-
+                `<option  value="${response.data.branch.id}" selected>${response.data.branch.name}</option>`
             )
         }
 
@@ -527,7 +531,7 @@
             selectMainGroupEle.val(mainGroupOption).change();
         } else {
             selectMainGroupEle.append(
-                `<option class="form-select" value="${response.data.group.parent_id}" selected>${response.data.group.parent_name}</option>`
+                `<option value="${response.data.group.parent_id}" selected>${response.data.group.parent_name}</option>`
 
             )
         }
@@ -537,22 +541,22 @@
         $(model).find('input[name="price"]').val(response.data.price);
 
         $(model).find('select[name="unit"]').append(
-            `<option class="form-select" value="${response.data.unit ?? ''}" selected>${response.data.unit ?? ''}</option>`
+            `<option value="${response.data.unit.name_en ?? ''}" selected>${response.data.unit.name_ar ?? ''}</option>`
         );
 
         if (model.is('#editModal')) {
             $(model).find(
-                `input[name="materialType"][value="${response.data.material_type}"]`
+                `input[name="materialType"][value="${response.data.material_type.name_en}"]`
             ).prop('checked', true);
 
         } else {
 
             let materialType = `
                         <input class="form-check-input material-type" type="radio"
-                            value="${response.data.material_type}" id="view_model_${response.data.material_type}"
+                            value="${response.data.material_type.name_en}" id="view_model_${response.data.material_type.name_en}"
                             name="materialType" checked>
-                        <label class="form-check-label" for="view_model_${response.data.material_type}">
-                            ${response.data.material_type}
+                        <label class="form-check-label" for="view_model_${response.data.material_type.name_en}">
+                            ${response.data.material_type.name_ar}
                         </label>`;
 
             $(model).find('.view_model_material_type').html(materialType);
@@ -567,7 +571,7 @@
         $(model).find('input[name="serial_nr"]').val(response.data.serial_nr);
         $(model).find('input[name="loss_ratio"]').val(response.data.loss_ratio);
         $(model).find('select[name="storage_type"]').append(
-            `<option class="form-select" value="${response.data.storage_type ?? ''}" selected>${response.data.storage_type ?? ''}</option>`
+            `<option class="form-select" value="${response.data.storage_type.name_en ?? ''}" selected>${response.data.storage_type.name_ar ?? ''}</option>`
         );
         $(model).find('input[name="expire_date"]').val(response.data.expire_date);
 
@@ -595,7 +599,7 @@
                 arr.push(section.name)
             });
             response.sections.forEach(el => {
-                const isChecked = arr.includes(el.name) ? 'checked' : '';
+                let isChecked = arr.includes(el.name) ? 'checked' : '';
                 sectionsContent +=
                     `<div class='col-md-4 d-flex align-items-center mt-2 '>
                             <div class="form-check">
@@ -652,10 +656,10 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" 
                                 value="${section.name}" 
-                                id="edit-mode-section-${section.id}"
+                                id="edit-model-section-${section.id}"
                                 name="sections">
                                 <label class="form-check-label"
-                                for="edit-mode-section-${section.id}">
+                                for="edit-model-section-${section.id}">
                                     ${section.name}
                                 </label>
                             </div>

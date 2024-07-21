@@ -25,7 +25,7 @@ trait HasSerialNumber
         });
 
         static::updating(function (Material $material) {
-            $material->setSerialNr();
+            $material->serial_nr = self::updateMaterialSerialNr($material);
         });
     }
 
@@ -36,6 +36,23 @@ trait HasSerialNumber
      * @return void
      */
     private static function generateMaterialSerialNr($material)
+    {
+        $stockGroup = StockGroup::find($material->group_id);
+        $material = Material::where('group_id', $material->group_id)->latest()->first();
+        if ($material) {
+            $nextSerialNr = $material->serial_nr + 1;  // 02
+        } else {
+            $nextSerialNr = $stockGroup->serial_nr . static::INTIAL_MATERIAL_NR; // 01
+        }
+        return  $nextSerialNr;
+    }
+
+    /**
+     * updateMaterialSerialNr
+     *
+     * @return void
+     */
+    private static function updateMaterialSerialNr($material)
     {
         $stockGroup = StockGroup::find($material->group_id);
         $material = Material::where('group_id', $material->group_id)->latest()->first();

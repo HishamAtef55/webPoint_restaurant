@@ -20,6 +20,9 @@ class StorageCast implements CastsAttributes
 
     public function set($model, string $key, $value, array $attributes): string
     {
+        if (is_string($value)) {
+            $value = StorageType::tryFrom($value);
+        }
         if (!$value instanceof StorageType) {
             throw new InvalidArgumentException('The given value is not an instance of storage enum.');
         }

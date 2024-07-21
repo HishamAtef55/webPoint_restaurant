@@ -35,8 +35,12 @@ class MainGroupController extends Controller
     public function store(
         StoreMainGroupRequest $request
     ): StockGroupResource {
+
+        $stockGroup = StockGroup::create($request->validated());
+        $stockGroup->serial_nr = $request->setSerialNr();
+        $stockGroup->save();
         return StockGroupResource::make(
-            StockGroup::create($request->validated())
+            $stockGroup
         )
             ->additional([
                 'message' => "تم إنشاء المجوعة الرئيسية بنجاح",

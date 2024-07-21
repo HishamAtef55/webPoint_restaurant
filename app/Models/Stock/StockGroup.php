@@ -10,7 +10,7 @@ use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class StockGroup extends Model
 {
-    use HasFactory, HasRecursiveRelationships, HasSerialNumber;
+    use HasFactory, HasRecursiveRelationships;
 
     /**
      * table
@@ -51,6 +51,15 @@ class StockGroup extends Model
         return (bool) $this->children->count();
     }
 
+    /**
+     * hasMaterials
+     *
+     * @return boolean
+     */
+    public function hasMaterials(): bool
+    {
+        return (bool) $this->materials->count();
+    }
     /**
      * storageCapacity
      *

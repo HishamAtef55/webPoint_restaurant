@@ -53,8 +53,6 @@ class Material extends Model
         'unit' => UnitCast::class,
         'storage_type' => StorageCast::class,
         'material_type' => MaterialCast::class,
-
-
     ];
 
     /**

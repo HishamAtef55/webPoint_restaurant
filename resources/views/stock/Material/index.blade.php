@@ -63,7 +63,7 @@
                                         <select id="unit" name="unit">
                                             <option selected disabled>اختر وحدة القياس</option>
                                             @foreach ($units as $unit)
-                                                <option value="{{ $unit->value }}">{{ $unit->value }}</option>
+                                                <option value="{{ $unit->value }}">{{ $unit->toString() }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -110,7 +110,8 @@
                                         <select id="storage_type" name="storage_type">
                                             <option selected disabled>اختر نوع التخزين</option>
                                             @foreach ($storageTypes as $storageType)
-                                                <option value="{{ $storageType->value }}">{{ $storageType->value }}</option>
+                                                <option value="{{ $storageType->value }}">{{ $storageType->toString() }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -465,13 +466,13 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="custom-form mt-3">
+                                <div class="custom-form mt-4">
                                     <input type="number" name="store_limit_min" id="edit_model_store_limit_min">
                                     <label for="edit_model_store_limit_min"> طلب المخزن (min)</label>
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="custom-form mt-3">
+                                <div class="custom-form mt-4">
                                     <input type="number" name="store_limit_max" id="edit_model_store_limit_max">
                                     <label for="edit_model_store_limit_max"> طلب المخزن (max)</label>
                                 </div>
@@ -510,6 +511,12 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="custom-form mt-3">
+                                    <input type="number" name="serial_nr" id="view_model_serial_nr">
+                                    <label for="view_model_serial_nr"> الرقم التسلسلى</label>
                                 </div>
                             </div>
                             <div class="col">

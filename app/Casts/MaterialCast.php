@@ -19,6 +19,9 @@ class MaterialCast implements CastsAttributes
 
     public function set($model, string $key, $value, array $attributes): string
     {
+        if (is_string($value)) {
+            $value = MaterialType::tryFrom($value);
+        }
         if (!$value instanceof MaterialType) {
             throw new InvalidArgumentException('The given value is not an instance of material enum.');
         }
