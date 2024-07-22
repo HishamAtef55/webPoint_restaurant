@@ -66,3 +66,47 @@
 [stacktrace]
 #0 {main}
 "} 
+[2024-07-23 01:41:04] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:42:02] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:43:01] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:44:00] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:45:01] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:46:01] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:47:00] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:48:02] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:49:03] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:50:04] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 
+[2024-07-23 01:51:01] local.ERROR: Cannot redeclare branchName() (previously declared in F:\webpoint\webpoint\app\helpers.php:5) {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot redeclare branchName() (previously declared in F:\\webpoint\\webpoint\\app\\helpers.php:5) at F:\\webpoint\\webpoint\\app\\helpers.php:7)
+[stacktrace]
+#0 {main}
+"} 

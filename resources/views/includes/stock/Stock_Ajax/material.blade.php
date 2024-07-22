@@ -703,6 +703,7 @@
 
     function bindGroupsChangeEvent() {
         $(document).on('change', '#editModal select[name="main_group_id"]', function() {
+            if (preventChangeEvent) return;
             let slectedMainGroupEle = $(this)
             let slectedSubMainGroupEle = $('#editModal select[name="sub_group_id"]')
             let selectedValue = slectedMainGroupEle.val();
