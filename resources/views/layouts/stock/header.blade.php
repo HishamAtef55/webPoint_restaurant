@@ -66,8 +66,9 @@
                     <li class="@if (Route::current()->getName() == 'stock.materials.index') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ Route('stock.materials.index') }}"> الخامات </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'view_components_items') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ Route('view_components_items') }}"> مكونات الاصناف
+                    <li class="@if (Route::current()->getName() == 'stock.items.components.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ Route('stock.items.components.index') }}"> مكونات
+                            الاصناف
                         </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'componentDetailsItem') active @endif">

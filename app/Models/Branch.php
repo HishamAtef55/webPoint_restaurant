@@ -6,6 +6,7 @@ use App\Models\menu;
 use App\Models\User;
 use App\Models\discounts;
 use App\Models\Item_Details;
+use App\Models\Stock\Material;
 use App\Models\Stock\Section;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -57,13 +58,33 @@ class Branch extends Model
     }
 
     /**
-     * Groups
+     * sections
      *
      * @return HasMany
      */
     public function sections(): HasMany
     {
         return $this->hasMany(Section::class, 'branch_id', 'id');
+    }
+
+    /**
+     * items
+     *
+     * @return HasMany
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(Item::class, 'branch_id', 'id');
+    }
+
+    /**
+     * materials
+     *
+     * @return HasMany
+     */
+    public function materials(): HasMany
+    {
+        return $this->hasMany(Material::class, 'branch_id', 'id');
     }
 
 

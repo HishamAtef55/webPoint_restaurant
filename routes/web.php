@@ -56,8 +56,9 @@ use App\Http\Controllers\Stock\Groups\SubGroupController;
 use App\Http\Controllers\Admin\ExpensesCategoryController;
 use App\Http\Controllers\Stock\BackToSuppliersControllers;
 use App\Http\Controllers\Stock\Groups\MainGroupController;
-use App\Http\Controllers\Stock\OpenBalanceDailyController;
+use App\Http\Controllers\Stock\Items\FilterItemController;
 
+use App\Http\Controllers\Stock\OpenBalanceDailyController;
 use App\Http\Controllers\Stock\Sections\SectionController;
 use App\Http\Controllers\Reports\SalesCurrentDayController;
 use App\Http\Controllers\Stock\Material\MaterialController;
@@ -66,10 +67,9 @@ use App\Http\Controllers\Stock\Suppliers\SuppliersController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\Stock\ComponentDetailsItemController;
+use App\Http\Controllers\Stock\Items\ItemComponentsController;
 use App\Http\Controllers\StockReports\TransferReportController;
 use App\Http\Controllers\Stock\Material\FilterSectionController;
-use App\Http\Controllers\StockReports\CardItemReportsController;
-use App\Http\Controllers\StockReports\ExchangesReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +81,8 @@ use App\Http\Controllers\StockReports\ExchangesReportController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Http\Controllers\StockReports\CardItemReportsController;
+use App\Http\Controllers\StockReports\ExchangesReportController;
 use App\Http\Controllers\StockReports\HalkItemReportsController;
 use App\Http\Controllers\StockReports\PurchasesReportController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
@@ -561,28 +563,36 @@ Route::group(
     * @route('material')
     */
     Route::resource('materials', MaterialController::class);
-    Route::get('material/groups/{stockGroup}/filter', FilterSubGroupController::class)->name('material.groups.filter');
-    Route::get('material/sections/{branch}/filter', FilterSectionController::class)->name('material.sections.filter');
+    Route::group([
+      'prefix' => 'material',
+      'as' => 'material.',
+    ], function () {
+      Route::get('groups/{stockGroup}/filter', FilterSubGroupController::class)->name('groups.filter');
+      Route::get('sections/{branch}/filter', FilterSectionController::class)->name('sections.filter');
+    });
+
+    /*
+    * @route('item/components')
+    */
+    Route::group(
+      [
+        'prefix' => 'items',
+        'as' => 'items.'
+      ],
+      function () {
+        Route::resource('components', ItemComponentsController::class);
+        Route::get('/{branch}/filter', FilterItemController::class);
+      }
+    );
   }
 );
 
 
-################################# Material ###########################################
-// Route::group(['prefix' => 'stock', 'controller' => MaterialController::class], function () {
-//   Route::get('/material', 'view_material')->name('view.material');
-//   Route::post('/get_sub_group', 'get_sub_group')->name('get_sub_group');
-//   Route::post('/get_group_code', 'get_group_code')->name('get_group_code');
-//   Route::post('/get_sections_branch', 'get_sections_branch')->name('get_sections_branch');
-//   Route::post('/save_material', 'save_material')->name('save_material');
-//   Route::post('/search_material_using_name', 'search_material_using_name')->name('search_material_using_name');
-//   Route::post('/get_material_in_ul', 'get_material_in_ul')->name('get_material_in_ul');
-//   Route::post('/update_material', 'update_material')->name('update_material');
-// });
 
 ################################## Component Items ###################################
 Route::group(['prefix' => 'stock', 'controller' => ComponentItemsController::class], function () {
-  Route::get('components_items', 'index')->name('view_components_items');
-  Route::post('components_items_get_items', 'get_items')->name('components_items_get_items');
+  // Route::get('components_items', 'index')->name('view_components_items');
+  // Route::post('components_items_get_items', 'get_items')->name('components_items_get_items');
   Route::post('components_items_get_material', 'get_material')->name('components_items_get_material');
   Route::post('components_items_get_material_in_item', 'get_material_in_item')->name('components_items_get_material_in_item');
   Route::post('saveComponent', 'saveComponent')->name('saveComponent');

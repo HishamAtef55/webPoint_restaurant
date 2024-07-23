@@ -1,5 +1,21 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
+    // Common function to handle AJAX errors
+    function handleAjaxError(reject) {
+        let response = $.parseJSON(reject.responseText);
+        $.each(response.errors, function(key, val) {
+            errorMsg(val[0]);
+        });
+    }
+
+    // handle csrf request header
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
+
     $(document).ready(function() {
         let branch = $('#branch');
         let items = $('#items');
@@ -25,27 +41,36 @@
 
 
         /*  ======================== Start All Functions ============================== */
-        function getItems(branchVal, itemsDiv) {
+        function getItems(branchVal, itemsDiv, materialDiv) {
             $.ajax({
-                url: "{{route('components_items_get_items')}}",
-                method: 'post',
-                data: {
-                    _token,
-                    branch: branchVal,
-                },
-                success: function(data) {
-                    if (data.status == true) {
+                type: "GET",
+                url: '{{ url('stock/items') }}/' + branchVal + '/filter',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status == 200) {
                         let html = '<option value="" disabled selected></option>';
-                        data.items.forEach((item) => {
-                            html += `<option value="${item.id}" data-price="${item.price}" >${item.name}</option>`
+                        let materialHtml = '<option value="" disabled selected></option>';
+                        response.data.forEach((item) => {
+                            html +=
+                                `<option value="${item.id}" data-price="${item.price}" >${item.name}</option>`
                         });
+                        response.materials.forEach((material) => {
+                            console.log(material)
+                            materialHtml +=
+                                `<option value="${material.serial_nr}" data-cost="${material.cost}" data-unit-name="${material.unit.name}">${material.name}</option>`
+                        });
+
+                        materialDiv.html(materialHtml)
+
                         itemsDiv.html(html)
                         itemsDiv.select2({
                             dir: "rtl"
                         });
+
                         itemsDiv.select2('open');
                     }
                 },
+                error: handleAjaxError,
             });
         }
 
@@ -82,7 +107,7 @@
         });
 
         branch.on('change', function() {
-            getItems($(this).val(), items)
+            getItems($(this).val(), items, materials)
         });
         /*  ======================== End Get Items ============================== */
         /*  ======================== Start Get Material ============================== */
@@ -91,7 +116,7 @@
             let tableBody = $('.table-materials tbody');
             materialArray = [];
             $.ajax({
-                url: "{{route('components_items_get_material_in_item')}}",
+                url: "{{ route('components_items_get_material_in_item') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -104,7 +129,9 @@
                         productQty.focus().select()
                         let html = '';
                         let count = 1;
-                        tableBody.html('<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>');
+                        tableBody.html(
+                            '<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>'
+                        );
                         data.materials.materials.forEach((material) => {
                             html += `<tr id="${material.material_id}">
                         <td>${count}</td>
@@ -135,13 +162,13 @@
         /*  ======================== End Get Material ============================== */
         productQty.on('keyup', function(e) {
             if (e.keyCode === 13) {
-                mainGroup.select2('open');
+                materials.select2('open');
             }
         });
         /*  ======================== Start Get Material ============================== */
         mainGroup.on('change', function() {
             $.ajax({
-                url: "{{route('components_items_get_material')}}",
+                url: "{{ route('components_items_get_material') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -153,7 +180,8 @@
                         data.materials.forEach(material => {
                             let unitName = material.sub_unit.sub_unit.name;
                             let unitSize = material.sub_unit.size;
-                            html += `<option value="${material.code}" data-cost="${material.cost}" data-unit-name="${unitName}" data-unit-size="${unitSize}">${material.name}</option>`
+                            html +=
+                                `<option value="${material.code}" data-cost="${material.cost}" data-unit-name="${unitName}" data-unit-size="${unitSize}">${material.name}</option>`
                         });
                         materials.html(html);
                         materials.select2({
@@ -170,7 +198,6 @@
         materials.on('change', function() {
             let cost = $(this).find('option:selected').attr('data-cost');
             let unitName = $(this).find('option:selected').attr('data-unit-name');
-            let unitSize = $(this).find('option:selected').attr('data-unit-size');
 
             unitLabel.text(unitName);
             setTimeout(() => {
@@ -198,12 +225,13 @@
         /*  ======================== Function Calculate Total Price & Percentage ============================== */
         /*  ======================== Start Add Material In Table ============================== */
         unitInput.on('keyup', function(e) {
+            console.log(e);
             let cost = materials.find('option:selected').attr('data-cost');
             let unitName = materials.find('option:selected').attr('data-unit-name');
             let unitSize = materials.find('option:selected').attr('data-unit-size');
             let materialCode = materials.find('option:selected').attr('value');
             let materialName = materials.find('option:selected').text();
-            let unitPrice = cost / unitSize;
+            let unitPrice = cost / 1000;
             let qty = $(this).val();
             let tableBody = $('.table-materials tbody');
             let counter = tableBody.find('tr').length;
@@ -294,7 +322,7 @@
                     rowParent.remove();
                     calcPricePercent();
                     $.ajax({
-                        url: "{{route('deleteComponent')}}",
+                        url: "{{ route('deleteComponent') }}",
                         method: 'post',
                         data: {
                             _token,
@@ -307,7 +335,8 @@
                         success: function(data) {
                             if (data.status == true) {
                                 getRowsNumber();
-                                materialArray = materialArray.filter(material => material.code != rowParent.attr('id'))
+                                materialArray = materialArray.filter(material =>
+                                    material.code != rowParent.attr('id'))
                                 Toast.fire({
                                     icon: 'success',
                                     title: 'تم حذف المكون بنجاح'
@@ -323,11 +352,11 @@
         /*  ======================== End Delete Materials In Table ============================== */
         /*  ======================== Start Save Components Items ============================== */
         saveComponent.on('click', function() {
+            console.log(materialArray)
             $.ajax({
-                url: "{{route('saveComponent')}}",
+                url: "{{ route('saveComponent') }}",
                 method: 'post',
                 data: {
-                    _token,
                     branch: branch.val(),
                     items: items.val(),
                     itemPrice: itemPrice.val(),
@@ -361,7 +390,7 @@
         itemWithOutMaterials.on('click', function() {
             let title = $(this).text();
             $.ajax({
-                url: "{{route('itemsWithOutMaterials')}}",
+                url: "{{ route('itemsWithOutMaterials') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -403,12 +432,18 @@
                                     download: "open",
                                     customize: function(doc) {
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.styles.tableBodyEven.alignment = "center";
-                                        doc.styles.tableBodyOdd.alignment = "center";
-                                        doc.styles.tableBodyEven.lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight = "1.5";
-                                        doc.styles.tableFooter.alignment = "center";
-                                        doc.styles.tableHeader.alignment = "center";
+                                        doc.styles.tableBodyEven.alignment =
+                                            "center";
+                                        doc.styles.tableBodyOdd.alignment =
+                                            "center";
+                                        doc.styles.tableBodyEven
+                                            .lineHeight = "1.5";
+                                        doc.styles.tableBodyOdd.lineHeight =
+                                            "1.5";
+                                        doc.styles.tableFooter.alignment =
+                                            "center";
+                                        doc.styles.tableHeader.alignment =
+                                            "center";
                                     },
                                 },
                                 "print",
@@ -430,7 +465,7 @@
         componentWithoutItems.on('click', function() {
             let title = $(this).text();
             $.ajax({
-                url: "{{route('componentWithoutItems')}}",
+                url: "{{ route('componentWithoutItems') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -468,12 +503,18 @@
                                     download: "open",
                                     customize: function(doc) {
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.styles.tableBodyEven.alignment = "center";
-                                        doc.styles.tableBodyOdd.alignment = "center";
-                                        doc.styles.tableBodyEven.lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight = "1.5";
-                                        doc.styles.tableFooter.alignment = "center";
-                                        doc.styles.tableHeader.alignment = "center";
+                                        doc.styles.tableBodyEven.alignment =
+                                            "center";
+                                        doc.styles.tableBodyOdd.alignment =
+                                            "center";
+                                        doc.styles.tableBodyEven
+                                            .lineHeight = "1.5";
+                                        doc.styles.tableBodyOdd.lineHeight =
+                                            "1.5";
+                                        doc.styles.tableFooter.alignment =
+                                            "center";
+                                        doc.styles.tableHeader.alignment =
+                                            "center";
                                     },
                                 },
                                 "print",
@@ -495,7 +536,7 @@
         printComponent.on('click', function() {
             let title = $(this).text();
             $.ajax({
-                url: "{{route('printComponent')}}",
+                url: "{{ route('printComponent') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -542,18 +583,25 @@
                                     },
                                     customize: function(doc) {
                                         doc.defaultStyle.font = 'Cairo';
-                                        doc.styles.tableBodyEven.alignment = "center";
-                                        doc.styles.tableBodyOdd.alignment = "center";
-                                        doc.styles.tableBodyEven.lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight = "1.5";
-                                        doc.styles.tableFooter.alignment = "center";
-                                        doc.styles.tableHeader.alignment = "center";
+                                        doc.styles.tableBodyEven.alignment =
+                                            "center";
+                                        doc.styles.tableBodyOdd.alignment =
+                                            "center";
+                                        doc.styles.tableBodyEven
+                                            .lineHeight = "1.5";
+                                        doc.styles.tableBodyOdd.lineHeight =
+                                            "1.5";
+                                        doc.styles.tableFooter.alignment =
+                                            "center";
+                                        doc.styles.tableHeader.alignment =
+                                            "center";
                                     },
                                 },
                                 "print",
                             ],
                         });
-                        $('.material-title-table').html(`${data.data.name} ( ${data.data.code} ) `)
+                        $('.material-title-table').html(
+                            `${data.data.name} ( ${data.data.code} ) `)
                         reportModal.modal('show')
                         reportModal.find('#labelModel').text(title)
                     } else {
@@ -570,7 +618,7 @@
         printItem.on('click', function() {
             let title = $(this).text();
             $.ajax({
-                url: "{{route('printItems')}}",
+                url: "{{ route('printItems') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -617,18 +665,25 @@
                                     },
                                     customize: function(doc) {
                                         doc.defaultStyle.font = 'Cairo';
-                                        doc.styles.tableBodyEven.alignment = "center";
-                                        doc.styles.tableBodyOdd.alignment = "center";
-                                        doc.styles.tableBodyEven.lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight = "1.5";
-                                        doc.styles.tableFooter.alignment = "center";
-                                        doc.styles.tableHeader.alignment = "center";
+                                        doc.styles.tableBodyEven.alignment =
+                                            "center";
+                                        doc.styles.tableBodyOdd.alignment =
+                                            "center";
+                                        doc.styles.tableBodyEven
+                                            .lineHeight = "1.5";
+                                        doc.styles.tableBodyOdd.lineHeight =
+                                            "1.5";
+                                        doc.styles.tableFooter.alignment =
+                                            "center";
+                                        doc.styles.tableHeader.alignment =
+                                            "center";
                                     },
                                 },
                                 "print",
                             ],
                         });
-                        $('.material-title-table').html(`${data.data[0].name} ( ${data.data[0].id} ) `)
+                        $('.material-title-table').html(
+                            `${data.data[0].name} ( ${data.data[0].id} ) `)
                         reportModal.modal('show')
                         reportModal.find('#labelModel').text(title)
                     } else {
@@ -672,7 +727,7 @@
 
         function getComponents(itemsVal, branchVal, list, to) {
             $.ajax({
-                url: "{{route('components_items_get_material_in_item')}}",
+                url: "{{ route('components_items_get_material_in_item') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -691,7 +746,8 @@
                             <span class="${to ? 'cost' : 'cost d-none'}">${material.cost}</span>
                             <input type="hidden" value="${material.cost / material.quantity}"/>`
                                 if (to) {
-                                    html += `<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>`
+                                    html +=
+                                        `<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>`
                                 }
                                 html += `</li>`;
                             });
@@ -704,7 +760,7 @@
 
         /*  ============= Start Get Items From ============= */
         fromBranch.on('change', function() {
-            getItems($(this).val(), fromItems);
+            getItems($(this).val(), fromItems, materials);
             setTimeout(() => {
                 fromItems.select2({
                     dir: 'rtl',
@@ -722,7 +778,7 @@
         /*  ============== End Get Material ============== */
         /*  ============= Start Get Items To ============= */
         toBranch.on('change', function() {
-            getItems($(this).val(), toItems);
+            getItems($(this).val(), toItems, materials);
             setTimeout(() => {
                 toItems.select2({
                     dir: 'rtl',
@@ -744,7 +800,9 @@
         /*  ============== Start Move Components ============== */
         $(document).on('click', '.fromComponents li', function() {
             let component = $(this).clone(true, true);
-            component.append($('<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>'));
+            component.append($(
+                '<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>'
+            ));
             component.find('span.cost').removeClass('d-none')
             component.find('.qty').removeAttr('readonly')
             if (toItems.val()) {
@@ -762,7 +820,9 @@
                 fromList.find('li').each(function() {
                     if (toList.find(`.${$(this).attr('class')}`).length == 0) {
                         let component = $(this).clone(true, true);
-                        component.append($('<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>'));
+                        component.append($(
+                            '<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>'
+                        ));
                         component.find('span.cost').removeClass('d-none');
                         component.find('.qty').removeAttr('readonly')
                         toList.append(component);
@@ -809,7 +869,7 @@
             });
 
             $.ajax({
-                url: "{{route('transferMaterial')}}",
+                url: "{{ route('transferMaterial') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -855,7 +915,7 @@
 
         componentsBranch.on('change', function() {
             $.ajax({
-                url: "{{route('get_group')}}",
+                url: "{{ route('stock.sections.groups') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -886,7 +946,7 @@
             });
 
             $.ajax({
-                url: "{{route('printComponents')}}",
+                url: "{{ route('printComponents') }}",
                 method: 'post',
                 data: {
                     _token,
@@ -927,8 +987,9 @@
                                 <td>${item.custom_materials.percentage}</td>
                                 <td>details components</td>
                             </tr>`
-                                    item.custom_materials.materials.forEach(material => {
-                                        html += `<tr class="table-success">
+                                    item.custom_materials.materials.forEach(
+                                        material => {
+                                            html += `<tr class="table-success">
                                     <td>${material.material_id}</td>
                                     <td>${material.material_name}</td>
                                     <td>${material.quantity}</td>
@@ -936,7 +997,7 @@
                                     <td></td>
                                     <td>material</td>
                                 </tr>`
-                                    });
+                                        });
                                 }
                                 if (item.details) {
                                     if (item.details.length > 0) {
@@ -949,7 +1010,8 @@
                                         <td></td>
                                         <td>detail</td>
                                     </tr>`
-                                            if (detail.materials.length == 1) {
+                                            if (detail.materials.length ==
+                                                1) {
                                                 html += `<tr class="table-warning">
                                             <td></td>
                                             <td>الخامات</td>
@@ -958,8 +1020,10 @@
                                             <td>${detail.materials[0].percentage}</td>
                                             <td>details components</td>
                                         </tr>`
-                                                detail.materials[0].materials.forEach(material => {
-                                                    html += `<tr class="table-success">
+                                                detail.materials[0]
+                                                    .materials.forEach(
+                                                        material => {
+                                                            html += `<tr class="table-success">
                                                 <td>${material.material_id}</td>
                                                 <td>${material.material_name}</td>
                                                 <td>${material.quantity}</td>
@@ -967,7 +1031,7 @@
                                                 <td></td>
                                                 <td>material</td>
                                             </tr>`
-                                                });
+                                                        });
                                             }
                                         });
                                     }
@@ -989,57 +1053,115 @@
                                     title: title,
                                     autoFilter: true,
                                     customize: function(xlsx) {
-                                        var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                                        var sheet = xlsx.xl.worksheets[
+                                            'sheet1.xml'];
                                         // Loop over the cells in column `C`
-                                        $('row c[r^="F"]', sheet).each(function() {
-                                            // Get the value
-                                            if ($('is t', this).text() == 'details components') {
-                                                $(this).attr('s', '20').siblings().attr('s', '5');
-                                            } else if ($('is t', this).text() == 'material') {
-                                                $(this).attr('s', '20').siblings().attr('s', '20');
-                                            } else if ($('is t', this).text() == 'details title') {
-                                                $(this).attr('s', '20').siblings().attr('s', '10');
-                                            } else if ($('is t', this).text() == 'detail') {
-                                                $(this).attr('s', '20').siblings().attr('s', '15');
-                                            }
-                                            $(this).remove()
-                                        });
+                                        $('row c[r^="F"]', sheet).each(
+                                            function() {
+                                                // Get the value
+                                                if ($('is t', this)
+                                                    .text() ==
+                                                    'details components'
+                                                ) {
+                                                    $(this).attr('s',
+                                                            '20')
+                                                        .siblings()
+                                                        .attr('s', '5');
+                                                } else if ($('is t',
+                                                        this).text() ==
+                                                    'material') {
+                                                    $(this).attr('s',
+                                                            '20')
+                                                        .siblings()
+                                                        .attr('s',
+                                                            '20');
+                                                } else if ($('is t',
+                                                        this).text() ==
+                                                    'details title') {
+                                                    $(this).attr('s',
+                                                            '20')
+                                                        .siblings()
+                                                        .attr('s',
+                                                            '10');
+                                                } else if ($('is t',
+                                                        this).text() ==
+                                                    'detail') {
+                                                    $(this).attr('s',
+                                                            '20')
+                                                        .siblings()
+                                                        .attr('s',
+                                                            '15');
+                                                }
+                                                $(this).remove()
+                                            });
                                     }
                                 }, ,
                                 {
                                     extend: "pdfHtml5",
                                     // download: "open",
                                     autoFilter: true,
-                                    title: title.split(' ').reverse().join('  '),
+                                    title: title.split(' ').reverse().join(
+                                        '  '),
                                     exportOptions: {
                                         orthogonal: "PDF",
                                     },
                                     customize: function(doc, s) {
-                                        doc.content[1].table.body.forEach(row => {
-                                            if (row[row.length - 1].text === 'details components') {
-                                                row.forEach(col => col.fillColor = '#fff3cd')
-                                            } else if (row[row.length - 1].text === 'material') {
-                                                row.forEach(col => col.fillColor = '#d1e7dd')
-                                            } else if (row[row.length - 1].text === 'details title') {
-                                                row.forEach(col => {
-                                                    col.fillColor = '#212529'
-                                                    col.color = 'white'
-                                                });
+                                        doc.content[1].table.body.forEach(
+                                            row => {
+                                                if (row[row.length - 1]
+                                                    .text ===
+                                                    'details components'
+                                                ) {
+                                                    row.forEach(col =>
+                                                        col
+                                                        .fillColor =
+                                                        '#fff3cd')
+                                                } else if (row[row
+                                                        .length - 1]
+                                                    .text === 'material'
+                                                ) {
+                                                    row.forEach(col =>
+                                                        col
+                                                        .fillColor =
+                                                        '#d1e7dd')
+                                                } else if (row[row
+                                                        .length - 1]
+                                                    .text ===
+                                                    'details title') {
+                                                    row.forEach(col => {
+                                                        col.fillColor =
+                                                            '#212529'
+                                                        col.color =
+                                                            'white'
+                                                    });
 
-                                            } else if (row[row.length - 1].text === 'detail') {
-                                                row.forEach(col => col.fillColor = '#cff4fc')
-                                            }
-                                            row.pop()
-                                        })
+                                                } else if (row[row
+                                                        .length - 1]
+                                                    .text === 'detail'
+                                                ) {
+                                                    row.forEach(col =>
+                                                        col
+                                                        .fillColor =
+                                                        '#cff4fc')
+                                                }
+                                                row.pop()
+                                            })
                                         doc.pageMargins = [10, 5];
                                         doc.content[0].margin = [0, 0]
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.defaultStyle.alignment = "center";
-                                        doc.styles.tableHeader.fillColor = '#159d71';
-                                        doc.styles.tableHeader.color = 'white';
-                                        doc.styles.tableHeader.fontSize = 12;
+                                        doc.defaultStyle.alignment =
+                                            "center";
+                                        doc.styles.tableHeader.fillColor =
+                                            '#159d71';
+                                        doc.styles.tableHeader.color =
+                                            'white';
+                                        doc.styles.tableHeader.fontSize =
+                                            12;
                                         doc.defaultStyle.fontSize = 12;
-                                        doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+                                        doc.content[1].table.widths = Array(
+                                                doc.content[1].table.body[0]
+                                                .length + 1).join('*')
+                                            .split('');
                                     },
                                 },
                                 "print",
@@ -1052,7 +1174,8 @@
                                 render: function(data, type, row) {
                                     if (type === 'PDF') {
                                         if (!/[a-z]/.test(data)) {
-                                            return data.split(' ').reverse().join('  ');
+                                            return data.split(' ')
+                                                .reverse().join('  ');
                                         }
                                     }
                                     return data;
