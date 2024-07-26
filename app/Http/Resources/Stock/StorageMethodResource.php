@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Stock;
 
+use App\Enums\Unit;
+use App\Enums\StorageType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class StorageMethodResource extends JsonResource
@@ -17,8 +19,8 @@ class StorageMethodResource extends JsonResource
         return [
             'id' => $this->id,
             'store_id' => $this->store_id,
-            'type' => $this->type,
-            'unit' => $this->unit,
+            'type' => StorageType::view($this->type),
+            'unit' =>  Unit::view($this->unit),
             'capacity' => $this->capacity,
         ];
     }

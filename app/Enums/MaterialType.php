@@ -36,14 +36,14 @@ enum MaterialType: string
         if (!$material) {
             // Handle the case where the unit value is invalid or not found
             return [
-                'name' => '',
-                'value' => '',
+                'name_ar' => '',
+                'name_en' => '',
             ];
         }
 
         return [
-            'name' => $material->toString(),
-            'value' => $material->value,
+            'name_ar' => $material->toString(),
+            'name_en' => $material->value,
         ];
     }
 }

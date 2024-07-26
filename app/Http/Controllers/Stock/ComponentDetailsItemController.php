@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
+use App\Models\Item;
 use App\Models\Branch;
+use App\Models\material;
+use App\Models\MainGroup;
+use App\Models\DetailsItem;
+use Illuminate\Http\Request;
+use App\Models\MainComponents;
 use App\Models\ComponentsItems;
 use App\Models\detailsComponent;
-use App\Models\DetailsItem;
-use App\Models\Item;
-use App\Models\MainComponents;
+use App\Models\Stock\StockGroup;
+use App\Http\Controllers\Controller;
 use App\Models\mainDetailsComponent;
-use App\Models\MainGroup;
-use App\Models\material;
-use Illuminate\Http\Request;
 
 class ComponentDetailsItemController extends Controller
 {
@@ -22,8 +23,8 @@ class ComponentDetailsItemController extends Controller
     }
     public $status = false;
     public function index(){
-        $branchs = Branch::get()->all();
-        $groups = MainGroup::get()->all();
+        $branchs = Branch::get();
+        $groups = StockGroup::get();
         return view('stock.stock.componentDetailsItems',compact('branchs','groups'));
     }
     public function getItemDetails(Request $request){

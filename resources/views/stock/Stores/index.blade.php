@@ -40,139 +40,41 @@
                         <!-- <h4>طريقة التخزين</h4> -->
                         <table class="store-table">
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input method-check" type="checkbox" value="تجميد"
-                                                id="freeze_method" name="storage_method">
-                                            <label class="form-check-label" for="freeze_method">
-                                                تجميد
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <label for="freeze" class="select-label">الوحدة</label>
-                                        <select class="form-select unit" id="freeze">
-                                            <option selected disabled>اختر نوع الوحدة</option>
-                                            <option value="كيلو">كيلو</option>
-                                            <option value="لتر">لتر</option>
-                                            <option value="عدد">عدد</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <div class="custom-form">
-                                            <input type="text" class="form-control" name="capacity" id="freeze_capacity">
-                                            <label for="freeze_capacity"> السعة</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input method-check" type="checkbox" value="تبريد"
-                                                id="cool_method" name="storage_method">
-                                            <label class="form-check-label" for="cool_method">
-                                                تبريد
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <label for="cool" class="select-label">الوحدة</label>
-                                        <select class="form-select unit" id="cool">
-                                            <option selected disabled>اختر نوع الوحدة</option>
-                                            <option value="كيلو">كيلو</option>
-                                            <option value="لتر">لتر</option>
-                                            <option value="عدد">عدد</option>
-                                        </select>
-
-                                    </td>
-                                    <td>
-                                        <div class="custom-form">
-                                            <input type="text" class="form-control" name="capacity" id="cool_capacity">
-                                            <label for="cool_capacity"> السعة</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input method-check" type="checkbox" value="أرضية"
-                                                id="floor_method" name="storage_method">
-                                            <label class="form-check-label" for="floor_method">
-                                                أرضية
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <label for="floor" class="select-label">الوحدة</label>
-                                        <select class="form-select unit" id="floor">
-                                            <option selected disabled>اختر نوع الوحدة</option>
-                                            <option value="كيلو">كيلو</option>
-                                            <option value="لتر">لتر</option>
-                                            <option value="عدد">عدد</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <div class="custom-form">
-                                            <input type="text" class="form-control" name="capacity" id="floor_capacity">
-                                            <label for="floor_capacity"> السعة</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input method-check" type="checkbox" value="أرفف"
-                                                id="shelf_method" name="storage_method">
-                                            <label class="form-check-label" for="shelf_method">
-                                                أرفف
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <label for="shelf" class="select-label">الوحدة</label>
-                                        <select class="form-select unit" id="shelf">
-                                            <option selected disabled>اختر نوع الوحدة</option>
-                                            <option value="كيلو">كيلو</option>
-                                            <option value="لتر">لتر</option>
-                                            <option value="عدد">عدد</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <div class="custom-form">
-                                            <input type="text" class="form-control" name="capacity"
-                                                id="shelf_capacity">
-                                            <label for="shelf_capacity"> السعة</label>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input method-check" type="checkbox" value="اخري"
-                                                id="other_method" name="storage_method">
-                                            <label class="form-check-label" for="other_method">
-                                                اخري
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <label for="other" class="select-label">الوحدة</label>
-                                        <select class="form-select unit" id="other">
-                                            <option selected disabled>اختر نوع الوحدة</option>
-                                            <option value="كيلو">كيلو</option>
-                                            <option value="لتر">لتر</option>
-                                            <option value="عدد">عدد</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <div class="custom-form">
-                                            <input type="text" class="form-control" name="capacity"
-                                                id="other_capacity">
-                                            <label for="other_capacity"> السعة</label>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @forelse($storageTypes as $storage)
+                                    <tr>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input method-check" type="checkbox"
+                                                    value="{{ $storage->value }}" id="{{ $storage->value }}_method"
+                                                    name="storage_method">
+                                                <label class="form-check-label" for="{{ $storage->value }}_method">
+                                                    {{ $storage->toString() }}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label for="{{ $storage->value }}" class="select-label">الوحدة</label>
+                                            <select class="form-select unit" id="{{ $storage->value }}">
+                                                <option selected disabled>اختر نوع الوحدة</option>
+                                                @forelse ($units as $unit)
+                                                    <option value="{{ $unit->value }}">{{ $unit->toString() }}</option>
+                                                @empty
+                                                    <option value="">لاتوجد وحدات متاحة</option>
+                                                @endforelse
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="custom-form">
+                                                <input type="text" class="form-control" name="capacity"
+                                                    id="{{ $storage->value }}_capacity">
+                                                <label for="{{ $storage->value }}_capacity"> السعة</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -283,151 +185,49 @@
                                 <!-- <h4>طريقة التخزين</h4> -->
                                 <table class="store-table">
                                     <table class="store-table">
+
                                         <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input method-check" type="checkbox"
-                                                            value="تجميد" id="view_freeze_method" name="storage_method">
-                                                        <label class="form-check-label" for="view_freeze_method">
-                                                            تجميد
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <label for="view_freeze_unit" class="select-label">الوحدة</label>
-                                                    <select class="form-select unit" id="view_freeze_unit"
-                                                        name="storage_unit">
-                                                        <option selected disabled>اختر نوع الوحدة</option>
-                                                        <option value="كيلو">كيلو</option>
-                                                        <option value="لتر">لتر</option>
-                                                        <option value="عدد">عدد</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <div class="custom-form">
-                                                        <input type="text" class="form-control" name="capacity"
-                                                            id="view_freeze_capacity">
-                                                        <label for="view_freeze_capacity"> السعة</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input method-check" type="checkbox"
-                                                            value="تبريد" id="view_cool_method" name="storage_method">
-                                                        <label class="form-check-label" for="view_cool_method">
-                                                            تبريد
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <label for="view_cool_unit" class="select-label">الوحدة</label>
-                                                    <select class="form-select unit" id="view_cool_unit"
-                                                        name="storage_unit">
-                                                        <option selected disabled>اختر نوع الوحدة</option>
-                                                        <option value="كيلو">كيلو</option>
-                                                        <option value="لتر">لتر</option>
-                                                        <option value="عدد">عدد</option>
-                                                    </select>
-
-                                                </td>
-                                                <td>
-                                                    <div class="custom-form">
-                                                        <input type="text" class="form-control" name="capacity"
-                                                            id="view_cool_capacity">
-                                                        <label for="view_cool_capacity"> السعة</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input method-check" type="checkbox"
-                                                            value="أرضية" id="view_floor_method" name="storage_method">
-                                                        <label class="form-check-label" for="view_floor_method">
-                                                            أرضية
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <label for="view_floor_unit" class="select-label">الوحدة</label>
-                                                    <select class="form-select unit" name="storage_unit"
-                                                        id="view_floor_unit">
-                                                        <option selected disabled>اختر نوع الوحدة</option>
-                                                        <option value="كيلو">كيلو</option>
-                                                        <option value="لتر">لتر</option>
-                                                        <option value="عدد">عدد</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <div class="custom-form">
-                                                        <input type="text" class="form-control" name="capacity"
-                                                            id="view_floor_capacity">
-                                                        <label for="view_floor_capacity"> السعة</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input method-check" type="checkbox"
-                                                            value="أرفف" id="view_shelf_method" name="storage_method">
-                                                        <label class="form-check-label" for="view_shelf_method">
-                                                            أرفف
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <label for="view_shelf_unit" class="select-label">الوحدة</label>
-                                                    <select class="form-select unit" name="storage_unit"
-                                                        id="view_shelf_unit">
-                                                        <option selected disabled>اختر نوع الوحدة</option>
-                                                        <option value="كيلو">كيلو</option>
-                                                        <option value="لتر">لتر</option>
-                                                        <option value="عدد">عدد</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <div class="custom-form">
-                                                        <input type="text" class="form-control" name="capacity"
-                                                            id="view_shelf_capacity">
-                                                        <label for="view_shelf_capacity"> السعة</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
-
-                                            <tr>
-                                                <td>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input method-check" type="checkbox"
-                                                            value="اخري" id="view_other_method" name="storage_method">
-                                                        <label class="form-check-label" for="view_other_method">
-                                                            اخري
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <label for="view_other_unit" class="select-label">الوحدة</label>
-                                                    <select class="form-select unit" name="storage_unit"
-                                                        id="view_other_unit">
-                                                        <option selected disabled>اختر نوع الوحدة</option>
-                                                        <option value="كيلو">كيلو</option>
-                                                        <option value="لتر">لتر</option>
-                                                        <option value="عدد">عدد</option>
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <div class="custom-form">
-                                                        <input type="text" class="form-control" name="capacity"
-                                                            id="view_other_capacity">
-                                                        <label for="view_other_capacity"> السعة</label>
-                                                    </div>
-                                                </td>
-                                            </tr>
+                                            @forelse($storageTypes as $storage)
+                                                <tr>
+                                                    <td>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input method-check" type="checkbox"
+                                                                value="{{ $storage->value }}"
+                                                                id="view_{{ $storage->value }}_method"
+                                                                name="storage_method">
+                                                            <label class="form-check-label"
+                                                                for="view_{{ $storage->value }}_method">
+                                                                {{ $storage->toString() }}
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <label for="view_{{ $storage->value }}"
+                                                            class="select-label">الوحدة</label>
+                                                        <select class="form-select unit" name="storage_unit"
+                                                            id="view_{{ $storage->value }}">
+                                                            <option selected disabled>اختر نوع الوحدة</option>
+                                                            @forelse ($units as $unit)
+                                                                <option value="{{ $unit->value }}">
+                                                                    {{ $unit->toString() }}</option>
+                                                            @empty
+                                                                <option value="">لاتوجد وحدات متاحة</option>
+                                                            @endforelse
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <div class="custom-form">
+                                                            <input type="text" class="form-control" name="capacity"
+                                                                id="view_{{ $storage->value }}_capacity">
+                                                            <label for="view_{{ $storage->value }}_capacity">
+                                                                السعة</label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </table>
@@ -490,146 +290,47 @@
                         <!-- <h4>طريقة التخزين</h4> -->
                         <table class="store-table">
                             <table class="store-table">
+
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input method-check" type="checkbox"
-                                                    value="تجميد" id="edit_freeze_method" name="storage_method">
-                                                <label class="form-check-label" for="edit_freeze_method">
-                                                    تجميد
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <label for="edit_freeze_unit" class="select-label">الوحدة</label>
-                                            <select class="form-select unit" id="edit_freeze_unit" name="storage_unit">
-                                                <option selected disabled>اختر نوع الوحدة</option>
-                                                <option value="كيلو">كيلو</option>
-                                                <option value="لتر">لتر</option>
-                                                <option value="عدد">عدد</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <div class="custom-form">
-                                                <input type="text" class="form-control" name="capacity"
-                                                    id="edit_freeze_capacity">
-                                                <label for="edit_freeze_capacity"> السعة</label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input method-check" type="checkbox"
-                                                    value="تبريد" id="edit_cool_method" name="storage_method">
-                                                <label class="form-check-label" for="edit_cool_method">
-                                                    تبريد
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <label for="edit_cool_unit" class="select-label">الوحدة</label>
-                                            <select class="form-select unit" id="edit_cool_unit" name="storage_unit">
-                                                <option selected disabled>اختر نوع الوحدة</option>
-                                                <option value="كيلو">كيلو</option>
-                                                <option value="لتر">لتر</option>
-                                                <option value="عدد">عدد</option>
-                                            </select>
-
-                                        </td>
-                                        <td>
-                                            <div class="custom-form">
-                                                <input type="text" class="form-control" name="capacity"
-                                                    id="edit_cool_capacity">
-                                                <label for="edit_cool_capacity"> السعة</label>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input method-check" type="checkbox"
-                                                    value="أرضية" id="edit_floor_method" name="storage_method">
-                                                <label class="form-check-label" for="edit_floor_method">
-                                                    أرضية
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <label for="edit_floor_unit" class="select-label">الوحدة</label>
-                                            <select class="form-select unit" name="storage_unit" id="edit_floor_unit">
-                                                <option selected disabled>اختر نوع الوحدة</option>
-                                                <option value="كيلو">كيلو</option>
-                                                <option value="لتر">لتر</option>
-                                                <option value="عدد">عدد</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <div class="custom-form">
-                                                <input type="text" class="form-control" name="capacity"
-                                                    id="edit_floor_capacity">
-                                                <label for="edit_floor_capacity"> السعة</label>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input method-check" type="checkbox"
-                                                    value="أرفف" id="edit_shelf_method" name="storage_method">
-                                                <label class="form-check-label" for="edit_shelf_method">
-                                                    أرفف
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <label for="edit_shelf_unit" class="select-label">الوحدة</label>
-                                            <select class="form-select unit" name="storage_unit" id="edit_shelf_unit">
-                                                <option selected disabled>اختر نوع الوحدة</option>
-                                                <option value="كيلو">كيلو</option>
-                                                <option value="لتر">لتر</option>
-                                                <option value="عدد">عدد</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <div class="custom-form">
-                                                <input type="text" class="form-control" name="capacity"
-                                                    id="edit_shelf_capacity">
-                                                <label for="edit_shelf_capacity"> السعة</label>
-                                            </div>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input method-check" type="checkbox"
-                                                    value="اخري" id="edit_other_method" name="storage_method">
-                                                <label class="form-check-label" for="edit_other_method">
-                                                    اخري
-                                                </label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <label for="edit_other_unit" class="select-label">الوحدة</label>
-                                            <select class="form-select unit" name="storage_unit" id="edit_other_unit">
-                                                <option selected disabled>اختر نوع الوحدة</option>
-                                                <option value="كيلو">كيلو</option>
-                                                <option value="لتر">لتر</option>
-                                                <option value="عدد">عدد</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <div class="custom-form">
-                                                <input type="text" class="form-control" name="capacity"
-                                                    id="edit_other_capacity">
-                                                <label for="edit_other_capacity"> السعة</label>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    @forelse($storageTypes as $storage)
+                                        <tr>
+                                            <td>
+                                                <div class="form-check">
+                                                    <input class="form-check-input method-check" type="checkbox"
+                                                        value="{{ $storage->value }}"
+                                                        id="edit_{{ $storage->value }}_method" name="storage_method">
+                                                    <label class="form-check-label"
+                                                        for="edit_{{ $storage->value }}_method">
+                                                        {{ $storage->toString() }}
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <label for="view_{{ $storage->value }}"
+                                                    class="select-label">الوحدة</label>
+                                                <select class="form-select unit" name="storage_unit"
+                                                    id="edit_{{ $storage->value }}">
+                                                    <option selected disabled>اختر نوع الوحدة</option>
+                                                    @forelse ($units as $unit)
+                                                        <option value="{{ $unit->value }}">{{ $unit->toString() }}
+                                                        </option>
+                                                    @empty
+                                                        <option value="">لاتوجد وحدات متاحة</option>
+                                                    @endforelse
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <div class="custom-form">
+                                                    <input type="text" class="form-control" name="capacity"
+                                                        id="edit_{{ $storage->value }}_capacity">
+                                                    <label for="edit_{{ $storage->value }}_capacity"> السعة</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </table>

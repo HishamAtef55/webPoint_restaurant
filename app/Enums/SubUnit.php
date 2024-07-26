@@ -3,18 +3,18 @@
 namespace App\Enums;
 
 
-enum Unit: string
+enum SubUnit: string
 {
 
-    case KILO = 'kilo';
-    case LITRE = 'litre';
+    case GM = 'gm';
+    case ML = 'ml';
     case NUMBER = 'number';
 
     public function toString(): string
     {
         return match ($this) {
-            self::KILO => 'كيلو',
-            self::LITRE => 'لتر',
+            self::GM => 'جرام',
+            self::ML => 'مللى',
             self::NUMBER => 'عدد'
         };
     }
@@ -22,17 +22,17 @@ enum Unit: string
     public static function values()
     {
         return [
-            Unit::KILO,
-            Unit::LITRE,
-            Unit::NUMBER,
+            SubUnit::GM,
+            SubUnit::ML,
+            SubUnit::NUMBER,
         ];
     }
 
-    public static function view($unitValue): array
+    public static function view($subUnitValue): array
     {
-        $unit = self::tryFrom($unitValue);
+        $subUnit = self::tryFrom($subUnitValue);
 
-        if (!$unit) {
+        if (!$subUnit) {
             // Handle the case where the unit value is invalid or not found
             return [
                 'name_ar' => '',
@@ -41,8 +41,9 @@ enum Unit: string
         }
 
         return [
-            'name_ar' => $unit->toString(),
-            'name_en' => $unit->value,
+            'name_ar' => $subUnit->toString(),
+            'name_en' => $subUnit->value,
+            'value' => $subUnit->value === 'number' ? 1 : 1000,
         ];
     }
 }

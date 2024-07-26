@@ -17,7 +17,7 @@ class ItemComponentsController extends Controller
     public function index(): View
     {
         $branchs = Branch::get();
-        return view('stock.stock.component_items', compact('branchs'));
+        return view('stock.Items.index', compact('branchs'));
     }
 
     /**

@@ -234,9 +234,6 @@
                         type: 'DELETE',
                         url: '{{ url('stock/materials', '') }}' + '/' + id,
                         dataType: 'json',
-                        data: {
-                            id: id,
-                        },
                         success: function(response) {
                             if (response.status == 200) {
                                 handleResponseMessageError(response.message,
@@ -525,9 +522,9 @@
         let mainGroupOption = selectMainGroupEle.find(
             `option:contains(${response.data.group.parent_name})`).val();
         let unitOption = selectUnitEle.find(
-            `option:contains(${response.data.unit.name})`).val();
+            `option:contains(${response.data.unit.name_ar})`).val();
         let storageOption = selectStorageEle.find(
-            `option:contains(${response.data.storage_type.name})`).val();
+            `option:contains(${response.data.storage_type.name_ar})`).val();
 
         if (branchOption) {
             selectBranchEle.val(branchOption).change();
@@ -550,7 +547,7 @@
             selectUnitEle.val(unitOption).change();
         } else {
             selectUnitEle.append(
-                `<option value="${response.data.unit.value ?? '' }" selected>${response.data.unit.name ?? '' }</option>`
+                `<option value="${response.data.unit.name_en}" selected>${response.data.unit.name_ar}</option>`
 
             )
         }
@@ -559,7 +556,7 @@
             selectStorageEle.val(storageOption).change();
         } else {
             selectStorageEle.append(
-                `<option class="form-select" value="${response.data.storage_type.value ?? ''}" selected>${response.data.storage_type.name ?? ''}</option>`
+                `<option class="form-select" value="${response.data.storage_type.name_en}" selected>${response.data.storage_type.name_ar}</option>`
 
             )
         }
@@ -572,17 +569,17 @@
 
         if (model.is('#editModal')) {
             $(model).find(
-                `input[name="materialType"][value="${response.data.material_type.value}"]`
+                `input[name="materialType"][value="${response.data.material_type.name_en}"]`
             ).prop('checked', true);
 
         } else {
-            if (response.data.material_type.value) {
+            if (response.data.material_type.name_en) {
                 let materialType = `
                         <input class="form-check-input material-type" type="radio"
-                            value="${response.data.material_type.value}" id="view_model_${response.data.material_type.name}"
+                            value="${response.data.material_type.name_en}" id="view_model_${response.data.material_type.name_ar}"
                             name="materialType" checked>
-                        <label class="form-check-label" for="view_model_${response.data.material_type.value}">
-                            ${response.data.material_type.name}
+                        <label class="form-check-label" for="view_model_${response.data.material_type.name_en}">
+                            ${response.data.material_type.name_ar}
                         </label>`;
 
                 $(model).find('.view_model_material_type').html(materialType);

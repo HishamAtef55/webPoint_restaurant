@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Stock\Stores;
 
+use App\Enums\Unit;
+use App\Enums\StorageType;
 use App\Models\Stock\Store;
 use Illuminate\Http\Request;
-use App\Http\Requests\Stock\Stores\StoreRequest;
-use App\Http\Requests\Stock\Stores\UpdateRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Stock\StoreResource;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Requests\Stock\Stores\StoreRequest;
+use App\Http\Requests\Stock\Stores\UpdateRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StoreController extends Controller
@@ -22,9 +24,13 @@ class StoreController extends Controller
     {
         $lastStoreNr = Store::latest()->first()?->id + 1 ?? 1;
         $stores = Store::paginate(5);
+        $units = Unit::values();
+        $storageTypes = StorageType::values();
         return view('stock.Stores.index', compact([
             'stores',
-            'lastStoreNr'
+            'lastStoreNr',
+            'units',
+            'storageTypes'
         ]));
     }
 

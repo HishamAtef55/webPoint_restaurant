@@ -18,33 +18,6 @@ class ComponentItemsController extends Controller
 {
     public $status = false;
 
-    // public function index(){
-    //     $branchs = Branch::get();
-    //     return view('stock.stock.component_items',compact('branchs'));
-    // }
-    // public function get_items(Request $request){
-    //     $items = Item::where(['branch_id'=>$request->branch])->select(['id','name','price'])->get();
-    //     if($items){
-    //         return response()->json([
-    //             'status'=>true,
-    //             'items'=>$items
-    //         ]);
-    //     }
-    // }
-    public function get_material(Request $request)
-    {
-        if ($request->group == "all") {
-            $materials = material::with('sub_unit.sub_unit')->select(['code', 'name', 'cost', 'unit'])->get();
-        } else {
-            $materials = material::with('sub_unit.sub_unit')->where(['main_group' => $request->group])->select(['code', 'name', 'cost', 'unit'])->get();
-        }
-        if ($materials) {
-            return response()->json([
-                'status' => true,
-                'materials' => $materials
-            ]);
-        }
-    }
     public function saveComponent(Request $request)
     {
         if ($request->materialArray != null) {
@@ -152,6 +125,9 @@ class ComponentItemsController extends Controller
         }
         return ['status' => true, 'data' => 'تم تكرار المكونات بنجاح'];
     }
+
+
+    
     public function itemsWithOutMaterials(Request $request)
     {
         if ($request->branch) {

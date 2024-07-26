@@ -47,7 +47,7 @@ class UpdateMaterialRequest extends FormRequest
                 'max_section' => ['nullable', 'integer'],
                 'storage_type' => ['nullable', 'string', new Enum(StorageType::class)],
                 'material_type' => ['nullable', 'string', new Enum(MaterialType::class)],
-                'expire_date' => ['nullable', 'date', 'after:today'],
+                'expire_date' => ['nullable', 'date'],
                 'group_id'  => ['required', 'integer', 'exists:stock_groups,id'],
                 'branch_id' => ['required', 'integer', 'exists:branchs,id'],
                 'sectionIds' => ['required', 'array'],

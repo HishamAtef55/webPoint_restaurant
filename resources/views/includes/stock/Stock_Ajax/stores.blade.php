@@ -164,10 +164,6 @@
                         type: 'DELETE',
                         url: '{{ url('stock/stores', '') }}' + '/' + id,
                         dataType: 'json',
-                        data: {
-
-                            id: id,
-                        },
                         success: function(response) {
 
                             if (response.status == 200) {
@@ -213,12 +209,10 @@
             type: 'GET',
             url: '{{ url('stock/stores', '') }}' + '/' + id,
             dataType: 'json',
-            data: {
-                id: id
-            },
             success: function(response) {
                 if (response.status == 200) {
                     const store = response.data;
+                    console.log(response)
 
 
 
@@ -231,15 +225,17 @@
                     // Show the modal first
                     $('#viewModal').modal('show');
                     store.storage_methods.forEach(method => {
+                        console.log(method.type.name_ar)
+                        console.log(method.unit.name_en)
                         const methodElement = $(
-                            `#viewModal input[name="storage_method"][value="${method.type}"]`
+                            `#viewModal input[name="storage_method"][value="${method.type.name_en}"]`
                         );
                         methodElement.prop('checked', true);
 
                         const selectElement = methodElement.closest('tr').find(
                             'select[name="storage_unit"]'
                         );
-                        selectElement.val(method.unit)
+                        selectElement.val(method.unit.name_en)
                             .change();
 
                         const capacityElement = methodElement.closest('tr')
@@ -270,9 +266,6 @@
             type: 'GET',
             url: '{{ url('stock/stores', '') }}' + '/' + id,
             dataType: 'json',
-            data: {
-                id: id
-            },
             success: function(response) {
                 if (response.status == 200) {
                     const store = response.data;
@@ -288,14 +281,14 @@
                     $('#editModal').modal('show');
                     store.storage_methods.forEach(method => {
                         const methodElement = $(
-                            `#editModal input[name="storage_method"][value="${method.type}"]`
+                            `#editModal input[name="storage_method"][value="${method.type.name_en}"]`
                         );
                         methodElement.prop('checked', true);
 
                         const selectElement = methodElement.closest('tr').find(
                             'select[name="storage_unit"]'
                         );
-                        selectElement.val(method.unit)
+                        selectElement.val(method.unit.name_en)
                             .change();
 
                         const capacityElement = methodElement.closest('tr')

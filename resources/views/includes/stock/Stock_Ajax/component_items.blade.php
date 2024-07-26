@@ -119,7 +119,6 @@
                 url: "{{ route('components_items_get_material_in_item') }}",
                 method: 'post',
                 data: {
-                    _token,
                     item: items.val(),
                     branch: branch.val()
                 },

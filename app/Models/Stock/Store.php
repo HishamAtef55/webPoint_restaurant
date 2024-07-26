@@ -57,6 +57,12 @@ class Store extends Model
         return $this->hasMany(Section::class, 'store_id', 'id');
     }
 
+    /**
+     * storageCapacity
+     *
+     * @return bool
+     */
+
     public function hasSection(): bool
     {
         return (bool) $this->sections()->count();

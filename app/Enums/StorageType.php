@@ -41,14 +41,14 @@ enum StorageType: string
         if (!$storage) {
             // Handle the case where the unit value is invalid or not found
             return [
-                'name' => '',
-                'value' => '',
+                'name_ar' => '',
+                'name_en' => '',
             ];
         }
 
         return [
-            'name' => $storage->toString(),
-            'value' => $storage->value,
+            'name_ar' => $storage->toString(),
+            'name_en' => $storage->value,
         ];
     }
 }

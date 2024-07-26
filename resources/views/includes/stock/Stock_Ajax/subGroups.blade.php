@@ -123,13 +123,8 @@
                 return new Promise((resolve) => {
                     $.ajax({
                         type: 'DELETE',
-                        url: '{{ url('stock/sub/groups', '') }}' + '/' +
-                            id,
+                        url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
                         dataType: 'json',
-                        data: {
-
-                            id: id,
-                        },
                         success: function(response) {
                             if (response.status == 200) {
                                 handleResponseMessageError(response.message,
@@ -177,9 +172,6 @@
             type: 'GET',
             url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
             dataType: 'json',
-            data: {
-                id: id
-            },
             success: function(response) {
                 if (response.status == 200) {
                     const subGroup = response.data;
@@ -222,9 +214,6 @@
             type: 'GET',
             url: '{{ url('stock/sub/groups', '') }}' + '/' + id,
             dataType: 'json',
-            data: {
-                id: id
-            },
             success: function(response) {
                 if (response.status == 200) {
                     const subGroup = response.data;
