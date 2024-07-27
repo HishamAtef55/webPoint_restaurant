@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
-use App\Models\ComponentsItems;
-use App\Models\MainComponents;
 use App\Models\MainGroup;
-use App\Models\mainMaterialRecipe;
-use App\Models\material;
-use App\Models\materialRecipe;
 use Illuminate\Http\Request;
+use App\Models\MainComponents;
+use App\Models\materialRecipe;
+use App\Models\Stock\Material;
+use App\Models\ComponentsItems;
+use App\Models\Stock\StockGroup;
+use App\Models\mainMaterialRecipe;
+use App\Http\Controllers\Controller;
 
 class MaterialRecipeController extends Controller
 {
@@ -19,8 +20,8 @@ class MaterialRecipeController extends Controller
     }
     public $status = false;
     public function index(){
-        $groups = MainGroup::get()->all();
-        $materials = material::get()->all();
+        $groups = StockGroup::get();
+        $materials = Material::get();
         return view('stock.stock.material_recipe',compact('materials','groups'));
     }
     public function saveMaterialRecipe(Request $request){

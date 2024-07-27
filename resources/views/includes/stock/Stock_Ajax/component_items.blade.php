@@ -57,7 +57,13 @@
                         response.materials.forEach((material) => {
                             console.log(material)
                             materialHtml +=
-                                `<option value="${material.serial_nr}" data-cost="${material.cost}" data-unit-name="${material.unit.name}">${material.name}</option>`
+                                `<option value="${material.id}"
+                                 data-serial="${material.serial_nr}"
+                                 data-cost="${material.cost}"
+                                 data-unit="${material.unit.sub_unit.name_ar}"
+                                 data-unit-value="${material.unit.sub_unit.value}"
+                                 
+                                 >${material.name}</option>`
                         });
 
                         materialDiv.html(materialHtml)
@@ -196,7 +202,7 @@
         /*  ======================== Start Material Details ============================== */
         materials.on('change', function() {
             let cost = $(this).find('option:selected').attr('data-cost');
-            let unitName = $(this).find('option:selected').attr('data-unit-name');
+            let unitName = $(this).find('option:selected').attr('data-unit');
 
             unitLabel.text(unitName);
             setTimeout(() => {
@@ -226,11 +232,12 @@
         unitInput.on('keyup', function(e) {
             console.log(e);
             let cost = materials.find('option:selected').attr('data-cost');
-            let unitName = materials.find('option:selected').attr('data-unit-name');
-            let unitSize = materials.find('option:selected').attr('data-unit-size');
-            let materialCode = materials.find('option:selected').attr('value');
+            let unitName = materials.find('option:selected').attr('data-unit');
+            let unitSize = materials.find('option:selected').attr('data-unit-value');
+            let materialCode = materials.find('option:selected').attr('data-serial');
+            let material_id = materials.find('option:selected').attr('value');
             let materialName = materials.find('option:selected').text();
-            let unitPrice = cost / 1000;
+            let unitPrice = cost / unitSize;
             let qty = $(this).val();
             let tableBody = $('.table-materials tbody');
             let counter = tableBody.find('tr').length;
@@ -268,7 +275,7 @@
                         });
                     } else {
                         materialArray.push({
-                            code: materialCode,
+                            code: material_id,
                             name: materialName,
                             quantity: qty,
                             price: unitPriceInput.val()

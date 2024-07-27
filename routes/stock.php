@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\materialRecipe;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Stock\Stores\StoreController;
 use App\Http\Controllers\Stock\ComponentItemsController;
+use App\Http\Controllers\Stock\MaterialRecipeController;
 use App\Http\Controllers\Stock\Groups\SubGroupController;
 use App\Http\Controllers\Stock\Groups\MainGroupController;
 use App\Http\Controllers\Stock\Items\FilterItemController;
