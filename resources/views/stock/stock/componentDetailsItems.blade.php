@@ -38,7 +38,7 @@
                             </div>
                             <div class="col-6">
                                 <div class="custom-form mt-3">
-                                    <input type="text" name="item_price" id="item_price" disabled>
+                                    <input type="text" name="item_price" value="0" id="item_price" disabled>
                                     <label for="item_price" >سعر البيع</label>
                                 </div>
                             </div>
@@ -46,18 +46,6 @@
                                 <div class="custom-form mt-3">
                                     <input type="number" class="product-qty" min='1' value="1" name="product_qty" id="product_qty" >
                                     <label for="product_qty" >الكمية المنتجة</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="select-box">
-                                    <label class="select-label"> المجموعة الرئيسية </label>
-                                    <select id="main_group">
-                                        <option disabled selected> اختر المجموعة الرئيسية </option>
-                                        <option value="all">all</option>
-                                        @foreach($groups as $group)
-                                            <option value="{{$group->id}}">{{$group->name}}</option>
-                                        @endforeach
-                                    </select>
                                 </div>
                             </div>
                             <div class="col-12">

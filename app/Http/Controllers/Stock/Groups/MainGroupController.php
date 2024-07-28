@@ -35,10 +35,10 @@ class MainGroupController extends Controller
     public function store(
         StoreMainGroupRequest $request
     ): StockGroupResource {
-
-        $stockGroup = StockGroup::create($request->validated());
-        $stockGroup->serial_nr = $request->setSerialNr();
-        $stockGroup->save();
+        $stockGroup = StockGroup::create([
+            'name' => $request->validated()['name'],
+            'serial_nr' => $request->setSerialNr()
+        ]);
         return StockGroupResource::make(
             $stockGroup
         )

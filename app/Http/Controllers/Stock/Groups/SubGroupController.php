@@ -38,9 +38,11 @@ class SubGroupController extends Controller
         StoreSubGroupRequest $request
     ): StockGroupResource {
 
-        $stockGroup = StockGroup::create($request->validated());
-        $stockGroup->serial_nr = $request->setSerialNr($request->parent_id);
-        $stockGroup->save();
+        $stockGroup = StockGroup::create([
+            'name' => $request->validated()['name'],
+            'parent_id' => $request->validated()['parent_id'],
+            'serial_nr' => $request->setSerialNr($request->validated()['parent_id'])
+        ]);
         return StockGroupResource::make(
             $stockGroup
         )
@@ -76,9 +78,12 @@ class SubGroupController extends Controller
         UpdateSubGroupRequest $request,
         StockGroup $stockGroup
     ): StockGroupResource {
-        $stockGroup->serial_nr = $request->updateSerialNr();
-        $stockGroup->update($request->validated());
-        $stockGroup->save();
+        
+        $stockGroup->update([
+            'name' => $request->validated()['name'],
+            'parent_id' => $request->validated()['parent_id'],
+            'serial_nr' => $request->updateSerialNr()
+        ]);
         return StockGroupResource::make($stockGroup)
             ->additional([
                 'serial_nr' => $request->updateSerialNr(),
