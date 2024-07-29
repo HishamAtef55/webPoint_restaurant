@@ -18,6 +18,12 @@ class ComponentItemsController extends Controller
 {
     public $status = false;
 
+
+    public function index()
+    {
+        $branchs = Branch::get();
+        return view('stock.Items.index', compact('branchs'));
+    }
     public function saveComponent(Request $request)
     {
         if ($request->materialArray != null) {
@@ -51,6 +57,7 @@ class ComponentItemsController extends Controller
                         'material_name' => $material['name'],
                         'cost'        => $material['price'],
                         'quantity'    => $material['quantity'],
+                        'unit'    => $material['unit'],
                     ]);
                 }
             }
@@ -127,7 +134,7 @@ class ComponentItemsController extends Controller
     }
 
 
-    
+
     public function itemsWithOutMaterials(Request $request)
     {
         if ($request->branch) {

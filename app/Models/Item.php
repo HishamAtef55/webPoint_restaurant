@@ -8,6 +8,7 @@ use App\Models\Details;
 use App\Models\extra;
 use App\Models\BarcodeItems;
 use App\Models\ItemPrinters;
+use App\Models\Stock\Material;
 use App\Models\Wait_order;
 use App\Models\Wait_order_m;
 class Item extends Model
@@ -53,7 +54,7 @@ class Item extends Model
     }
     
     public function Materials(){
-        return $this->belongsToMany(material::class , 'components_items','item_id','id');
+        return $this->belongsToMany(Material::class , 'components_items','item_id','id');
     }
 
     public function material_components(){

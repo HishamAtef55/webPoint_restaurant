@@ -8,6 +8,13 @@
         });
     }
 
+    const unitToArabic = {
+        'ml': 'مللى',
+        'gm': 'جرام',
+        'number': 'عدد'
+        // Add other units as needed
+    };
+
     // handle csrf request header
 
     $.ajaxSetup({
@@ -55,12 +62,11 @@
                                 `<option value="${item.id}" data-price="${item.price}" >${item.name}</option>`
                         });
                         response.materials.forEach((material) => {
-                            console.log(material)
                             materialHtml +=
                                 `<option value="${material.id}"
-                                 data-serial="${material.serial_nr}"
                                  data-cost="${material.cost}"
                                  data-unit="${material.unit.sub_unit.name_ar}"
+                                 data-unit-name-en="${material.unit.sub_unit.name_en}"
                                  data-unit-value="${material.unit.sub_unit.value}"
                                  
                                  >${material.name}</option>`
@@ -134,15 +140,22 @@
                         productQty.focus().select()
                         let html = '';
                         let count = 1;
-                        tableBody.html(
-                            '<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>'
-                        );
+                        tableBody.html('');
+                        if (!data.materials) {
+                            tableBody.html(
+                                '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                            );
+                            $('.percentage').val(0)
+                            $('.total-price').val(0)
+                            return;
+                        }
                         data.materials.materials.forEach((material) => {
                             html += `<tr id="${material.material_id}">
                         <td>${count}</td>
                         <td>${material.material_id}</td>
                         <td>${material.material_name}</td>
                         <td class="tr-qty">${material.quantity}</td>
+                        <td>${unitToArabic[material.unit]}</td>
                         <td class="tr-price">${material.cost}</td>
                         <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
                     </tr>`;
@@ -150,7 +163,8 @@
                                 code: material.material_id,
                                 name: material.material_name,
                                 quantity: material.quantity,
-                                price: material.cost
+                                price: material.cost,
+                                unit: material.unit
                             });
                             count++
                         });
@@ -230,12 +244,11 @@
         /*  ======================== Function Calculate Total Price & Percentage ============================== */
         /*  ======================== Start Add Material In Table ============================== */
         unitInput.on('keyup', function(e) {
-            console.log(e);
             let cost = materials.find('option:selected').attr('data-cost');
             let unitName = materials.find('option:selected').attr('data-unit');
+            let unit = materials.find('option:selected').attr('data-unit-name-en');
             let unitSize = materials.find('option:selected').attr('data-unit-value');
-            let materialCode = materials.find('option:selected').attr('data-serial');
-            let material_id = materials.find('option:selected').attr('value');
+            let materialCode = materials.find('option:selected').attr('value');
             let materialName = materials.find('option:selected').text();
             let unitPrice = cost / unitSize;
             let qty = $(this).val();
@@ -274,20 +287,24 @@
                             }
                         });
                     } else {
+                        console.log('vfdbfbf');
                         materialArray.push({
-                            code: material_id,
+                            code: materialCode,
                             name: materialName,
                             quantity: qty,
-                            price: unitPriceInput.val()
+                            price: unitPriceInput.val(),
+                            unit: unit
                         });
+                        console.log(materialArray)
                         let html = `<tr id="${materialCode}">
-                    <td>${counter + 1}</td>
-                    <td>${materialCode}</td>
-                    <td>${materialName}</td>
-                    <td class="tr-qty">${qty}</td>
-                    <td class="tr-price">${unitPriceInput.val()}</td>
-                    <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
-                </tr>`;
+                            <td>${counter + 1}</td>
+                            <td>${materialCode}</td>
+                            <td>${materialName}</td>
+                            <td class="tr-qty">${qty}</td>
+                            <td>${unitName}</td>
+                            <td class="tr-price">${unitPriceInput.val()}</td>
+                            <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
+                        </tr>`;
                         tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
                         tableBody.append($(html));
                     }
@@ -358,7 +375,6 @@
         /*  ======================== End Delete Materials In Table ============================== */
         /*  ======================== Start Save Components Items ============================== */
         saveComponent.on('click', function() {
-            console.log(materialArray)
             $.ajax({
                 url: "{{ route('saveComponent') }}",
                 method: 'post',
@@ -437,20 +453,116 @@
                                     extend: "pdfHtml5",
                                     download: "open",
                                     customize: function(doc) {
+                                        // Define custom styles
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.styles.tableBodyEven.alignment =
-                                            "center";
-                                        doc.styles.tableBodyOdd.alignment =
-                                            "center";
-                                        doc.styles.tableBodyEven
-                                            .lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight =
-                                            "1.5";
-                                        doc.styles.tableFooter.alignment =
-                                            "center";
-                                        doc.styles.tableHeader.alignment =
-                                            "center";
-                                    },
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                                direction: 'rtl' // Right-to-left text direction
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                                direction: 'rtl' // Right-to-left text direction
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                                direction: 'rtl' // Right-to-left text direction
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Right-to-left text direction
+                                            }
+                                        };
+
+                                        // Add a header
+                                        doc.header = {
+                                            text: 'مكونات على لاتحتوى اصناف ', // Arabic text
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                            direction: 'ltr' // Right-to-left text direction
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                                direction: 'rtl' // Right-to-left text direction
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Apply general row styles
+                                        doc.content[1].table.body.forEach(
+                                            row => {
+                                                if (row.length) {
+                                                    row.forEach(
+                                                        cell => {
+                                                            if (cell
+                                                                .text
+                                                            ) {
+                                                                cell.fontSize =
+                                                                    10;
+                                                                cell.alignment =
+                                                                    'center';
+                                                                cell.border = [
+                                                                    false,
+                                                                    false,
+                                                                    false,
+                                                                    true
+                                                                ]; // Bottom border for each cell
+                                                                cell.direction =
+                                                                    'rtl'; // Right-to-left text direction
+                                                            }
+                                                        });
+                                                }
+                                            });
+
+                                        // Adjust column widths
+                                        doc.content[1].table.widths = [50,
+                                            '*', '*', '*'
+                                        ]; // Define widths for each column
+
+                                    }
                                 },
                                 "print",
                             ],
@@ -633,7 +745,6 @@
                 },
                 success: function(data) {
                     if (data.status == true) {
-                        console.log(data.data)
                         let html = `<table class="report_table table table-striped w-100">
                     <thead>
                         <tr>

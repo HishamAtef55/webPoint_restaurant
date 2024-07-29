@@ -100,7 +100,6 @@ Route::group(
                 'as' => 'items.'
             ],
             function () {
-                Route::resource('components', ItemComponentsController::class);
                 Route::get('/{branch}/filter', FilterItemController::class);
             }
         );
@@ -111,6 +110,7 @@ Route::group(
 
 ################################## Component Items ###################################
 Route::group(['prefix' => 'stock', 'controller' => ComponentItemsController::class], function () {
+    Route::get('components_items', 'index')->name('view_components_items');
     Route::post('components_items_get_material', 'get_material')->name('components_items_get_material');
     Route::post('components_items_get_material_in_item', 'get_material_in_item')->name('components_items_get_material_in_item');
     Route::post('saveComponent', 'saveComponent')->name('saveComponent');

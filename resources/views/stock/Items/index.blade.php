@@ -9,7 +9,6 @@
                     <div class="bg-light p-2 rounded shadow">
                         <div class="row">
                             <div class="col-md-12">
-                                <div>
                                     <label class="select-label">اسم الفرع</label>
                                     <select id="branch">
                                         <option disabled selected>اختر الفرع</option>
@@ -17,17 +16,14 @@
                                             <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                                         @endforeach
                                     </select>
-                                </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div>
                                     <label for="items" class="select-label">اسم الصنف</label>
                                     <select class="form-control select2 " id="items">
                                         <option disabled selected>اختر الصنف</option>
                                     </select>
-                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -47,12 +43,10 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div>
                                     <label for="materials" class="select-label">الخامة</label>
                                     <select id="materials">
                                         <option disabled selected>اختر الخامة</option>
                                     </select>
-                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -84,23 +78,25 @@
                                     <th>كود المكون</th>
                                     <th>اسم المكون</th>
                                     <th>الكمية</th>
+                                    <th>الوحدة</th>
                                     <th>التكلفة</th>
-                                    <th></th>
+                                    <th>تحكم</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="not-found">
-                                    <td colspan="6">لا يوجد بيانات</td>
+                                    <td colspan="7">لا يوجد بيانات</td>
                                 </tr>
                             </tbody>
                             <tfoot class="table-dark">
                                 <tr>
-                                    <td>0</td>
+                                    <td></td>
                                     <td>النسبة</td>
                                     <td><input type="number" class="percentage" value="0" disabled> <span
                                             class="fs-5">%</span> </td>
                                     <td>الاجمالى</td>
                                     <td><input type="number" class="total-price" value="0" disabled></td>
+                                    <td></td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -138,6 +134,7 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-5">
+                            <h4 class="modal-title fw-bold" id="exampleModalLabel">From</h4>
                             <div class="custom-form mt-3">
                                 <label class="form-label">اسم الفرع</label>
                                 <select class="form-control select2" id="fromBranch">
