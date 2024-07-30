@@ -23,6 +23,14 @@
         }
     })
 
+    // Common function to handle AJAX errors
+    function handleAjaxError(reject) {
+        let response = $.parseJSON(reject.responseText);
+        $.each(response.errors, function(key, val) {
+            errorMsg(val[0]);
+        });
+    }
+
     $(document).ready(function() {
         let branch = $('#branch');
         let items = $('#items');
@@ -45,7 +53,9 @@
         let componentWithoutItems = $('#componentWithoutItems');
         let reportModal = $('#reportModal');
 
-
+        let spinner = $(
+            '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+        );
 
         /*  ======================== Start All Functions ============================== */
         function getItems(branchVal, itemsDiv, materialDiv) {
@@ -295,7 +305,6 @@
                             price: unitPriceInput.val(),
                             unit: unit
                         });
-                        console.log(materialArray)
                         let html = `<tr id="${materialCode}">
                             <td>${counter + 1}</td>
                             <td>${materialCode}</td>
@@ -411,38 +420,42 @@
         /*  ======================== Start itemsWithOutMaterials ============================== */
         itemWithOutMaterials.on('click', function() {
             let title = $(this).text();
+            let branchVal = branch.val();
+            if (!branchVal) {
+                Toast.fire({
+                    icon: 'error',
+                    title: "برجاء اختيار الفرع",
+                });
+            }
             $.ajax({
-                url: "{{ route('itemsWithOutMaterials') }}",
-                method: 'post',
-                data: {
-                    _token,
-                    branch: branch.val()
-                },
-                success: function(data) {
-                    if (data.status == true) {
+                type: "GET",
+                url: '{{ url('stock/items/components') }}/' + branchVal + '/filter',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status == 200) {
+
                         let html = `<table class="report_table table table-striped w-100">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Cost Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                        data.data.forEach(item => {
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>السعر</th> 
+                                    <th>التكلفة</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                        response.data.forEach(item => {
                             html += `<tr>
-                            <td>${item.id}</td>
-                            <td>${item.name}</td>
-                            <td>${item.price}</td>
-                            <td>${item.cost_price || 0}</td>
-                        </tr>`
+                                <td>${item.id}</td>
+                                <td>${item.name}</td>
+                                <td>${item.price}</td>
+                                <td>${item.cost}</td>
+                            </tr>`;
                         });
                         html += `</tbody></table>`;
                         reportModal.find('.report_content').html(html)
                         $(".report_table").DataTable({
                             scrollY: '405px',
-                            // scrollCollapse: true,
                             paging: false,
                             dom: "<'.row'<'.col-md-6 mb-2'f><'.col-md-6 report_setting text-start mb-2'B><'.col-12 mt-2 text-center't><'.col-12'i>>",
                             buttons: [
@@ -451,6 +464,7 @@
                                 "excel",
                                 {
                                     extend: "pdfHtml5",
+                                    orientation: 'landscape',
                                     download: "open",
                                     customize: function(doc) {
                                         // Define custom styles
@@ -466,7 +480,6 @@
                                                 border: [false, false,
                                                     false, true
                                                 ], // Bottom border
-                                                direction: 'rtl' // Right-to-left text direction
                                             },
                                             tableBodyEven: {
                                                 fontSize: 10,
@@ -477,7 +490,6 @@
                                                 border: [false, false,
                                                     false, true
                                                 ], // Bottom border
-                                                direction: 'rtl' // Right-to-left text direction
                                             },
                                             tableBodyOdd: {
                                                 fontSize: 10,
@@ -488,13 +500,12 @@
                                                 border: [false, false,
                                                     false, true
                                                 ], // Bottom border
-                                                direction: 'rtl' // Right-to-left text direction
                                             },
                                             tableFooter: {
                                                 fontSize: 10,
                                                 alignment: 'center',
                                                 margin: [0, 10, 0, 10],
-                                                direction: 'rtl' // Right-to-left text direction
+                                                direction: 'rtl' // Ensure RTL direction
                                             }
                                         };
 
@@ -507,7 +518,6 @@
                                             margin: [0, 20, 0,
                                                 20
                                             ], // Top, right, bottom, left
-                                            direction: 'ltr' // Right-to-left text direction
                                         };
 
                                         // Add a footer with page numbers
@@ -522,7 +532,6 @@
                                                 margin: [0, 10, 0,
                                                     10
                                                 ], // Top, right, bottom, left
-                                                direction: 'rtl' // Right-to-left text direction
                                             };
                                         };
 
@@ -531,51 +540,60 @@
                                             60
                                         ]; // left, top, right, bottom
 
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
                                         // Apply general row styles
-                                        doc.content[1].table.body.forEach(
-                                            row => {
-                                                if (row.length) {
-                                                    row.forEach(
-                                                        cell => {
-                                                            if (cell
-                                                                .text
-                                                            ) {
-                                                                cell.fontSize =
-                                                                    10;
-                                                                cell.alignment =
-                                                                    'center';
-                                                                cell.border = [
-                                                                    false,
-                                                                    false,
-                                                                    false,
-                                                                    true
-                                                                ]; // Bottom border for each cell
-                                                                cell.direction =
-                                                                    'rtl'; // Right-to-left text direction
-                                                            }
-                                                        });
-                                                }
-                                            });
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
 
                                         // Adjust column widths
-                                        doc.content[1].table.widths = [50,
-                                            '*', '*', '*'
+                                        table.widths = [50, '*', '*',
+                                            '*'
                                         ]; // Define widths for each column
-
                                     }
                                 },
+
                                 "print",
                             ],
                         });
                         reportModal.modal('show')
                         reportModal.find('#labelModel').text(title)
-                    } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.data
-                        });
                     }
                 },
+                error: handleAjaxError,
             });
         });
         /*  ======================== End itemsWithOutMaterials ============================== */
@@ -859,6 +877,9 @@
                                 html += `<li class="material_${material.material_id}">
                             <span>${material.material_id}</span>
                             <span>${material.material_name}</span>
+                            <span style="margin-left:5px;">
+                                <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
+                               </span>
                             <span><input type="number" value="${material.quantity}" class="qty" ${to ? '' : 'readonly'} /></span>
                             <span class="${to ? 'cost' : 'cost d-none'}">${material.cost}</span>
                             <input type="hidden" value="${material.cost / material.quantity}"/>`
@@ -967,7 +988,7 @@
         /*  ============== End Change Qty Components ============== */
         /*  ============== Start Save Transfer ============== */
         $('#save_transfer').on('click', function() {
-            let item_id = toItems.find('option:selected').attr('value');
+            let item_id = toItems.val();
             let branch = toBranch.find('option:selected').attr('value');
             let componentsArray = [];
             toList.find('li').each(function() {
@@ -975,36 +996,45 @@
                 let material_name = $(this).find('span').eq(1).text()
                 let quantity = $(this).find('.qty').val()
                 let cost = $(this).find('.cost').text()
+                let unit = $(this).find('.unit').attr('data-unit')
                 componentsArray.push({
-                    branch,
-                    item_id,
                     material_id,
                     material_name,
                     quantity,
                     cost,
+                    unit
                 })
             });
+            let dataToSend = {
+                branch: branch,
+                item_id: item_id,
+                components: componentsArray
+            };
+            let button = $(this);
+            let originalHtml = button.html();
+            button.html(spinner).prop('disabled', true);
 
             $.ajax({
+                type: 'POST',
                 url: "{{ route('transferMaterial') }}",
-                method: 'post',
-                data: {
-                    _token,
-                    materials: componentsArray
-                },
-                success: function(data) {
+                dataType: 'json',
+                data: dataToSend,
+                success: function(response) {
+                    console.log(response)
+                    return false;
                     if (data.status == true) {
                         $('#transferModal').modal('hide')
                         fromBranch.val(null).trigger("change");
                         fromItems.val(null).trigger("change");
                         toBranch.val(null).trigger("change");
                         toItems.val(null).trigger("change");
-                        Toast.fire({
-                            icon: 'success',
-                            title: data.data
-                        });
+                        successMsg(response.message);
                     }
                 },
+                error: handleAjaxError,
+                complete: function() {
+                    button.html(originalHtml).prop('disabled', false);
+                }
             });
 
         });
@@ -1309,6 +1339,39 @@
             $(this).find('.details-report').html('')
         })
         /*  ============== Start Close Model ============== */
+        $('#transferModal').on('shown.bs.modal', function() {
+            // Reset the "From" branch and items
+            $('#fromBranch').val(null).trigger('change');
+            $('#fromItems').empty(); // Clear the options
+
+            // Clear the "From" components list
+            $('.fromComponents').empty();
+
+            // Reset the "To" branch and items
+            $('#toBranch').val(null).trigger('change');
+            $('#toItems').empty(); // Clear the options
+
+            // Clear the "To" components list
+            $('.toComponents').empty();
+        });
+
+        let isSelect2Open = false;
+
+        $('#toItems').on('select2:opening', function() {
+            isSelect2Open = true;
+        });
+
+        $('#toItems').on('select2:closing', function() {
+            isSelect2Open = false;
+        });
+
+        // Prevent the modal from closing if Select2 is open
+        $('#transferModal').on('hide.bs.modal', function(e) {
+            if (isSelect2Open) {
+                console.log('Modal close prevented due to Select2 dropdown open');
+                e.preventDefault(); // Prevent the modal from closing
+            }
+        });
 
 
     });

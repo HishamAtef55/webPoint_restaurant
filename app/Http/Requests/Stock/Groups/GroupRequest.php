@@ -25,7 +25,7 @@ class GroupRequest extends FormRequest
     {
         return [
             'branch_id' => [
-                'required', 'integer', 'exists:groups,id'
+                'required', 'integer', 'exists:branchs,id'
             ]
         ];
     }

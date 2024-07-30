@@ -6,10 +6,11 @@ use App\Models\menu;
 use App\Models\User;
 use App\Models\discounts;
 use App\Models\Item_Details;
-use App\Models\Stock\Material;
 use App\Models\Stock\Section;
+use App\Models\Stock\Material;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Branch extends Model
@@ -87,7 +88,15 @@ class Branch extends Model
         return $this->hasMany(Material::class, 'branch_id', 'id');
     }
 
-
+    /**
+     * mainComponent
+     *
+     * @return BelongsTo
+     */
+    public function mainComponent(): BelongsTo
+    {
+        return $this->belongsTo(MainComponents::class, 'id', 'branch');
+    }
 
 
     public function Menus()

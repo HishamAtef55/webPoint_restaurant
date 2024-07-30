@@ -16,6 +16,7 @@ use App\Http\Controllers\Stock\ComponentDetailsItemController;
 use App\Http\Controllers\Stock\Items\ItemComponentsController;
 use App\Http\Controllers\Stock\Material\FilterSectionController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
+use App\Http\Controllers\Stock\Items\FilterItemComponentController;
 
 Route::group(
     [
@@ -101,6 +102,7 @@ Route::group(
             ],
             function () {
                 Route::get('/{branch}/filter', FilterItemController::class);
+                Route::get('/components/{branch}/filter', FilterItemComponentController::class);
             }
         );
     }
@@ -117,7 +119,6 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentItemsController::cla
     Route::post('deleteComponent', 'deleteComponent')->name('deleteComponent');
     Route::post('transfer_material', 'transfer_material')->name('transferMaterial');
     // This is Routs Reports in page
-    Route::post('itemsWithOutMaterials', 'itemsWithOutMaterials')->name('itemsWithOutMaterials');
     Route::post('printComponents', 'printComponents')->name('printComponents');
     Route::post('printItems', 'printItems')->name('printItems');
     Route::post('printComponent', 'printComponent')->name('printComponent');

@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
-use App\Models\Branch;
 use App\Models\Item;
-use App\Models\MainComponents;
-use App\Models\MainGroup;
+use App\Models\Units;
+use App\Models\Branch;
 use App\Models\material;
+use App\Models\MainGroup;
+use Illuminate\Http\Request;
+use App\Models\MainComponents;
 use App\Models\ComponentsItems;
 use App\Models\MaterialSections;
 use App\Models\Stock\StockGroup;
-use App\Models\Units;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Stock\Material as StockMaterial;
+use App\Http\Requests\Stock\Item\TransferItemComponentRequest;
 
 class ComponentItemsController extends Controller
 {
@@ -93,8 +95,12 @@ class ComponentItemsController extends Controller
     }
 
 
-    public function transfer_material(Request $request)
-    {
+    public function transfer_material(
+        Request $request
+    ) {
+        return response()->json([
+            'request' => $request->all()
+        ]);
         $chekMain = false;
         $sum = 0;
         $main = array();
@@ -133,32 +139,6 @@ class ComponentItemsController extends Controller
         return ['status' => true, 'data' => 'تم تكرار المكونات بنجاح'];
     }
 
-
-
-    public function itemsWithOutMaterials(Request $request)
-    {
-        if ($request->branch) {
-            $newData = [];
-            $c = 0;
-            $items = Item::with('custom_materials')->where(['branch_id' => $request->branch])->get();
-            $this->status = true;
-            foreach ($items as $item) {
-                if ($item->custom_materials == null) {
-                    $newData[$c]['name'] = $item->name;
-                    $newData[$c]['id'] = $item->id;
-                    $newData[$c]['price'] = $item->price;
-                    $newData[$c]['cost_price'] = $item->cost_price;
-                    $c++;
-                }
-            }
-        } else {
-            $item = 'select branch please';
-        }
-        return response()->json([
-            'status' => $this->status,
-            'data' => $newData,
-        ]);
-    }
     public function printComponents(Request $request)
     {
         $counter = 0;
@@ -195,7 +175,7 @@ class ComponentItemsController extends Controller
         }
         if ($request->branch && $request->materials) {
             $this->status = true;
-            $data = material::limit(1)->with(['components' => function ($query) {
+            $data = StockMaterial::limit(1)->with(['components' => function ($query) {
                 $query->select(['item_id', 'quantity', 'cost', 'material_id']);
             }, 'components.item'])->where(['code' => $request->materials])->select(['name', 'code'])->first();
         }
