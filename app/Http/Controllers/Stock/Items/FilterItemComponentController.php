@@ -24,9 +24,9 @@ class FilterItemComponentController extends Controller
     ): AnonymousResourceCollection {
 
         return ItemResource::collection(
-            Item::whereNotIn(
-                'id',[$branch->mainComponent->pluck('item')]
-            )->get()
+            Item::doesntHave('material_components')
+                ->whereBelongsTo($branch)
+                ->get()
         )->additional([
             'message' => null,
             'status' => Response::HTTP_OK

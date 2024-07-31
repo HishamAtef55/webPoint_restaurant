@@ -685,10 +685,10 @@
                         let html = `<table class="report_table table table-striped w-100">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>quantity</th>
-                            <th>Cost</th>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الكمية</th>
+                            <th>التكلفة</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -697,7 +697,7 @@
                             <td>${component.item_id}</td>
                             <td>${component.item.name}</td>
                             <td>${component.quantity}</td>
-                            <td>${component.cost || 0}</td>
+                            <td>${component.cost}</td>
                         </tr>`
                         });
                         html += `</tbody></table>`;
@@ -713,25 +713,126 @@
                                 "excel",
                                 {
                                     extend: "pdfHtml5",
+                                    orientation: 'landscape',
                                     download: "open",
-                                    messageTop: function() {
-                                        return `${data.data.name} ( ${data.data.code} ) `
-                                    },
                                     customize: function(doc) {
-                                        doc.defaultStyle.font = 'Cairo';
-                                        doc.styles.tableBodyEven.alignment =
-                                            "center";
-                                        doc.styles.tableBodyOdd.alignment =
-                                            "center";
-                                        doc.styles.tableBodyEven
-                                            .lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight =
-                                            "1.5";
-                                        doc.styles.tableFooter.alignment =
-                                            "center";
-                                        doc.styles.tableHeader.alignment =
-                                            "center";
-                                    },
+                                        // Define custom styles
+                                        doc.defaultStyle.font = "Cairo";
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Ensure RTL direction
+                                            }
+                                        };
+
+                                        // Add a header
+                                        doc.header = {
+                                            text: 'مكون طباعة', // Arabic text
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
+                                        // Apply general row styles
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
+
+                                        // Adjust column widths
+                                        table.widths = [50, '*', '*',
+                                            '*'
+                                        ]; // Define widths for each column
+                                    }
                                 },
                                 "print",
                             ],
@@ -766,10 +867,10 @@
                         let html = `<table class="report_table table table-striped w-100">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>quantity</th>
-                            <th>Cost</th>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الكمية</th>
+                            <th>التكلفة</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -778,7 +879,7 @@
                             <td>${component.material_id}</td>
                             <td>${component.material_name}</td>
                             <td>${component.quantity}</td>
-                            <td>${component.cost || 0}</td>
+                            <td>${component.cost}</td>
                         </tr>`
                         });
                         html += `</tbody></table>`;
@@ -794,25 +895,126 @@
                                 "excel",
                                 {
                                     extend: "pdfHtml5",
+                                    orientation: 'landscape',
                                     download: "open",
-                                    messageTop: function() {
-                                        return `${data.data[0].name} ( ${data.data[0].id} ) `
-                                    },
                                     customize: function(doc) {
-                                        doc.defaultStyle.font = 'Cairo';
-                                        doc.styles.tableBodyEven.alignment =
-                                            "center";
-                                        doc.styles.tableBodyOdd.alignment =
-                                            "center";
-                                        doc.styles.tableBodyEven
-                                            .lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight =
-                                            "1.5";
-                                        doc.styles.tableFooter.alignment =
-                                            "center";
-                                        doc.styles.tableHeader.alignment =
-                                            "center";
-                                    },
+                                        // Define custom styles
+                                        doc.defaultStyle.font = "Cairo";
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Ensure RTL direction
+                                            }
+                                        };
+
+                                        // Add a header
+                                        doc.header = {
+                                            text: 'صنف طباعة', // Arabic text
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
+                                        // Apply general row styles
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
+
+                                        // Adjust column widths
+                                        table.widths = [50, '*', '*',
+                                            '*'
+                                        ]; // Define widths for each column
+                                    }
                                 },
                                 "print",
                             ],
@@ -1019,16 +1221,17 @@
                 url: "{{ route('transferMaterial') }}",
                 dataType: 'json',
                 data: dataToSend,
-                success: function(response) {
-                    console.log(response)
-                    return false;
+                success: function(data) {
                     if (data.status == true) {
                         $('#transferModal').modal('hide')
                         fromBranch.val(null).trigger("change");
                         fromItems.val(null).trigger("change");
                         toBranch.val(null).trigger("change");
                         toItems.val(null).trigger("change");
-                        successMsg(response.message);
+                        Toast.fire({
+                            icon: 'success',
+                            title: data.data
+                        });
                     }
                 },
                 error: handleAjaxError,

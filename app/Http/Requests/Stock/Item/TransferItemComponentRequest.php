@@ -4,6 +4,7 @@ namespace App\Http\Requests\Stock\Item;
 
 use App\Enums\Unit;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TransferItemComponentRequest extends FormRequest
@@ -34,7 +35,7 @@ class TransferItemComponentRequest extends FormRequest
             'components.*.material_name' => ['required', 'string'],
             'components.*.quantity' => ['required', 'integer', 'min:1'],
             'components.*.cost' => ['required', 'numeric', 'min:0'],
-            'components.*.unit' => ['required', 'string', Rule::enum(Unit::class)]
+            'components.*.unit' => ['required', 'string', new Enum(Unit::class)]
         ];
     }
 

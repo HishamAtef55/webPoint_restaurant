@@ -96,45 +96,46 @@ class ComponentItemsController extends Controller
 
 
     public function transfer_material(
-        Request $request
+        TransferItemComponentRequest $request
     ) {
-        return response()->json([
-            'request' => $request->all()
-        ]);
-        $chekMain = false;
-        $sum = 0;
-        $main = array();
-        $addItem = array();
-        foreach ($request->materials as $material) {
-            if (MainComponents::limit(1)->where(['branch' => $material['branch'], 'item' => $material['item_id']])->count() == 0) {
-                $chekMain = true;
-            }
-            $addItem['branch'] = $material['branch'];
-            $addItem['item'] = $material['item_id'];
-            $addItem['quantity'] = 1;
+        foreach ($request->validated()['item_id'] as $key => $item) {
 
-            if (ComponentsItems::limit(1)->where(['branch' => $material['branch'], 'item_id' => $material['item_id'], 'material_id' => $material['material_id']])->count() == 0) {
-                $main['branch'] = $material['branch'];
-                $main['item_id'] = $material['item_id'];
-                $main['material_id'] = $material['material_id'];
-                $main['material_name'] = $material['material_name'];
-                $main['quantity'] = $material['quantity'];
-                $main['cost'] = $material['cost'];
-                $sum += $material['cost'];
-                $addMaterial = ComponentsItems::create($main);
+            $chekMain = false;
+            $sum = 0;
+            $main = array();
+            $addItem = array();
+            foreach ($request->components as $material) {
+                if (MainComponents::limit(1)->where(['branch' => $request->validated()['branch'], 'item' =>  $item])->count() == 0) {
+                    $chekMain = true;
+                }
+                $addItem['branch'] = $request->validated()['branch'];
+                $addItem['item'] = $item;
+                $addItem['quantity'] = 1;
+
+                if (ComponentsItems::limit(1)->where(['branch' => $request->validated()['branch'], 'item_id' =>  $item, 'material_id' => $material['material_id']])->count() == 0) {
+                    $main['branch'] = $request->validated()['branch'];
+                    $main['item_id'] = $item;
+                    $main['material_id'] = $material['material_id'];
+                    $main['material_name'] = $material['material_name'];
+                    $main['quantity'] = $material['quantity'];
+                    $main['cost'] = $material['cost'];
+                    $main['unit'] = $material['unit'];
+                    $sum += $material['cost'];
+                    $addMaterial = ComponentsItems::create($main);
+                }
             }
-        }
-        $getItem = Item::limit(1)->where(['branch_id' => $addItem['branch'], 'id' => $addItem['item']])->select(['price'])->first();
-        $addItem['cost'] = $sum;
-        $addItem['percentage'] = number_format($sum / $getItem->price * 100, 2, '.', '');
-        if ($chekMain) {
-            $addMain = MainComponents::create($addItem);
-        } else {
-            $main_cost = MainComponents::limit(1)->where(['branch' => $material['branch'], 'item' => $material['item_id']])->select(['cost', 'percentage', 'quantity'])->first();
-            MainComponents::limit(1)->where(['branch' => $material['branch'], 'item' => $material['item_id']])->update([
-                'cost' => $addItem['cost'] + $main_cost->cost,
-                'percentage' => $addItem['percentage'] + $main_cost->percentage,
-            ]);
+            $getItem = Item::limit(1)->where(['branch_id' => $addItem['branch'], 'id' => $addItem['item']])->select(['price'])->first();
+            $addItem['cost'] = $sum;
+            $addItem['percentage'] = number_format($sum / $getItem->price * 100, 2, '.', '');
+            if ($chekMain) {
+                $addMain = MainComponents::create($addItem);
+            } else {
+                $main_cost = MainComponents::limit(1)->where(['branch' => $request->validated()['branch'], 'item' =>  $item])->select(['cost', 'percentage', 'quantity'])->first();
+                MainComponents::limit(1)->where(['branch' => $request->validated()['branch'], 'item' =>  $item])->update([
+                    'cost' => $addItem['cost'] + $main_cost->cost,
+                    'percentage' => $addItem['percentage'] + $main_cost->percentage,
+                ]);
+            }
         }
         return ['status' => true, 'data' => 'تم تكرار المكونات بنجاح'];
     }
