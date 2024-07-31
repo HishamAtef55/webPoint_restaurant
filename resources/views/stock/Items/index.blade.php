@@ -9,25 +9,21 @@
                     <div class="bg-light p-2 rounded shadow">
                         <div class="row">
                             <div class="col-md-12">
-                                <div>
-                                    <label class="select-label">اسم الفرع</label>
-                                    <select id="branch">
-                                        <option disabled selected>اختر الفرع</option>
-                                        @foreach ($branchs as $branch)
-                                            <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                <label class="select-label">اسم الفرع</label>
+                                <select id="branch">
+                                    <option disabled selected>اختر الفرع</option>
+                                    @foreach ($branchs as $branch)
+                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div>
-                                    <label for="items" class="select-label">اسم الصنف</label>
-                                    <select class="form-control select2 " id="items">
-                                        <option disabled selected>اختر الصنف</option>
-                                    </select>
-                                </div>
+                                <label for="items" class="select-label">اسم الصنف</label>
+                                <select class="form-control select2 " id="items">
+                                    <option disabled selected>اختر الصنف</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -47,12 +43,10 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <div>
-                                    <label for="materials" class="select-label">الخامة</label>
-                                    <select id="materials">
-                                        <option disabled selected>اختر الخامة</option>
-                                    </select>
-                                </div>
+                                <label for="materials" class="select-label">الخامة</label>
+                                <select id="materials">
+                                    <option disabled selected>اختر الخامة</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -84,23 +78,25 @@
                                     <th>كود المكون</th>
                                     <th>اسم المكون</th>
                                     <th>الكمية</th>
+                                    <th>الوحدة</th>
                                     <th>التكلفة</th>
-                                    <th></th>
+                                    <th>تحكم</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr class="not-found">
-                                    <td colspan="6">لا يوجد بيانات</td>
+                                    <td colspan="7">لا يوجد بيانات</td>
                                 </tr>
                             </tbody>
                             <tfoot class="table-dark">
                                 <tr>
-                                    <td>0</td>
+                                    <td></td>
                                     <td>النسبة</td>
                                     <td><input type="number" class="percentage" value="0" disabled> <span
                                             class="fs-5">%</span> </td>
                                     <td>الاجمالى</td>
                                     <td><input type="number" class="total-price" value="0" disabled></td>
+                                    <td></td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -138,8 +134,9 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-5">
-                            <div class="custom-form mt-3">
-                                <label class="form-label">اسم الفرع</label>
+                            <p class="text-center fw-bold">From</p>
+                            <div class="custom-form mb-3">
+                                <label class="form-label mb-1">اسم الفرع</label>
                                 <select class="form-control select2" id="fromBranch">
                                     <option disabled selected></option>
                                     @foreach ($branchs as $branch)
@@ -147,7 +144,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="custom-form mt-3">
+                            <div class="custom-form mb-3">
                                 <label for="fromItems">بيانات الاصناف</label>
                                 <select class="form-control select2" id="fromItems"></select>
                             </div>
@@ -157,8 +154,9 @@
                             <button class="btn dark-btn transAll">TransAll</button>
                         </div>
                         <div class="col-md-5">
-                            <div class="custom-form mt-3">
-                                <label class="form-label">اسم الفرع</label>
+                            <p class="text-center fw-bold">To</p>
+                            <div class="custom-form mb-3">
+                                <label class="form-label mb-1">اسم الفرع</label>
                                 <select class="form-control select2" id="toBranch">
                                     <option disabled selected></option>
                                     @foreach ($branchs as $branch)
@@ -166,9 +164,9 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="custom-form mt-3">
+                            <div class="custom-form mb-3">
                                 <label for="toItems"> اسم الصنف </label>
-                                <select class="form-control select2" id="toItems"></select>
+                                <select class="form-control select2" id="toItems" multiple="multiple"></select>
                             </div>
                             <ul class='toComponents'></ul>
                         </div>

@@ -3,6 +3,7 @@
 use App\Models\materialRecipe;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Stock\MaterialOperations;
+use App\Http\Controllers\Stock\PurchasesController;
 use App\Http\Controllers\Stock\Stores\StoreController;
 use App\Http\Controllers\Stock\ComponentItemsController;
 use App\Http\Controllers\Stock\MaterialRecipeController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Stock\ComponentDetailsItemController;
 use App\Http\Controllers\Stock\Items\ItemComponentsController;
 use App\Http\Controllers\Stock\Material\FilterSectionController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
+use App\Http\Controllers\Stock\Items\FilterItemComponentController;
 
 Route::group(
     [
@@ -100,8 +102,8 @@ Route::group(
                 'as' => 'items.'
             ],
             function () {
-                Route::resource('components', ItemComponentsController::class);
                 Route::get('/{branch}/filter', FilterItemController::class);
+                Route::get('/components/{branch}/filter', FilterItemComponentController::class);
             }
         );
     }
@@ -111,13 +113,13 @@ Route::group(
 
 ################################## Component Items ###################################
 Route::group(['prefix' => 'stock', 'controller' => ComponentItemsController::class], function () {
+    Route::get('components_items', 'index')->name('view_components_items');
     Route::post('components_items_get_material', 'get_material')->name('components_items_get_material');
     Route::post('components_items_get_material_in_item', 'get_material_in_item')->name('components_items_get_material_in_item');
     Route::post('saveComponent', 'saveComponent')->name('saveComponent');
     Route::post('deleteComponent', 'deleteComponent')->name('deleteComponent');
     Route::post('transfer_material', 'transfer_material')->name('transferMaterial');
     // This is Routs Reports in page
-    Route::post('itemsWithOutMaterials', 'itemsWithOutMaterials')->name('itemsWithOutMaterials');
     Route::post('printComponents', 'printComponents')->name('printComponents');
     Route::post('printItems', 'printItems')->name('printItems');
     Route::post('printComponent', 'printComponent')->name('printComponent');

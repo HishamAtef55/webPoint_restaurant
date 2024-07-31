@@ -2,22 +2,30 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
-use App\Models\Branch;
 use App\Models\Item;
-use App\Models\MainComponents;
-use App\Models\MainGroup;
+use App\Models\Units;
+use App\Models\Branch;
 use App\Models\material;
+use App\Models\MainGroup;
+use Illuminate\Http\Request;
+use App\Models\MainComponents;
 use App\Models\ComponentsItems;
 use App\Models\MaterialSections;
 use App\Models\Stock\StockGroup;
-use App\Models\Units;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Stock\Material as StockMaterial;
+use App\Http\Requests\Stock\Item\TransferItemComponentRequest;
 
 class ComponentItemsController extends Controller
 {
     public $status = false;
 
+
+    public function index()
+    {
+        $branchs = Branch::get();
+        return view('stock.Items.index', compact('branchs'));
+    }
     public function saveComponent(Request $request)
     {
         if ($request->materialArray != null) {
@@ -51,6 +59,7 @@ class ComponentItemsController extends Controller
                         'material_name' => $material['name'],
                         'cost'        => $material['price'],
                         'quantity'    => $material['quantity'],
+                        'unit'    => $material['unit'],
                     ]);
                 }
             }
@@ -86,72 +95,51 @@ class ComponentItemsController extends Controller
     }
 
 
-    public function transfer_material(Request $request)
-    {
-        $chekMain = false;
-        $sum = 0;
-        $main = array();
-        $addItem = array();
-        foreach ($request->materials as $material) {
-            if (MainComponents::limit(1)->where(['branch' => $material['branch'], 'item' => $material['item_id']])->count() == 0) {
-                $chekMain = true;
-            }
-            $addItem['branch'] = $material['branch'];
-            $addItem['item'] = $material['item_id'];
-            $addItem['quantity'] = 1;
+    public function transfer_material(
+        TransferItemComponentRequest $request
+    ) {
+        foreach ($request->validated()['item_id'] as $key => $item) {
 
-            if (ComponentsItems::limit(1)->where(['branch' => $material['branch'], 'item_id' => $material['item_id'], 'material_id' => $material['material_id']])->count() == 0) {
-                $main['branch'] = $material['branch'];
-                $main['item_id'] = $material['item_id'];
-                $main['material_id'] = $material['material_id'];
-                $main['material_name'] = $material['material_name'];
-                $main['quantity'] = $material['quantity'];
-                $main['cost'] = $material['cost'];
-                $sum += $material['cost'];
-                $addMaterial = ComponentsItems::create($main);
+            $chekMain = false;
+            $sum = 0;
+            $main = array();
+            $addItem = array();
+            foreach ($request->components as $material) {
+                if (MainComponents::limit(1)->where(['branch' => $request->validated()['branch'], 'item' =>  $item])->count() == 0) {
+                    $chekMain = true;
+                }
+                $addItem['branch'] = $request->validated()['branch'];
+                $addItem['item'] = $item;
+                $addItem['quantity'] = 1;
+
+                if (ComponentsItems::limit(1)->where(['branch' => $request->validated()['branch'], 'item_id' =>  $item, 'material_id' => $material['material_id']])->count() == 0) {
+                    $main['branch'] = $request->validated()['branch'];
+                    $main['item_id'] = $item;
+                    $main['material_id'] = $material['material_id'];
+                    $main['material_name'] = $material['material_name'];
+                    $main['quantity'] = $material['quantity'];
+                    $main['cost'] = $material['cost'];
+                    $main['unit'] = $material['unit'];
+                    $sum += $material['cost'];
+                    $addMaterial = ComponentsItems::create($main);
+                }
             }
-        }
-        $getItem = Item::limit(1)->where(['branch_id' => $addItem['branch'], 'id' => $addItem['item']])->select(['price'])->first();
-        $addItem['cost'] = $sum;
-        $addItem['percentage'] = number_format($sum / $getItem->price * 100, 2, '.', '');
-        if ($chekMain) {
-            $addMain = MainComponents::create($addItem);
-        } else {
-            $main_cost = MainComponents::limit(1)->where(['branch' => $material['branch'], 'item' => $material['item_id']])->select(['cost', 'percentage', 'quantity'])->first();
-            MainComponents::limit(1)->where(['branch' => $material['branch'], 'item' => $material['item_id']])->update([
-                'cost' => $addItem['cost'] + $main_cost->cost,
-                'percentage' => $addItem['percentage'] + $main_cost->percentage,
-            ]);
+            $getItem = Item::limit(1)->where(['branch_id' => $addItem['branch'], 'id' => $addItem['item']])->select(['price'])->first();
+            $addItem['cost'] = $sum;
+            $addItem['percentage'] = number_format($sum / $getItem->price * 100, 2, '.', '');
+            if ($chekMain) {
+                $addMain = MainComponents::create($addItem);
+            } else {
+                $main_cost = MainComponents::limit(1)->where(['branch' => $request->validated()['branch'], 'item' =>  $item])->select(['cost', 'percentage', 'quantity'])->first();
+                MainComponents::limit(1)->where(['branch' => $request->validated()['branch'], 'item' =>  $item])->update([
+                    'cost' => $addItem['cost'] + $main_cost->cost,
+                    'percentage' => $addItem['percentage'] + $main_cost->percentage,
+                ]);
+            }
         }
         return ['status' => true, 'data' => 'تم تكرار المكونات بنجاح'];
     }
 
-
-    
-    public function itemsWithOutMaterials(Request $request)
-    {
-        if ($request->branch) {
-            $newData = [];
-            $c = 0;
-            $items = Item::with('custom_materials')->where(['branch_id' => $request->branch])->get();
-            $this->status = true;
-            foreach ($items as $item) {
-                if ($item->custom_materials == null) {
-                    $newData[$c]['name'] = $item->name;
-                    $newData[$c]['id'] = $item->id;
-                    $newData[$c]['price'] = $item->price;
-                    $newData[$c]['cost_price'] = $item->cost_price;
-                    $c++;
-                }
-            }
-        } else {
-            $item = 'select branch please';
-        }
-        return response()->json([
-            'status' => $this->status,
-            'data' => $newData,
-        ]);
-    }
     public function printComponents(Request $request)
     {
         $counter = 0;
@@ -188,7 +176,7 @@ class ComponentItemsController extends Controller
         }
         if ($request->branch && $request->materials) {
             $this->status = true;
-            $data = material::limit(1)->with(['components' => function ($query) {
+            $data = StockMaterial::limit(1)->with(['components' => function ($query) {
                 $query->select(['item_id', 'quantity', 'cost', 'material_id']);
             }, 'components.item'])->where(['code' => $request->materials])->select(['name', 'code'])->first();
         }

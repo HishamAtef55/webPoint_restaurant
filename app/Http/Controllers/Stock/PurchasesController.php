@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\Models\material;
-use App\Models\materialLog;
-use App\Models\operationsDetails;
-use App\Models\sectionCost;
-use App\Models\sectionPurchases;
-use App\Models\sectionPurchasesDetails;
-use App\Models\stock_unit;
-use App\Models\stocksection;
-use App\Models\storeCost;
-use App\Models\storePurchases;
-use App\Models\storePurchasesDetails;
 use App\Models\Stores;
+use App\Models\material;
+use App\Models\storeCost;
 use App\Models\Suppliers;
+use App\Models\stock_unit;
+use App\Models\materialLog;
+use App\Models\sectionCost;
+use App\Models\Stock\Store;
+use App\Models\stocksection;
 use App\Traits\MainFunction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Stock\Section;
+use App\Models\Stock\Supplier;
+use App\Models\storePurchases;
+use App\Models\sectionPurchases;
+use App\Models\operationsDetails;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\storePurchasesDetails;
+use App\Models\sectionPurchasesDetails;
 
 class PurchasesController extends Controller
 {
@@ -43,16 +46,16 @@ class PurchasesController extends Controller
 
     public function index(){
         $serial = $this->getSerial('store');
-        $stores    = Stores::get()->all();
-        $branches = Branch::get()->all();
-        $suppliers = Suppliers::get()->all();
+        $stores    = Store::get();
+        $branches = Branch::get();
+        $suppliers = Supplier::get();
         return view('stock.stock.purchases',compact(['serial','stores','branches','suppliers']));
     }
     public function changeType(Request $request){
         return ['serial'=>$this->getSerial($request->type)];
     }
     public function changeBranch(Request $request){
-        $sections = stocksection::where(['branch'=>$request->branch])->get();
+        $sections = Section::where(['branch'=>$request->branch])->get();
         return ['sections'=>$sections];
     }
     public function changeSection(Request $request){
