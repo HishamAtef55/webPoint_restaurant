@@ -151,24 +151,24 @@
                         let html = '';
                         let count = 1;
                         tableBody.html('');
-                        if (!data.materials) {
-                            tableBody.html(
-                                '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
-                            );
-                            $('.percentage').val(0)
-                            $('.total-price').val(0)
-                            return;
-                        }
-                        data.materials.materials.forEach((material) => {
-                            html += `<tr id="${material.material_id}">
-                        <td>${count}</td>
-                        <td>${material.material_id}</td>
-                        <td>${material.material_name}</td>
-                        <td class="tr-qty">${material.quantity}</td>
-                        <td>${unitToArabic[material.unit]}</td>
-                        <td class="tr-price">${material.cost}</td>
-                        <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
-                    </tr>`;
+                            if (!data.materials || !data.materials.materials.length) {
+                                tableBody.html(
+                                    '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                                );
+                                $('.percentage').val(0)
+                                $('.total-price').val(0)
+                                return;
+                            }
+                                data.materials.materials.forEach((material) => {
+                                    html += `<tr id="${material.material_id}">
+                                <td>${count}</td>
+                                <td>${material.material_id}</td>
+                                <td>${material.material_name}</td>
+                                <td class="tr-qty">${material.quantity}</td>
+                                <td>${unitToArabic[material.unit]}</td>
+                                <td class="tr-price">${material.cost}</td>
+                                <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
+                            </tr>`;
                             materialArray.push({
                                 code: material.material_id,
                                 name: material.material_name,
@@ -297,7 +297,6 @@
                             }
                         });
                     } else {
-                        console.log('vfdbfbf');
                         materialArray.push({
                             code: materialCode,
                             name: materialName,
@@ -1571,7 +1570,6 @@
         // Prevent the modal from closing if Select2 is open
         $('#transferModal').on('hide.bs.modal', function(e) {
             if (isSelect2Open) {
-                console.log('Modal close prevented due to Select2 dropdown open');
                 e.preventDefault(); // Prevent the modal from closing
             }
         });

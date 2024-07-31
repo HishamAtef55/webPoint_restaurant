@@ -1,5 +1,28 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
+    // Common function to handle AJAX errors
+    function handleAjaxError(reject) {
+        let response = $.parseJSON(reject.responseText);
+        $.each(response.errors, function(key, val) {
+            errorMsg(val[0]);
+        });
+    }
+
+    const unitToArabic = {
+        'ml': 'مللى',
+        'gm': 'جرام',
+        'number': 'عدد'
+        // Add other units as needed
+    };
+
+    // handle csrf request header
+
+    $.ajaxSetup({
+        headers: {
+            "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
+        }
+    })
+
     $(document).ready(function() {
         let branch = $('#branch');
         let items = $('#items');
@@ -21,8 +44,11 @@
         let printDetails = $('#printDetails');
         let printComponent = $('#print_component');
         let reportModal = $('#reportModal');
+        let tableBody = $('.table-materials tbody');
 
-
+        let spinner = $(
+            '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+        );
 
 
         /*  ======================== Start All Functions ============================== */
@@ -31,7 +57,6 @@
                 url: "{{ route('getItemDetails') }}",
                 method: 'post',
                 data: {
-                    _token,
                     branch: branchVal,
                 },
                 success: function(data) {
@@ -43,12 +68,11 @@
                                 `<option value="${item.id}" data-price="${item.price}" >${item.name}</option>`
                         });
                         data.materials.forEach((material) => {
-                            console.log(material)
                             materialHtml +=
                                 `<option value="${material.id}"
-                                 data-serial="${material.serial_nr}"
                                  data-cost="${material.cost}"
                                  data-unit="${material.unit.sub_unit.name_ar}"
+                                 data-unit-name-en="${material.unit.sub_unit.name_en}"
                                  data-unit-value="${material.unit.sub_unit.value}"
                                  
                                  >${material.name}</option>`
@@ -137,68 +161,62 @@
         /*  ======================== Start Get Material ============================== */
         details.on('change', function() {
             let price = $(this).find('option:selected').attr('data-price');
-            let tableBody = $('.table-materials tbody');
             materialArray = [];
-            console.log($(this).val())
-            if ($(this).val()) {
-                $.ajax({
-                    url: "{{ route('getMaterialsInDetails') }}",
-                    method: 'post',
-                    data: {
-                        _token,
-                        item: items.val(),
-                        branch: branch.val(),
-                        details: details.val()
-                    },
-                    success: function(data) {
-                        if (data.status == true) {
-                            itemPrice.val(price);
-                            productQty.focus().select();
-                            let html = '';
-                            let count = 1;
+
+
+            $.ajax({
+                url: "{{ route('getMaterialsInDetails') }}",
+                method: 'post',
+                data: {
+                    _token,
+                    item: items.val(),
+                    branch: branch.val(),
+                    details: details.val()
+                },
+                success: function(data) {
+                    if (data.status == true) {
+                        itemPrice.val(price)
+                        productQty.focus().select()
+                        let html = '';
+                        let count = 1;
+                        tableBody.html('');
+                        if (!data.materials || !data.materials.materials.length) {
                             tableBody.html(
-                                '<tr class="not-found"> <td colspan="6">لا يوجد بيانات</td></tr>'
-                                );
-                            $('.percentage').val(0);
-                            $('.total-price').val(0);
-                            getRowsNumber();
-                            materialArray = [];
-                            if (data.materials) {
-                                data.materials.materials.forEach((material) => {
-                                    html += `<tr id="${material.material_id}">
-                                <td>${count}</td>
-                                <td>${material.material_id}</td>
-                                <td>${material.material_name}</td>
-                                <td class="tr-qty">${material.quantity}</td>
-                                <td class="tr-price">${material.cost}</td>
-                                <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
-                            </tr>`;
-                                    materialArray.push({
-                                        code: material.material_id,
-                                        name: material.material_name,
-                                        quantity: material.quantity,
-                                        price: material.cost
-                                    });
-                                    count++
-                                });
-                                $('.percentage').val(data.materials.percentage)
-                                $('.total-price').val(data.materials.cost)
-                                $('#product_qty').val(data.materials.quantity)
-                                tableBody.append($(html));
-                                getRowsNumber()
-                            }
+                                '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                            );
+                            $('.percentage').val(0)
+                            $('.total-price').val(0)
+                            return;
                         }
-                    },
-                });
-            } else {
-                itemPrice.val('');
-                productQty.focus().select();
-                tableBody.empty();
-                $('.percentage').val(0);
-                $('.total-price').val(0);
-                getRowsNumber();
-                materialArray = [];
-            }
+                        data.materials.materials.forEach((material) => {
+                            html += `<tr id="${material.material_id}">
+                        <td>${count}</td>
+                        <td>${material.material_id}</td>
+                        <td>${material.material_name}</td>
+                        <td class="tr-qty">${material.quantity}</td>
+                        <td>${unitToArabic[material.unit]}</td>
+                        <td class="tr-price">${material.cost}</td>
+                        <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
+                    </tr>`;
+                            materialArray.push({
+                                code: material.material_id,
+                                name: material.material_name,
+                                quantity: material.quantity,
+                                price: material.cost,
+                                unit: material.unit
+                            });
+                            count++
+                        });
+                        $('.percentage').val(data.materials.percentage)
+                        $('.total-price').val(data.materials.cost)
+                        $('#product_qty').val(data.materials.quantity)
+                        tableBody.append($(html));
+                        getRowsNumber()
+
+                    }
+                },
+
+            });
         });
         /*  ======================== End Get Material ============================== */
         productQty.on('keyup', function(e) {
@@ -238,8 +256,7 @@
         /*  ======================== Start Material Details ============================== */
         materials.on('change', function() {
             let cost = $(this).find('option:selected').attr('data-cost');
-            let unitName = $(this).find('option:selected').attr('data-unit-name');
-            let unitSize = $(this).find('option:selected').attr('data-unit-size');
+            let unitName = $(this).find('option:selected').attr('data-unit');
 
             unitLabel.text(unitName);
             setTimeout(() => {
@@ -258,6 +275,7 @@
             totalPriceInput.val(totalPrice.toFixed(2));
 
             let percentage = (totalPrice / itemPrice.val()) * 100;
+
             percentageInput.val(percentage.toFixed(2));
         }
 
@@ -270,8 +288,9 @@
         /*  ======================== Start Add Material In Table ============================== */
         unitInput.on('keyup', function(e) {
             let cost = materials.find('option:selected').attr('data-cost');
-            let unitName = materials.find('option:selected').attr('data-unit-name');
-            let unitSize = materials.find('option:selected').attr('data-unit-size');
+            let unitName = materials.find('option:selected').attr('data-unit');
+            let unit = materials.find('option:selected').attr('data-unit-name-en');
+            let unitSize = materials.find('option:selected').attr('data-unit-value');
             let materialCode = materials.find('option:selected').attr('value');
             let materialName = materials.find('option:selected').text();
             let unitPrice = cost / unitSize;
@@ -282,7 +301,24 @@
 
             if (materials.val()) {
                 unitPriceInput.val((qty * unitPrice).toFixed(2))
-                if (e.keyCode === 13 && items.val() && $(this).val()) {
+                if (e.keyCode === 13) {
+                    if (!items.val()) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'يجب اختيار صنف'
+                        });
+                        return false
+                    }
+                    if (!$(this).val()) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'يجب ادخال كمية'
+                        });
+                        return false
+                    }
+
+
+
                     if (tableBody.find(`tr#${materialCode}`).length > 0) {
                         let tableRow = tableBody.find(`tr#${materialCode}`);
                         tableRow.find('.tr-qty').text(qty);
@@ -298,16 +334,19 @@
                             code: materialCode,
                             name: materialName,
                             quantity: qty,
-                            price: unitPriceInput.val()
+                            price: unitPriceInput.val(),
+                            unit: unit
                         });
                         let html = `<tr id="${materialCode}">
-        <td>${counter + 1}</td>
-        <td>${materialCode}</td>
-        <td>${materialName}</td>
-        <td class="tr-qty">${qty}</td>
-        <td class="tr-price">${unitPriceInput.val()}</td>
-        <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
-    </tr>`
+                            <td>${counter + 1}</td>
+                            <td>${materialCode}</td>
+                            <td>${materialName}</td>
+                            <td class="tr-qty">${qty}</td>
+                            <td>${unitName}</td>
+                            <td class="tr-price">${unitPriceInput.val()}</td>
+                            <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
+                        </tr>`;
+                        tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
                         tableBody.append($(html));
                     }
                     unitPriceInput.val('')
@@ -320,6 +359,13 @@
                         materials.select2('open');
                     }, 100);
                 }
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب اختيار خامة'
+                });
+                $(this).val('')
+                return false
             }
         });
         /*  ======================== End Add Material In Table ============================== */
@@ -340,7 +386,7 @@
                     rowParent.remove();
                     calcPricePercent();
                     $.ajax({
-                        url: "{{ route('deleteComponent') }}",
+                        url: "{{ route('deleteDetailsRecipe') }}",
                         method: 'post',
                         data: {
                             _token,
@@ -348,7 +394,8 @@
                             branch: branch.val(),
                             items: items.val(),
                             totalPrice: totalPriceInput.val(),
-                            percentage: percentageInput.val()
+                            percentage: percentageInput.val(),
+                            details: details.val()
                         },
                         success: function(data) {
                             if (data.status == true) {
@@ -359,8 +406,19 @@
                                     icon: 'success',
                                     title: 'تم حذف المكون بنجاح'
                                 });
+
                             }
                         },
+                        complete: function() {
+                            if (tableBody.find('tr')
+                                .length === 0) {
+                                tableBody.append(
+                                    `<tr class="not-found">
+                                                    <td colspan="7">لا يوجد بيانات</td>
+                                                </tr>`);
+                            }
+                        }
+
                     });
                 }
             })
@@ -388,20 +446,18 @@
                     if (data.status == true) {
                         materials.val(null);
                         mainGroup.val(null);
-                        items.val(null);
-                        $('.table-materials tbody').html('');
+                        // $('.table-materials tbody').html('');
                         calcPricePercent();
                         getRowsNumber()
-                        $('#product_qty').val(1)
-
                         Toast.fire({
                             icon: 'success',
                             title: data.data
                         });
-                        setTimeout(() => {
-                            items.select2('open');
-                        }, 300);
+                        $('#product_qty').val(1)
                         materialArray = []
+                        setTimeout(() => {
+                            items.val(items.val()).select2('open');
+                        }, 300);
                     }
                 },
             });
@@ -470,12 +526,12 @@
                                                 // Get the value
                                                 if ($('is t', this)
                                                     .text() == 'color'
-                                                    ) {
+                                                ) {
                                                     $(this).attr('s',
                                                             '20')
                                                         .siblings()
                                                         .attr('s',
-                                                        '20');
+                                                            '20');
                                                 }
                                                 $(this).remove()
                                             });
@@ -512,7 +568,7 @@
                                         doc.styles.tableHeader.color =
                                             'white';
                                         doc.styles.tableHeader.fontSize =
-                                        12;
+                                            12;
                                         doc.defaultStyle.fontSize = 12;
                                         doc.content[1].table.widths = Array(
                                                 doc.content[1].table.body[0]
@@ -619,7 +675,7 @@
                                                             '20')
                                                         .siblings()
                                                         .attr('s',
-                                                        '20');
+                                                            '20');
                                                 }
                                             });
                                         // $(`row`, sheet).children().attr('s', '20');
@@ -708,6 +764,9 @@
                                 html += `<li class="material_${material.material_id}">
                 <span>${material.material_id}</span>
                 <span>${material.material_name}</span>
+                            <span style="margin-left:5px;">
+                <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
+                </span>
                 <span><input type="number" value="${material.quantity}" class="qty" ${to ? '' : 'readonly'} /></span>
                 <span class="${to ? 'cost' : 'cost d-none'}">${material.cost}</span>
                 <input type="hidden" value="${material.cost / material.quantity}"/>`
@@ -725,7 +784,7 @@
         }
         /*  ============= Start Get Items From ============= */
         fromBranch.on('change', function() {
-            getItems($(this).val(), fromItems);
+            getItems($(this).val(), fromItems, materials)
             setTimeout(() => {
                 fromItems.select2({
                     dir: 'rtl',
@@ -783,11 +842,14 @@
                         if (data.materials) {
                             data.materials.materials.forEach((material) => {
                                 html += `<li class="material_${material.material_id}">
-                <span>${material.material_id}</span>
-                <span>${material.material_name}</span>
-                <span><input type="number" value="${material.quantity}" class="qty" readonly /></span>
-                <span class="cost d-none">${material.cost}</span>
-                <input type="hidden" value="${material.cost / material.quantity}"/>`
+                            <span>${material.material_id}</span>
+                            <span>${material.material_name}</span>
+                             <span style="margin-left:5px;">
+                                <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
+                               </span>
+                            <span><input type="number" value="${material.quantity}" class="qty" readonly /></span>
+                            <span class="cost d-none">${material.cost}</span>
+                            <input type="hidden" value="${material.cost / material.quantity}"/>`
                                 html += `</li>`;
                             });
                         }
@@ -802,7 +864,7 @@
         /*  ============== End Get Material Details ============== */
         /*  ============= Start Get Items To ============= */
         toBranch.on('change', function() {
-            getItems($(this).val(), toItems);
+            getItems($(this).val(), toItems, materials)
             setTimeout(() => {
                 toItems.select2({
                     dir: 'rtl',
@@ -867,6 +929,9 @@
                                     `<li class="material_${material.material_id}">
                             <span>${material.material_id}</span>
                             <span>${material.material_name}</span>
+                                                        <span style="margin-left:5px;">
+                                <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
+                               </span>
                             <span><input type="number" value="${material.quantity}" class="qty" /></span>
                             <span class="cost">${material.cost}</span>
                             <input type="hidden" value="${material.cost / material.quantity}"/>
@@ -889,7 +954,7 @@
             let component = $(this).clone(true, true);
             component.append($(
                 '<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>'
-                ));
+            ));
             component.find('span.cost').removeClass('d-none')
             component.find('.qty').removeAttr('readonly')
             if (toItems.val()) {
@@ -909,7 +974,7 @@
                         let component = $(this).clone(true, true);
                         component.append($(
                             '<button class="btn btn-danger delete_to_Component"><i class="fa-regular fa-trash-can"></i></button>'
-                            ));
+                        ));
                         component.find('span.cost').removeClass('d-none');
                         component.find('.qty').removeAttr('readonly')
                         toList.append(component);
@@ -937,34 +1002,45 @@
         /*  ============== End Change Qty Components ============== */
         /*  ============== Start Save Transfer ============== */
         $('#save_transfer').on('click', function() {
+
             let item_id = toItems.find('option:selected').attr('value');
             let branch = toBranch.find('option:selected').attr('value');
-            let details = toDetailsItems.find('option:selected').attr('value');
+            let details = toDetailsItems.val();
             let componentsArray = [];
             toList.find('li').each(function() {
                 let material_id = $(this).find('span').first().text()
                 let material_name = $(this).find('span').eq(1).text()
                 let quantity = $(this).find('.qty').val()
                 let cost = $(this).find('.cost').text()
+                let unit = $(this).find('.unit').attr('data-unit')
                 componentsArray.push({
-                    branch,
-                    item_id,
-                    details,
                     material_id,
                     material_name,
                     quantity,
+                    branch,
+                    item_id,
+                    details,
                     cost,
+                    unit
                 })
             });
 
+            let dataToSend = {
+                details: details,
+                materials: componentsArray
+            };
+            let button = $(this);
+            let originalHtml = button.html();
+            button.html(spinner).prop('disabled', true);
+
+
             $.ajax({
+                type: 'POST',
                 url: "{{ route('transfierMaterialDetails') }}",
-                method: 'post',
-                data: {
-                    _token,
-                    materials: componentsArray
-                },
+                dataType: 'json',
+                data: dataToSend,
                 success: function(data) {
+                    console.log(data);
                     if (data.status == true) {
                         $('#transferModal').modal('hide')
                         fromBranch.val(null).trigger("change");
@@ -977,6 +1053,10 @@
                         });
                     }
                 },
+                error: handleAjaxError,
+                complete: function() {
+                    button.html(originalHtml).prop('disabled', false);
+                }
             });
 
         });
@@ -986,5 +1066,40 @@
         ============ Start Component Modal ============
         ===============================================
         */
+
+        $('#transferModal').on('shown.bs.modal', function() {
+            // Reset the "From" branch and items
+            $('#fromBranch').val(null).trigger('change');
+            $('#fromItems').empty(); // Clear the options
+            $('#fromDetailsItems').empty(); // Clear the options
+
+            // Clear the "From" components list
+            $('.fromComponents').empty();
+
+            // Reset the "To" branch and items
+            $('#toBranch').val(null).trigger('change');
+            $('#toItems').empty(); // Clear the options
+            $('#toDetailsItems').empty(); // Clear the options
+
+            // Clear the "To" components list
+            $('.toComponents').empty();
+        });
+
+        let isSelect2Open = false;
+
+        $('#toDetailsItems').on('select2:opening', function() {
+            isSelect2Open = true;
+        });
+
+        $('#toDetailsItems').on('select2:closing', function() {
+            isSelect2Open = false;
+        });
+
+        // Prevent the modal from closing if Select2 is open
+        $('#transferModal').on('hide.bs.modal', function(e) {
+            if (isSelect2Open) {
+                e.preventDefault(); // Prevent the modal from closing
+            }
+        });
     });
 </script>

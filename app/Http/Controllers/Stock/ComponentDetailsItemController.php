@@ -33,7 +33,7 @@ class ComponentDetailsItemController extends Controller
     {
         $items = Item::whereHas('getdetails')->where(['branch_id' => $request->branch])->select(['id', 'name', 'price'])->get();
         if ($items) {
-            $branch  = Branch::where('id',$request->branch)->first();
+            $branch  = Branch::where('id', $request->branch)->first();
             return response()->json([
                 'status' => true,
                 'items' => $items,
@@ -65,6 +65,7 @@ class ComponentDetailsItemController extends Controller
     }
     public function saveDetailsComponent(Request $request)
     {
+
         if ($request->materialArray != null) {
             $mainId = 0;
             if (mainDetailsComponent::limit(1)->where(['branch' => $request->branch, 'item' => $request->items, 'details' => $request->details])->count() == 0) {
@@ -103,6 +104,7 @@ class ComponentDetailsItemController extends Controller
                         'material_name' => $material['name'],
                         'cost'          => $material['price'],
                         'quantity'      => $material['quantity'],
+                        'unit' => $material['unit'],
                     ]);
                 }
             }
@@ -116,6 +118,7 @@ class ComponentDetailsItemController extends Controller
     }
     public function deleteDetailsRecipe(Request $request)
     {
+
         $del_item  = detailsComponent::limit(1)->where(['branch' => $request->branch, 'item' => $request->items, 'details' => $request->details, 'material_id' => $request->code])->delete();
         if ($del_item) {
             mainDetailsComponent::limit(1)->where(['branch' => $request->branch, 'item' => $request->items, 'details' => $request->details])->update([
@@ -138,49 +141,54 @@ class ComponentDetailsItemController extends Controller
     }
     public function transfierMaterialDetails(Request $request)
     {
-        $chekMain = false;
-        $sum = 0;
-        $main = array();
-        $addItem = array();
-        $mainId = 0;
-        $branch = $request->materials[0]['branch'];
-        $item = $request->materials[0]['item_id'];
-        $details = $request->materials[0]['details'];
-        if (mainDetailsComponent::limit(1)->where(['branch' => $branch, 'item' => $item, 'details' => $details])->count() == 0) {
-            $addItem['branch'] = $branch;
-            $addItem['item'] = $item;
-            $addItem['details'] = $details;
-            $addMain = mainDetailsComponent::create($addItem);
-            $mainId = $addMain->id;
-        } else {
-            $data = mainDetailsComponent::limit(1)->where(['branch' => $branch, 'item' => $item, 'details' => $details])->first();
-            $mainId = $data->id;
-        }
-        foreach ($request->materials as $material) {
-            if (detailsComponent::limit(1)->where(['main_id' => $mainId, 'material_id' => $material['material_id']])->count() == 0) {
-                $main['branch'] = $material['branch'];
-                $main['item'] = $material['item_id'];
-                $main['details'] = $material['details'];
-                $main['material_id'] = $material['material_id'];
-                $main['material_name'] = $material['material_name'];
-                $main['quantity'] = $material['quantity'];
-                $main['cost'] = $material['cost'];
-                $main['main_id'] = $mainId;
-                $sum += $material['cost'];
-                $addMaterial = detailsComponent::create($main);
+        foreach ($request->details as $key => $details) {
+
+            $chekMain = false;
+            $sum = 0;
+            $main = array();
+            $addItem = array();
+            $mainId = 0;
+            $branch = $request->materials[0]['branch'];
+            $item = $request->materials[0]['item_id'];
+            $details = $details;
+            if (mainDetailsComponent::limit(1)->where(['branch' => $branch, 'item' => $item, 'details' => $details])->count() == 0) {
+                $addItem['branch'] = $branch;
+                $addItem['item'] = $item;
+                $addItem['details'] = $details;
+                $addMain = mainDetailsComponent::create($addItem);
+                $mainId = $addMain->id;
             } else {
-                detailsComponent::limit(1)->where(['main_id' => $mainId, 'material_id' => $material['material_id']])->update([
-                    'cost' => $material['cost'],
-                    'quantity' => $material['quantity'],
-                ]);
-                $sum += $material['cost'];
+                $data = mainDetailsComponent::limit(1)->where(['branch' => $branch, 'item' => $item, 'details' => $details])->first();
+                $mainId = $data->id;
             }
+            foreach ($request->materials as $material) {
+                if (detailsComponent::limit(1)->where(['main_id' => $mainId, 'material_id' => $material['material_id']])->count() == 0) {
+                    $main['branch'] = $material['branch'];
+                    $main['item'] = $material['item_id'];
+                    $main['details'] = $details;
+                    $main['material_id'] = $material['material_id'];
+                    $main['material_name'] = $material['material_name'];
+                    $main['quantity'] = $material['quantity'];
+                    $main['cost'] = $material['cost'];
+                    $main['unit'] = $material['unit'];
+                    $main['main_id'] = $mainId;
+                    $sum += $material['cost'];
+                    $addMaterial = detailsComponent::create($main);
+                } else {
+                    detailsComponent::limit(1)->where(['main_id' => $mainId, 'material_id' => $material['material_id']])->update([
+                        'cost' => $material['cost'],
+                        'quantity' => $material['quantity'],
+                    ]);
+                    $sum += $material['cost'];
+                }
+            }
+            $costDetails = DetailsItem::limit(1)->where(['branch_id' => $branch, 'item_id' => $item, 'detail_id' => $details])->select(['price'])->first();
+            $data = mainDetailsComponent::limit(1)->where(['branch' => $branch, 'item' => $item, 'details' => $details])->update([
+                'cost' => $sum,
+                'percentage' => ($costDetails->price != 0) ? number_format($sum / $costDetails->price * 100, 2, '.', '') : '0.00'
+            ]);
         }
-        $costDetails = DetailsItem::limit(1)->where(['branch_id' => $branch, 'item_id' => $item, 'detail_id' => $details])->select(['price'])->first();
-        $data = mainDetailsComponent::limit(1)->where(['branch' => $branch, 'item' => $item, 'details' => $details])->update([
-            'cost' => $sum,
-            'percentage' => number_format($sum / $costDetails->price * 100, 2, '.', '')
-        ]);
+
         return ['status' => true, 'data' => 'تم تكرار المكونات بنجاح'];
     }
     public function DetailsWithoutMaterials(Request $request)
