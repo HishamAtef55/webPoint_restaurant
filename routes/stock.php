@@ -18,6 +18,7 @@ use App\Http\Controllers\Stock\Items\ItemComponentsController;
 use App\Http\Controllers\Stock\Material\FilterSectionController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
 use App\Http\Controllers\Stock\Items\FilterItemComponentController;
+use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
 
 Route::group(
     [
@@ -104,6 +105,11 @@ Route::group(
             function () {
                 Route::get('/{branch}/filter', FilterItemController::class);
                 Route::get('/components/{branch}/filter', FilterItemComponentController::class);
+                Route::group([
+                    'prefix' => 'details/component',
+                ], function () {
+                    Route::get('/{branch}/filter', FilterItemsDetailsController::class);
+                });
             }
         );
     }
@@ -136,7 +142,7 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     Route::post('getMaterialsInDetails', 'getMaterialsInDetails')->name('getMaterialsInDetails');
     Route::post('transfierMaterialDetails', 'transfierMaterialDetails')->name('transfierMaterialDetails');
     // This is Routs Reports in page
-    Route::post('DetailsWithoutMaterials', 'DetailsWithoutMaterials')->name('DetailsWithoutMaterials');
+    // Route::post('DetailsWithoutMaterials', 'DetailsWithoutMaterials')->name('DetailsWithoutMaterials');
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
 

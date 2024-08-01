@@ -428,6 +428,13 @@
         /*  ======================== End Delete Materials In Table ============================== */
         /*  ======================== Start Save Components Items ============================== */
         saveComponent.on('click', function() {
+            if (!materials.val()) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب اختيار خامة'
+                });
+                return;
+            }
             $.ajax({
                 url: "{{ route('saveDetailsComponent') }}",
                 method: 'post',
@@ -466,149 +473,193 @@
         /*  ======================== Start itemsWithOutMaterials ============================== */
         DetailsWithoutMaterials.on('click', function() {
             let title = $(this).text();
+            let branchVal = branch.val();
+            if (!branchVal) {
+                Toast.fire({
+                    icon: 'error',
+                    title: "برجاء اختيار الفرع",
+                });
+            }
             $.ajax({
-                url: "{{ route('DetailsWithoutMaterials') }}",
-                method: 'post',
-                data: {
-                    _token,
-                    branch: branch.val(),
-                },
-                success: function(data) {
-                    if (data.status == true) {
-                        let html = `<table class="report_table table-striped table w-100">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-                        data.data.forEach(item => {
-                            html += `<tr class="table-primary fw-bold text-center">
-                        <td>${item.id}</td>
-                        <td>${item.name}</td>
-                        <td>${item.price}</td>
-                        <td>color</td>
-                    </tr>`
-                            if (item.details.length > 0) {
-                                item.details.forEach(detail => {
-                                    html += `<tr class="">
-                                <td>${detail.id}</td>
-                                <td>${detail.name}</td>
-                                <td>${detail.price}</td>
-                                <td>no</td>
-                            </tr>`
-                                });
-                            }
+                type: "GET",
+                url: '{{ url('stock/items/details/component') }}/' + branchVal + '/filter',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status == 200) {
+
+                        let html = `<table class="report_table table table-striped w-100">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>السعر</th> 
+                                    <th>الفرع</th> 
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                        response.data.forEach(item => {
+                            html += `<tr>
+                                <td>${item.id}</td>
+                                <td>${item.name}</td>
+                                <td>${item.price}</td>
+                                <td>${item.branch}</td>
+                            </tr>`;
                         });
                         html += `</tbody></table>`;
                         reportModal.find('.report_content').html(html)
                         $(".report_table").DataTable({
                             scrollY: '405px',
-                            ordering: false,
                             paging: false,
                             dom: "<'.row'<'.col-md-6 mb-2'f><'.col-md-6 report_setting text-start mb-2'B><'.col-12 mt-2 text-center't><'.col-12'i>>",
                             buttons: [
                                 "copy",
                                 "csv",
-                                {
-                                    extend: 'excelHtml5',
-                                    title: '',
-                                    autoFilter: true,
-                                    customize: function(xlsx) {
-                                        var sheet = xlsx.xl.worksheets[
-                                            'sheet1.xml'];
-                                        // Loop over the cells in column `C`
-                                        $('row c[r^="D"]', sheet).each(
-                                            function() {
-                                                // Get the value
-                                                if ($('is t', this)
-                                                    .text() == 'color'
-                                                ) {
-                                                    $(this).attr('s',
-                                                            '20')
-                                                        .siblings()
-                                                        .attr('s',
-                                                            '20');
-                                                }
-                                                $(this).remove()
-                                            });
-                                    }
-                                },
+                                "excel",
                                 {
                                     extend: "pdfHtml5",
+                                    orientation: 'landscape',
                                     download: "open",
-                                    autoFilter: true,
-                                    title: title.split(' ').reverse().join(
-                                        '  '),
-                                    exportOptions: {
-                                        orthogonal: "PDF",
-                                    },
-                                    customize: function(doc, s) {
-                                        doc.content[1].table.body.forEach(
-                                            row => {
-                                                if (row[row.length - 1]
-                                                    .text === 'color') {
-                                                    row.forEach(col =>
-                                                        col
-                                                        .fillColor =
-                                                        '#c5d7f2')
-                                                }
-                                                row.pop()
-                                            })
-                                        doc.pageMargins = [10, 5];
-                                        doc.content[0].margin = [0, 0]
+                                    customize: function(doc) {
+                                        // Define custom styles
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.defaultStyle.alignment =
-                                            "center";
-                                        doc.styles.tableHeader.fillColor =
-                                            '#159d71';
-                                        doc.styles.tableHeader.color =
-                                            'white';
-                                        doc.styles.tableHeader.fontSize =
-                                            12;
-                                        doc.defaultStyle.fontSize = 12;
-                                        doc.content[1].table.widths = Array(
-                                                doc.content[1].table.body[0]
-                                                .length + 1).join('*')
-                                            .split('');
-                                    },
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Ensure RTL direction
+                                            }
+                                        };
+
+                                        // Add a header
+                                        doc.header = {
+                                            text: 'مكونات على لاتحتوى اصناف تفاصيل ', // Arabic text
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
+                                        // Apply general row styles
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
+
+                                        // Adjust column widths
+                                        table.widths = [50, '*', '*',
+                                            '*'
+                                        ]; // Define widths for each column
+                                    }
                                 },
+
                                 "print",
                             ],
-                            columnDefs: [{
-                                targets: [-1],
-                                visible: false,
-                            }, {
-                                targets: [1],
-                                render: function(data, type, row) {
-                                    if (type === 'PDF') {
-                                        if (!/[a-z]/.test(data)) {
-                                            return data.split(' ')
-                                                .reverse().join('  ');
-                                        }
-                                    }
-                                    return data;
-                                }
-                            }]
                         });
                         reportModal.modal('show')
                         reportModal.find('#labelModel').text(title)
-                    } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.data
-                        });
                     }
                 },
+                error: handleAjaxError,
             });
         });
         /*  ======================== End itemsWithOutMaterials ============================== */
         /*  ======================== Start printDetails ============================== */
         printDetails.on('click', function() {
             let title = $(this).text();
+
+            if (!details.val()) {
+                Toast.fire({
+                    icon: 'error',
+                    title: "برجاء اختيار تفاصيل الصنف",
+                });
+            }
             $.ajax({
                 url: "{{ route('printDetails') }}",
                 method: 'post',
@@ -619,14 +670,15 @@
                     details: details.val(),
                 },
                 success: function(data) {
+                    // console.log(data);
                     if (data.status == true) {
                         let html = `<table class="report_table table-striped table w-100">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>quantity</th>
-                            <th>Cost</th>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>الكمية</th>
+                            <th>التكلفة</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -652,64 +704,141 @@
                         reportModal.find('.report_content').html(html)
                         $(".report_table").DataTable({
                             scrollY: '405px',
-                            ordering: false,
                             paging: false,
                             dom: "<'.row'<'.col-md-6 mb-2'f><'.col-md-6 report_setting text-start mb-2'B><'.col-12 mt-2 text-center't><'.col-12'i>>",
                             buttons: [
                                 "copy",
                                 "csv",
-                                {
-                                    extend: 'excelHtml5',
-                                    title: '',
-                                    autoFilter: true,
-                                    customize: function(xlsx) {
-                                        var sheet = xlsx.xl.worksheets[
-                                            'sheet1.xml'];
-                                        // Loop over the cells in column `C`
-                                        $('row c[r^="C"]', sheet).each(
-                                            function() {
-                                                // Get the value
-                                                if ($('is t', this)
-                                                    .text() == '-') {
-                                                    $(this).attr('s',
-                                                            '20')
-                                                        .siblings()
-                                                        .attr('s',
-                                                            '20');
-                                                }
-                                            });
-                                        // $(`row`, sheet).children().attr('s', '20');
-                                    }
-                                },
+                                "excel",
                                 {
                                     extend: "pdfHtml5",
+                                    orientation: 'landscape',
                                     download: "open",
                                     customize: function(doc) {
+                                        // Define custom styles
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.styles.tableBodyEven.alignment =
-                                            "center";
-                                        doc.styles.tableBodyOdd.alignment =
-                                            "center";
-                                        doc.styles.tableBodyEven
-                                            .lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight =
-                                            "1.5";
-                                        doc.styles.tableFooter.alignment =
-                                            "center";
-                                        doc.styles.tableHeader.alignment =
-                                            "center";
-                                    },
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Ensure RTL direction
+                                            }
+                                        };
+
+                                        // Add a header
+                                        doc.header = {
+                                            text: 'صنف مكونات',
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
+                                        // Apply general row styles
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
+
+                                        // Adjust column widths
+                                        table.widths = [50, '*', '*',
+                                            '*'
+                                        ]; // Define widths for each column
+                                    }
                                 },
+
                                 "print",
                             ],
                         });
                         reportModal.modal('show')
                         reportModal.find('#labelModel').text(title)
-                    } else {
-                        Toast.fire({
-                            icon: 'error',
-                            title: data.data
-                        });
                     }
                 },
             });
@@ -1083,6 +1212,8 @@
 
             // Clear the "To" components list
             $('.toComponents').empty();
+
+            fromItems.select2('open')
         });
 
         let isSelect2Open = false;
