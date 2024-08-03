@@ -1,10 +1,5 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    $(document).ready(function() {
-        bindBranchChangeEvent(); // Bind change event when the document is ready
-        bindGroupsChangeEvent();
-    });
-
     // handle csrf request header
 
     $.ajaxSetup({
@@ -30,689 +25,508 @@
             timer: 5000
         });
     }
+    $(document).ready(function() {
+        let spinner = $(
+            '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+        );
+        let productQty = $('#storeMaterialRecipe').find('input[name="product_qty"]');
+        let materialPriceEle = $('#storeMaterialRecipe').find('input[name="material_price"]');
+        let branchEle = $('#storeMaterialRecipe').find('select[name="branch_id"]');
+        let manfacturedMaterialSelectEle = $('#storeMaterialRecipe').find(
+            'select[name="manufactured_material_id"]');
+        const unitToArabic = {
+            'ml': 'مللى',
+            'gm': 'جرام',
+            'number': 'عدد'
+            // Add other units as needed
+        };
+        let materials = $('#storeMaterialRecipe').find('select[name="material_id"]');
+        let unitInput = $('#storeMaterialRecipe').find('input[name="unit"]');
+        let unitLabel = $('#storeMaterialRecipe').find('span[id="unit_label"]');
+        let unitPriceInput = $('#storeMaterialRecipe').find('input[name="unit_price"]');
+        let materialArray = [];
+        let materialTable = $('.table-materials');
+        let totalPriceInput = materialTable.find('tfoot .total-price');
+        let percentageInput = materialTable.find('tfoot .percentage');
+        let saveComponent = $('#storeMaterialRecipe').find('button[id="save_material_recipe"]');
+        let printComponentsModal = $('#print_components_model');
+        console.log(printComponentsModal)
+        let reportModal = $('#reportModal');
+        // get materials
+        branchEle.on('change', function() {
+            let selectedValue = $(this).val();
+            if (!selectedValue) return;
+            let slectedMatrialRecipeEle = $(
+                '#storeMaterialRecipe select[name="manufactured_material_id"]')
 
-    let preventChangeEvent = false; // Flag to control change event execution
-    let preventGroupsChangeEvent = false; // Flag to control change event execution
+            const url = '{{ url('stock/material/recipe') }}/' + selectedValue + '/filter';
 
-    const tbody = $('table.table-data tbody');
-    let spinner = $(
-        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
-    );
-    let productQty = $('#storeMaterialRecipe').find('input[name="product_qty"]');
-    let materialPriceEle = $('#storeMaterialRecipe').find('input[name="material_price"]');
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        let html = '<option value="" disabled selected></option>';
 
+                        slectedMatrialRecipeEle.html('');
+                        const materials = response.data;
 
-
-    // get materials
-    $(document).on('change', '#storeMaterialRecipe select[name="branch_id"]', function() {
-        let selectedValue = $(this).val();
-        if (!selectedValue) return;
-        let slectedMatrialRecipeEle = $('#storeMaterialRecipe select[name="manufactured_material_id"]')
-
-        const url = '{{ url('stock/material/recipe') }}/' + selectedValue + '/filter';
-
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: 'json',
-            success: function(response) {
-                if (response.status === 200) {
-                    slectedMatrialRecipeEle.html('');
-                    const materials = response.data;
-                    slectedMatrialRecipeEle.prop('disabled', false)
-
-                    if (!materials.length) {
-                        slectedMatrialRecipeEle.append(
-                            '<option value="">لاتوجد خامات</option>');
-                        return;
-                    }
-                    materials.forEach(material => {
-                        const newMaterialOptions =
-                            `<option value="${material.id}"
-                            data-price="${material.price ?? 0}"
-                            >${material.name}</option>`
-                        slectedMatrialRecipeEle.append(newMaterialOptions)
-                    });
-                }
-
-            },
-            error: handleAjaxError,
-            complete: function(response) {
-                materialPriceEle.val(0)
-                if (response.responseJSON.data.length) {
-                    slectedMatrialRecipeEle.select2('open');
-                }
-
-            },
-        })
-    });
-
-    // get materials details
-    $(document).on('change', '#storeMaterialRecipe select[name="manufactured_material_id"]', function() {
-        materialPriceEle.val(0)
-        let selectedValue = $(this).val();
-        if (!selectedValue) return;
-        let price = $(this).find('option:selected').attr('data-price');
-
-        materialPriceEle.val(price);
-    });
-
-    /*  ======================== End Get Material ============================== */
-    productQty.on('keyup', function(e) {
-        let slectedMatrialRecipeEle = $('#storeMaterialRecipe').find('select[name="material_id"]')
-
-        if (e.keyCode === 13) {
-            slectedMatrialRecipeEle.select2('open');
-        }
-    });
-
-    // store section
-
-    $(document).on('submit', '#storeMaterial', function(e) {
-        e.preventDefault();
-        const form = $(this);
-        const button = form.find('button[type="submit"]');
-        const originalHtml = button.html();
-        button.html(spinner).prop('disabled', true);
-        const storeModel = $('#storeMaterial');
-        const formData = collectMaterialData(form);
-        $.ajax({
-            type: 'POST',
-            url: "{{ route('stock.materials.store') }}",
-            dataType: 'json',
-            data: {
-                name: formData.name,
-                cost: formData.cost,
-                price: formData.price,
-                unit: formData.unit,
-                // 
-                group_id: formData.subGroupId,
-                branch_id: formData.branchId,
-                // 
-                min_store: formData.storeLimitMin,
-                max_store: formData.storeLimitMax,
-                min_section: formData.sectionLimitMin,
-                max_section: formData.sectionLimitMax,
-                // 
-                loss_ratio: formData.lossRatio,
-                expire_date: formData.expireDate,
-                storage_type: formData.storageType,
-                // 
-                material_type: formData.selectedMaterialType,
-                sectionIds: formData.sections,
-            },
-            success: function(response) {
-                console.log(response);
-                if (response.status == 200) {
-                    newMaterial = `<tr id=sid${response.data.id}>
-                            <td>${response.data.id}</td>
-                            <td>${response.data.group.name}</td>
-                            <td>${response.data.name}</td>
-                                                    <td>
-                                    <button title="تعديل" class="btn btn-success"
-                                        data-id="${response.data.id}" id="edit_material">
-
-                                        <i class="far fa-edit"></i>
-                                    </button>
-
-                                    <button title="عرض" data-id="${response.data.id}" id="view_material"
-                                        class="btn btn-primary">
-
-                                        <i class="fa fa-eye" aria-hidden="true"></i>
-
-                                    </button>
-                                    <button class="btn btn-danger" id="delete_material"
-                                        data-id="${response.data.id}">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                            </td>
-                            </tr>`;
-                    $('tbody tr').each(function() {
-                        if ($(this).find('td').attr('colspan') == '4') {
-                            $(this).remove();
+                        if (!materials.length) {
+                            slectedMatrialRecipeEle.append(
+                                '<option value="">لاتوجد خامات</option>');
+                            materialPriceEle.val(0)
+                            return;
                         }
-                    });
-                    tbody.append(newMaterial);
+                        materials.forEach((item) => {
+                            html +=
+                                `<option value="${item.id}" data-price="${item.price}" >${item.name}</option>`
+                        });
+                        manfacturedMaterialSelectEle.html(html)
+                        manfacturedMaterialSelectEle.select2({
+                            dir: "rtl"
+                        });
 
-                    resetModalForm(storeModel)
-                    $('#id').val(response.data.id + 1);
+                        manfacturedMaterialSelectEle.select2('open');
+                    }
 
-                    successMsg(response.message);
-                    checkForm();
+                },
+                error: handleAjaxError,
+            })
+        });
+
+        // get materials details
+        manfacturedMaterialSelectEle.on('change', function() {
+            let selectedValue = $(this).val();
+            if (!selectedValue) return;
+            let price = $(this).find('option:selected').attr('data-price');
+            let tableBody = $('.table-materials tbody');
+            materialArray = [];
+
+            $.ajax({
+                type: "GET",
+                url: '{{ url('stock/material/recipe/filter') }}/' + selectedValue,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        materialPriceEle.val(price)
+                        productQty.focus().select();
+                        let html = '';
+                        let count = 1;
+                        tableBody.html('');
+                        if (!response.data.length) {
+                            tableBody.html(
+                                '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                            );
+                            $('.percentage').val(0)
+                            $('.total-price').val(0)
+                            return;
+                        }
+                        response.data.forEach((material) => {
+                            html += `<tr id="${material.material_recipe_id}">
+                                <td>${material.material_recipe_id}</td>
+                                <td>${material.material_recipe_name}</td>
+                                <td class="tr-qty">${material.quantity}</td>
+                                <td>${unitToArabic[material.unit]}</td>
+                                <td class="tr-price">${material.price}</td>
+                                <td> <button class="btn btn-danger delete_Component" data-id="${material.id}"><i class="fa-regular fa-trash-can"></i></button> </td>
+                            </tr>`;
+                            materialArray.push({
+                                code: material.material_recipe_id,
+                                quantity: material.quantity,
+                                price: material.price,
+                                unit: material.unit
+                            });
+                        });
+                        // $('.percentage').val(data.materials.percentage)
+                        totalPriceInput.val(response.total_price)
+                        tableBody.append($(html));
+
+                    }
                 }
-            },
-            error: handleAjaxError,
-            complete: function() {
-                button.html(originalHtml).prop('disabled', false);
+            });
+        });
+
+        productQty.on('keyup', function(e) {
+            if (e.keyCode === 13) {
+                materials.select2('open');
             }
         });
-    });
 
-    // delete section
-    $(document).on('click', '#delete_material', function() {
-        const id = $(this).data('id');
-        const row = $(this).closest('tr');
-        Swal.fire({
-            title: 'حذف !',
-            text: 'هل انت متأكد من حذف الخامة',
-            icon: 'warning',
-            showCancelButton: true,
-            showLoaderOnConfirm: true,
-            confirmButtonColor: '#5cb85c',
-            cancelButtonColor: '#d33',
-            cancelButtonText: 'لا',
-            confirmButtonText: 'نعم',
-            preConfirm: () => {
-                return new Promise((resolve) => {
+        materials.on('change', function() {
+            let cost = $(this).find('option:selected').attr('data-cost');
+            let unitName = $(this).find('option:selected').attr('data-unit');
+
+            unitLabel.text(unitName);
+            unitInput.val('');
+            unitPriceInput.val('');
+            setTimeout(() => {
+                unitInput.focus();
+            }, 100);
+
+        });
+
+        function calcPricePercent() {
+            let totalPrice = 0;
+            materialTable.find('td.tr-price').each(function() {
+                totalPrice += parseFloat($(this).text());
+            });
+            totalPriceInput.val(totalPrice.toFixed(2));
+
+            // let percentage = (totalPrice / itemPrice.val()) * 100;
+            // percentageInput.val(percentage.toFixed(2));
+        }
+        unitInput.on('keyup', function(e) {
+            let cost = materials.find('option:selected').attr('data-price') / 100;
+            let unitName = materials.find('option:selected').attr('data-unit');
+            let unit = materials.find('option:selected').attr('data-unit-name-en');
+            let unitSize = materials.find('option:selected').attr('data-unit-value');
+            let materialCode = materials.find('option:selected').attr('value');
+            let materialName = materials.find('option:selected').text();
+            let unitPrice = cost / unitSize;
+            let qty = $(this).val();
+            let tableBody = $('.table-materials tbody');
+            let counter = tableBody.find('tr').length;
+
+
+
+            if (materials.val()) {
+                unitPriceInput.val((qty * unitPrice).toFixed(2))
+                if (e.keyCode === 13) {
+                    if (!manfacturedMaterialSelectEle.val()) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'يجب اختيار خامة'
+                        });
+                        return false
+                    }
+                    if (!$(this).val()) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'يجب ادخال كمية'
+                        });
+                        return false
+                    }
+
+
+
+                    if (tableBody.find(`tr#${materialCode}`).length > 0) {
+                        let tableRow = tableBody.find(`tr#${materialCode}`);
+                        tableRow.find('.tr-qty').text(qty);
+                        tableRow.find('.tr-price').text(unitPriceInput.val());
+                        materialArray.forEach(material => {
+                            if (material.code == materialCode) {
+                                material.quantity = qty,
+                                    material.price = unitPriceInput.val()
+                            }
+                        });
+                    } else {
+                        materialArray.push({
+                            code: materialCode,
+                            quantity: qty,
+                            price: unitPriceInput.val(),
+                            unit: unit
+                        });
+                        let html = `<tr id="${materialCode}">
+  
+                            <td>${materialCode}</td>
+                            <td>${materialName}</td>
+                            <td class="tr-qty">${qty}</td>
+                            <td>${unitName}</td>
+                            <td class="tr-price">${unitPriceInput.val()}</td>
+                            <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
+
+                        </tr>`;
+                        tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
+                        tableBody.append($(html));
+                    }
+                    unitPriceInput.val('')
+                    unitInput.val('')
+                    calcPricePercent();
+                    materials.val(null).trigger("change");
+                    $(this).blur();
+                    setTimeout(() => {
+                        materials.select2('open');
+                    }, 100);
+                }
+            } else {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب اختيار خامة'
+                });
+                $(this).val('')
+                return false
+            }
+        });
+
+        // store new component
+
+        saveComponent.on('click', function() {
+            let button = $(this);
+            let originalHtml = button.html();
+            button.html(spinner);
+            button.prop('disabled', true);
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('stock.material.recipe.store') }}",
+                dataType: 'json',
+                data: {
+                    material_id: manfacturedMaterialSelectEle.val(),
+                    components: materialArray,
+                },
+                success: function(response) {
+
+                    if (response.status == 201) {
+                        materials.val(null);
+                        calcPricePercent();
+                        successMsg(response.message);
+
+                        $('#product_qty').val(1)
+                        materialArray = []
+                        setTimeout(() => {
+                            manfacturedMaterialSelectEle.val(
+                                manfacturedMaterialSelectEle).select2('open');
+                        }, 300);
+                    }
+                },
+                error: handleAjaxError,
+                complete: function(response) {
+                    button.html(originalHtml).prop('disabled', false);
+
+                }
+            });
+        });
+
+        // delete material component
+        $(document).on('click', '.delete_Component', function() {
+            const id = $(this).data('id');
+            let rowParent = $(this).parents('tr');
+            let tableBody = $('.table-materials tbody');
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: 'rgb(21, 157, 113)',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم',
+                cancelButtonText: 'لا'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    rowParent.remove();
+                    if (tableBody.find('tr').length === 0) {
+                        tableBody.html(
+                            '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                        );
+                    }
+                    calcPricePercent();
                     $.ajax({
                         type: 'DELETE',
-                        url: '{{ url('stock/materials', '') }}' + '/' + id,
+                        url: '{{ url('stock/material/recipe', '') }}' + '/' + id,
                         dataType: 'json',
                         success: function(response) {
                             if (response.status == 200) {
-                                handleResponseMessageError(response.message,
-                                    'تم الحذف', 'success')
-
-                                row.remove();
-                                resolve();
+                                materialArray = materialArray.filter(material =>
+                                    material.code != rowParent.attr('id'))
+                                successMsg(response.message);
                             }
                         },
-                        error: function(error) {
-                            handleResponseMessageError(error.responseJSON
-                                .message, 'خطأ', 'error')
-                            resolve();
-                        },
-                        complete: function() {
-                            if (tbody.find('tr').length === 0) {
-                                tbody.append(
-                                    '<tr><td colspan="4">لا توجد خامات</td></tr>'
-                                );
-                            }
-                        }
                     });
-                });
-            }
-        });
-    });
-
-    // view section
-    $(document).on('click', '#view_material', function() {
-        const id = $(this).data('id');
-        const viewModal = $('#viewModal');
-        resetModalForm(viewModal);
-        let button = $(this);
-        let originalHtml = button.html();
-        button.html(spinner);
-        button.prop('disabled', true);
-
-        $.ajax({
-            type: 'GET',
-            url: '{{ url('stock/materials', '') }}' + '/' + id,
-            dataType: 'json',
-            success: function(response) {
-                if (response.status == 200) {
-                    updateModelForm(viewModal, response)
-                    checkForm();
                 }
-            },
-            error: handleAjaxError,
-            complete: function() {
-                button.html(originalHtml).prop('disabled', false);
-            }
-
-        });
-
-    })
-    // edit section
-    $(document).on('click', '#edit_material', function() {
-        const id = $(this).data('id');
-        const viewModal = $('#editModal');
-        // Set the flag to prevent the change event
-        resetModalForm(viewModal);
-        preventChangeEvent = true;
-        preventGroupsChangeEvent = true;
-        let button = $(this);
-        let originalHtml = button.html();
-        button.html(spinner);
-        button.prop('disabled', true);
-
-        $.ajax({
-            type: 'GET',
-            url: '{{ url('stock/materials', '') }}' + '/' + id,
-            dataType: 'json',
-            success: function(response) {
-                if (response.status == 200) {
-                    updateModelForm(viewModal, response)
-                    $('#editModal').find('.modal-footer #update_material').removeAttr('data-id')
-                        .data('id', response.data.id)
-
-                    checkForm();
-                }
-                // Unset the flag after setting new values
-                preventChangeEvent = false;
-                preventGroupsChangeEvent = false;
-            },
-            error: handleAjaxError,
-            complete: function() {
-                button.html(originalHtml).prop('disabled', false);
-                // Unset the flag after setting new values
-                preventChangeEvent = false;
-                preventGroupsChangeEvent = false;
-            }
-
-        });
-    });
-
-
-    // update section 
-    $(document).on('click', '#update_material', function() {
-        const id = $(this).data('id');
-        let button = $(this);
-        let originalHtml = button.html();
-        const form = $('#editModal');
-        button.html(spinner).prop('disabled', true);
-        const formData = collectMaterialData(form);
-        $.ajax({
-            type: 'PUT',
-            url: '{{ url('stock/materials', '') }}' + '/' + id,
-            dataType: 'json',
-            data: {
-                name: formData.name,
-                cost: formData.cost,
-                price: formData.price,
-                unit: formData.unit,
-                // 
-                group_id: formData.subGroupId,
-                branch_id: formData.branchId,
-                // 
-                min_store: formData.storeLimitMin,
-                max_store: formData.storeLimitMax,
-                min_section: formData.sectionLimitMin,
-                max_section: formData.sectionLimitMax,
-                // 
-                loss_ratio: formData.lossRatio,
-                expire_date: formData.expireDate,
-                storage_type: formData.storageType,
-                // 
-                material_type: formData.selectedMaterialType,
-                sectionIds: formData.sections,
-            },
-            success: function(response) {
-                if (response.status == 200) {
-                    $('#sid' + response.data.id + ' td:nth-child(1)').text(response.data
-                        .id)
-                    $('#sid' + response.data.id + ' td:nth-child(2)').text(response.data.group.name)
-                    $('#sid' + response.data.id + ' td:nth-child(3)').text(response.data.name)
-                    successMsg(response.message);
-                    $('#editModal').modal('hide');
-                }
-            },
-            error: handleAjaxError,
-            complete: function() {
-                button.html(originalHtml).prop('disabled', false);
-            }
-        });
-    })
-
-    // collect saving new material data
-    function collectMaterialData(form) {
-        //
-        let mainGroupId = form.find("select[name='main_group_id']").val();
-        let subGroupId = form.find("select[name='sub_group_id']").val();
-        let branchId = form.find("select[name='branch_id']").val();
-        // 
-        let name = form.find("input[name='name']").val();
-        let cost = form.find("input[name='cost']").val();
-        let price = form.find("input[name='price']").val();
-        let unit = form.find("select[name='unit']").val();
-        // 
-        let storeLimitMin = form.find("input[name='store_limit_min']").val();
-        let storeLimitMax = form.find("input[name='store_limit_max']").val();
-        let sectionLimitMin = form.find("input[name='section_limit_min']").val();
-        let sectionLimitMax = form.find("input[name='section_limit_max']").val();
-        // 
-        let lossRatio = form.find("input[name='loss_ratio']").val();
-        let expireDate = form.find("input[name='expire_date']").val();
-        let storageType = form.find("select[name='storage_type']").val();
-        // 
-        let selectedMaterialType = form.find("input[name='materialType']:checked").val();
-        const sectionsChecked = form.find('input[name="sections"]:checked');
-        let sections;
-        if (!sectionsChecked.length) {
-            sections = [];
-        } else {
-            if (form.is('#editModal')) {
-                sections = sectionsChecked.map((_, el) => ({
-                    id: $(el).attr('id').replace('edit-model-section-', '')
-                })).get();
-            } else {
-                sections = sectionsChecked.map((_, el) => ({
-                    id: $(el).attr('id').replace('section-', '')
-                })).get();
-            }
-        }
-
-
-
-        return {
-            name: name,
-            cost: cost,
-            price: price,
-            unit: unit,
-            // 
-            mainGroupId: mainGroupId,
-            subGroupId: subGroupId,
-            branchId: branchId,
-            // 
-            storeLimitMin: storeLimitMin,
-            storeLimitMax: storeLimitMax,
-            sectionLimitMin: sectionLimitMin,
-            sectionLimitMax: sectionLimitMax,
-            // 
-            lossRatio: lossRatio,
-            expireDate: expireDate,
-            storageType: storageType,
-            // 
-            selectedMaterialType: selectedMaterialType,
-            sections: sections,
-        };
-
-    }
-
-    // Common function to reset modal form
-    function resetModalForm(formElement) {
-
-        const name = $(formElement).find("input[name='name']")
-        const cost = $(formElement).find("input[name='cost']")
-        const price = $(formElement).find("input[name='price']")
-        const min_store = $(formElement).find("input[name='store_limit_min']")
-        const max_store = $(formElement).find("input[name='store_limit_max']")
-        const min_section = $(formElement).find("input[name='section_limit_min']")
-        const max_section = $(formElement).find("input[name='section_limit_max']")
-        const loss_ratio = $(formElement).find("input[name='loss_ratio']")
-        const expire_date = $(formElement).find("input[name='expire_date']")
-        //   branch select
-        const branchSelect = $(formElement).find('select[name="branch_id"]');
-        const firstBranchOptionValue = branchSelect.val('');
-        //   unit select
-        const unitSelect = $(formElement).find('select[name="unit"]');
-        const firstUnitOptionValue = unitSelect.find('option:first').val();
-        //   main group select
-        const mainGroupSelect = $(formElement).find('select[name="main_group_id"]');
-        const firstMainGroupOptionValue = mainGroupSelect.find('option:first').val();
-        //   sub group select
-        const subGroupSelect = $(formElement).find('select[name="sub_group_id"]');
-        //   storage type select
-        const storageTypeSelect = $(formElement).find('select[name="storage_type"]');
-        const firstStorageTypeOptionValue = storageTypeSelect.find('option:first').val();
-        // material type checkbox
-        $(formElement).find('input[type="radio"]').prop('checked', false),
-
-            $(formElement).find('input[type="checkbox"]').prop('checked', false);
-
-        $(formElement).find('.view_model_material_type').html('')
-
-        const sections = $(formElement).find('.section_id')
-        // set values
-        name.val('')
-        cost.val('')
-        price.val('')
-        min_store.val('')
-        max_store.val('')
-        min_section.val('')
-        max_section.val('')
-        loss_ratio.val('')
-        expire_date.val('')
-        branchSelect.val(firstBranchOptionValue).change();
-        unitSelect.val(firstUnitOptionValue).change();
-        mainGroupSelect.val(firstMainGroupOptionValue).change();
-        subGroupSelect.empty().append('<option selected disabled>اختر المجموعة الفرعية</option>').change();
-        storageTypeSelect.val(firstStorageTypeOptionValue).change();
-        sections.html('')
-    }
-
-    function updateModelForm(model, response) {
-
-        //   view model
-        model.modal('show');
-        // update values
-
-        $(model).find("input[name='id']").val(response.data.id);
-
-
-        $(model).find('select[name="sub_group_id"]').append(
-            `<option  value="${response.data.group.id}" selected>${response.data.group.name}</option>`
-        );
-
-        // select option
-        let selectBranchEle = $(model).find('select[name="branch_id"]')
-        let selectMainGroupEle = $(model).find('select[name="main_group_id"]')
-        let selectUnitEle = $(model).find('select[name="unit"]')
-        let selectStorageEle = $(model).find('select[name="storage_type"]')
-
-
-        let branchOption = selectBranchEle.find(
-            `option:contains(${response.data.branch.name})`).val();
-        let mainGroupOption = selectMainGroupEle.find(
-            `option:contains(${response.data.group.parent_name})`).val();
-        let unitOption = selectUnitEle.find(
-            `option:contains(${response.data.unit.name_ar})`).val();
-        let storageOption = selectStorageEle.find(
-            `option:contains(${response.data.storage_type.name_ar})`).val();
-
-        if (branchOption) {
-            selectBranchEle.val(branchOption).change();
-
-        } else {
-            selectBranchEle.append(
-                `<option value="${response.data.branch.id}" selected>${response.data.branch.name}</option>`
-            )
-        }
-
-        if (mainGroupOption) {
-            selectMainGroupEle.val(mainGroupOption).change();
-        } else {
-            selectMainGroupEle.append(
-                `<option value="${response.data.group.parent_id}" selected>${response.data.group.parent_name}</option>`
-
-            )
-        }
-        if (unitOption) {
-            selectUnitEle.val(unitOption).change();
-        } else {
-            selectUnitEle.append(
-                `<option value="${response.data.unit.name_en}" selected>${response.data.unit.name_ar}</option>`
-
-            )
-        }
-
-        if (storageOption) {
-            selectStorageEle.val(storageOption).change();
-        } else {
-            selectStorageEle.append(
-                `<option class="form-select" value="${response.data.storage_type.name_en}" selected>${response.data.storage_type.name_ar}</option>`
-
-            )
-        }
-        // 
-        $(model).find('input[name="name"]').val(response.data.name);
-        $(model).find('input[name="cost"]').val(response.data.cost);
-        $(model).find('input[name="price"]').val(response.data.price);
-
-
-
-        if (model.is('#editModal')) {
-            $(model).find(
-                `input[name="materialType"][value="${response.data.material_type.name_en}"]`
-            ).prop('checked', true);
-
-        } else {
-            if (response.data.material_type.name_en) {
-                let materialType = `
-                        <input class="form-check-input material-type" type="radio"
-                            value="${response.data.material_type.name_en}" id="view_model_${response.data.material_type.name_ar}"
-                            name="materialType" checked>
-                        <label class="form-check-label" for="view_model_${response.data.material_type.name_en}">
-                            ${response.data.material_type.name_ar}
-                        </label>`;
-
-                $(model).find('.view_model_material_type').html(materialType);
-            }
-
-        }
-
-
-        $(model).find('input[name="store_limit_min"]').val(response.data.min_store);
-        $(model).find('input[name="store_limit_max"]').val(response.data.max_store);
-        $(model).find('input[name="section_limit_min"]').val(response.data.min_section);
-        $(model).find('input[name="section_limit_max"]').val(response.data.max_section);
-
-        $(model).find('input[name="serial_nr"]').val(response.data.serial_nr);
-        $(model).find('input[name="loss_ratio"]').val(response.data.loss_ratio);
-
-        $(model).find('input[name="expire_date"]').val(response.data.expire_date);
-
-        // Append sections
-        let sectionsContent = '';
-        if (model.is('#viewModal')) {
-            response.data.sections.forEach(function(section) {
-                sectionsContent += `
-                        <div class='col-md-4 d-flex align-items-center mt-2 '>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                value="${section.name}" 
-                                id="section-${section.id}"
-                                name="sections" checked>
-                                <label class="form-check-label"
-                                for="section-${section.id}">
-                                    ${section.name}
-                                </label>
-                            </div>
-                        </div>`;
             })
-        } else {
-            let arr = []
-            response.data.sections.forEach(function(section) {
-                arr.push(section.name)
-            });
-            response.sections.forEach(el => {
-                let isChecked = arr.includes(el.name) ? 'checked' : '';
-                sectionsContent +=
-                    `<div class='col-md-4 d-flex align-items-center mt-2 '>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                value="${el.name}"
-                                id="edit-model-section-${el.id}"
-                                name="sections" ${isChecked}>
-                                <label class="form-check-label"
-                                for="edit-model-section-${el.id}">
-                                ${el.name}
-                                </label>
-                            </div>
-                        </div>`;
-            });
-        }
-        $(model).find('.section_id').html(sectionsContent);
-    }
+        });
 
-    function bindBranchChangeEvent() {
-        $(document).on('change', '#editModal select[name="branch_id"]', function() {
-            if (preventChangeEvent) return;
-            let slectedMainGroupEle = $(this)
+        /*  ======================== Start Change Component ============================== */
+        $(document).on('dblclick', '.table-materials tbody tr', function() {
+            let code = $(this).attr('id');
+            console.log(code)
+            // mainGroup.val('all').trigger('change')
+            setTimeout(() => {
+                materials.val(code).trigger('change');
+                materials.select2('close');
+                setTimeout(() => {
+                    unitInput.focus();
+                }, 0)
+            }, 300);
 
-            let sectionCheckboxEle = $('#editModal .section_id')
-            let selectedValue = slectedMainGroupEle.val();
-            let selectedText = slectedMainGroupEle.find('option:selected').text();
-            if (!selectedValue) return;
+        });
+        /*  ======================== End Change Component ============================== */
 
-            const url = '{{ url('stock/material/sections') }}/' + selectedValue + '/filter';
-            const initialParams = {
-                "branch_id": selectedValue,
-            };
-            const queryString = $.param(initialParams);
-
-
+        printComponentsModal.on('click', function() {
+            let title = $(this).text();
             $.ajax({
-                type: "GET",
-                url: '{{ url('stock/material/sections') }}/' + selectedValue + '/filter',
+                type: "POST",
+                url: "{{ route('stock.material.recipe.filter') }}",
                 dataType: 'json',
                 success: function(response) {
-                    if (response.status === 200) {
-                        const sections = response.data;
-                        let sectionsContent = '';
-                        sectionCheckboxEle.html('');
-                        if (!sections.length) {
-                            sectionsContent =
-                                `<div class='col-md-12 d-flex align-items-center mt-2 '>
-                                    <p>لاتوجد أقسام متاحة</p>
-                            </div>`;
-                        }
-                        sections.forEach(function(section) {
-                            sectionsContent += `
-                        <div class='col-md-4 d-flex align-items-center mt-2 '>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                value="${section.name}" 
-                                id="edit-model-section-${section.id}"
-                                name="sections">
-                                <label class="form-check-label"
-                                for="edit-model-section-${section.id}">
-                                    ${section.name}
-                                </label>
-                            </div>
-                        </div>`;
-                        })
-                        sectionCheckboxEle.html(sectionsContent);
+                    console.log('response staus id', response.status)
+                    if (response.status == 200) {
+                        console.log(response.data)
+                        console.log(response.status)
 
-                    }
-
-                },
-                error: handleAjaxError,
-            })
-        })
-    }
-
-    function bindGroupsChangeEvent() {
-        $(document).on('change', '#editModal select[name="main_group_id"]', function() {
-            if (preventChangeEvent) return;
-            let slectedMainGroupEle = $(this)
-            let slectedSubMainGroupEle = $('#editModal select[name="sub_group_id"]')
-            let selectedValue = slectedMainGroupEle.val();
-            let selectedText = slectedMainGroupEle.find('option:selected').text();
-            if (!selectedValue) return;
-
-            const url = '{{ url('stock/material/groups') }}/' + selectedValue + '/filter';
-            const initialParams = {
-                "parent_id": selectedValue,
-            };
-            const queryString = $.param(initialParams);
-
-
-            $.ajax({
-                type: "GET",
-                url: `${url}?${queryString}`,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 200) {
-                        slectedSubMainGroupEle.html('');
-                        const subGroups = response.data;
-                        slectedSubMainGroupEle.prop('disabled', false)
-
-                        if (!subGroups.length) {
-                            slectedSubMainGroupEle.append(
-                                '<option value="">لاتوجد مجموعات فرعية</option>');
-                            return;
-                        }
-                        subGroups.forEach(group => {
-                            const newGroupsOptions =
-                                `<option value="${group.id}">${group.name}</option>`
-                            slectedSubMainGroupEle.append(newGroupsOptions)
+                        let html = `<table class="report_table table table-striped w-100">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>الكمية</th> 
+                                    <th>الوحدة</th> 
+                                    <th>السعر</th> 
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                        response.data.forEach(item => {
+                            html += `<tr>
+                                <td>${item.id}</td>
+                                <td>${item.material_recipe_name}</td>
+                                <td>${item.quantity}</td>
+                                <td>${unitToArabic[item.unit]}</td>
+                                <td>${item.display_price}</td>
+                            </tr>`;
                         });
-                    }
+                        html += `</tbody></table>`;
+                        reportModal.find('.report_content').html(html)
+                        $(".report_table").DataTable({
+                            scrollY: '405px',
+                            paging: false,
+                            dom: "<'.row'<'.col-md-6 mb-2'f><'.col-md-6 report_setting text-start mb-2'B><'.col-12 mt-2 text-center't><'.col-12'i>>",
+                            buttons: [
+                                "copy",
+                                "csv",
+                                "excel",
+                                {
+                                    extend: "pdfHtml5",
+                                    orientation: 'landscape',
+                                    download: "open",
+                                    customize: function(doc) {
+                                        // Define custom styles
+                                        doc.defaultStyle.font = "Cairo";
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Ensure RTL direction
+                                            }
+                                        };
 
+                                        // Add a header
+                                        doc.header = {
+                                            text: 'المكونات طباعة ', // Arabic text
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
+                                        // Apply general row styles
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
+
+                                        // Adjust column widths
+                                        table.widths = [50, '*', '*',
+                                            '*', '*'
+                                        ]; // Define widths for each column
+                                    }
+                                },
+
+                                "print",
+                            ],
+                        });
+                        reportModal.modal('show')
+                        reportModal.find('#labelModel').text(title)
+                    }
                 },
                 error: handleAjaxError,
-            })
+            });
         });
-    }
+    });
 </script>

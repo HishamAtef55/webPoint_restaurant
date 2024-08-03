@@ -563,14 +563,16 @@
         // 
         $(model).find('input[name="name"]').val(response.data.name);
         $(model).find('input[name="cost"]').val(response.data.cost);
-        $(model).find('input[name="price"]').val(response.data.price);
-
-
 
         if (model.is('#editModal')) {
             $(model).find(
                 `input[name="materialType"][value="${response.data.material_type.name_en}"]`
             ).prop('checked', true);
+
+            var numericPrice = parseFloat(response.data.price.replace(/[^0-9,]/g, '').replace(',', '.'));
+
+            // Set the numeric value in the input
+            $(model).find('input[name="price"]').val(numericPrice);
 
         } else {
             if (response.data.material_type.name_en) {
@@ -584,6 +586,9 @@
 
                 $(model).find('.view_model_material_type').html(materialType);
             }
+
+            $(model).find('input[name="price"]').val(response.data.price);
+
 
         }
 

@@ -65,7 +65,6 @@ class StoreMaterialRequest extends FormRequest
     {
         $this->merge([
             'price' => !$this->price ? 0 : $this->price * 100,
-            'cost' => !$this->cost ? 0 : $this->cost * 100,
         ]);
     }
 

@@ -43,6 +43,7 @@ use App\Http\Controllers\StockReports\OperationsReportsController;
 use App\Http\Controllers\Stock\Items\FilterItemComponentController;
 use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 use App\Http\Controllers\StockReports\ManufacturingReportsController;
+use App\Http\Controllers\Stock\Material\FilterMaterialBranchController;
 use App\Http\Controllers\Stock\Material\FilterMaterialRecipeController;
 use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
 
@@ -149,11 +150,14 @@ Route::group(
         ], function () {
             Route::resource('recipe', MaterialRecipeController::class, [
                 'parameters' => [
-                    'recipe' => 'MaterialRecipe',
+                    'recipe' => 'materialRecipe',
                 ],
 
             ]);
-            Route::get('/recipe/{branch}/filter', FilterMaterialRecipeController::class);
+            Route::post('/recipe/filter', [MaterialRecipeController::class, 'filter'])
+                ->name('recipe.filter');
+            Route::get('/recipe/{branch}/filter', FilterMaterialBranchController::class);
+            Route::get('/recipe/filter/{material}', FilterMaterialRecipeController::class);
         });
     }
 );

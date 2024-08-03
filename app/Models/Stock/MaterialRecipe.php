@@ -11,9 +11,6 @@ class MaterialRecipe extends Model
     use HasFactory;
 
 
-
-    use HasFactory;
-
     /**
      * table
      *
@@ -26,7 +23,7 @@ class MaterialRecipe extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['material_id', 'quantity', 'price'];
+    protected $fillable = ['material_id', 'material_recipe_id', 'quantity', 'price', 'unit'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -57,6 +54,6 @@ class MaterialRecipe extends Model
      */
     public function material(): BelongsTo
     {
-        return $this->belongsTo(Material::class, 'material_id', 'id');
+        return $this->belongsTo(Material::class, 'material_recipe_id', 'id');
     }
 }

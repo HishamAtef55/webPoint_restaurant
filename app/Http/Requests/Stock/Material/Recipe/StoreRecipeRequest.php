@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Stock\Material\Recipe;
 
+use App\Enums\Unit;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRecipeRequest extends FormRequest
@@ -13,7 +15,7 @@ class StoreRecipeRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,22 @@ class StoreRecipeRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'material_id' => ['required', 'integer', 'exists:stock_materials,id'],
+            'components' => ['required', 'array'],
+            'components.*.code' => ['required', 'integer', 'exists:stock_materials,id'],
+            'components.*.quantity' => ['required', 'integer', 'min:1'],
+            'components.*.price' => ['required'],
+            'components.*.unit' => ['required', 'string', new Enum(Unit::class)]
         ];
+    }
+
+    public function messages()
+    {
+        return
+            [
+                'material_id.required' => __('برجاء اختيار الخامة'),
+                'material_id.exists' => __('الخامة غير متاحة'),
+                'components.required' => __('برجاء اختيار مكونات الخامة'),
+            ];
     }
 }

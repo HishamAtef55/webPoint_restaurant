@@ -108,12 +108,12 @@ class Material extends Model
     }
 
     /**
-     * variants
+     * recipes
      *
      * @return HasMany
      */
 
-    public function variants(): HasMany
+    public function recipes(): HasMany
     {
         return $this->hasMany(MaterialRecipe::class, 'material_id', 'id');
     }
@@ -125,7 +125,7 @@ class Material extends Model
      */
     public function getTotalQuantityAttribute()
     {
-        return $this->variants()->sum('quantity');
+        return $this->recipes()->sum('quantity');
     }
 
     /**
@@ -133,10 +133,8 @@ class Material extends Model
      *
      * @return float
      */
-    public function getTotalCostAttribute()
+    public function getTotalPriceAttribute()
     {
-        return $this->variants()->sum(function ($variant) {
-            return $variant->quantity * $variant->price;
-        });
+        return $this->recipes()->sum('price');
     }
 }

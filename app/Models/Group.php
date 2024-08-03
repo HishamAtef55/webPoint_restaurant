@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\menu;
 use App\Models\Sub_group;
+use App\Models\Stock\Section;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -46,6 +47,6 @@ class Group extends Model
      */
     public function sections(): BelongsToMany
     {
-        return $this->belongsToMany(StockSection::class, 'stock_section_groups', 'section_id', 'group_id');
+        return $this->belongsToMany(Section::class, 'stock_section_groups', 'section_id', 'group_id');
     }
 }

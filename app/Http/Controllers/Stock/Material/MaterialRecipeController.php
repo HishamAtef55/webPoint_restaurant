@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 use App\Models\Stock\Material;
 use App\Models\Stock\StockGroup;
 use App\Http\Controllers\Controller;
+use App\Models\Stock\MaterialRecipe;
+use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Http\Resources\Stock\MaterialRecipeResource;
+use App\Http\Requests\Stock\Material\StoreMaterialRequest;
+use App\Http\Requests\Stock\Material\Recipe\StoreRecipeRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class MaterialRecipeController extends Controller
 {
@@ -23,7 +31,6 @@ class MaterialRecipeController extends Controller
         $materials->map(function ($material) {
             $material->unit = Unit::view($material->unit);
         });
-        // dd($materials);
         return view('stock.Material.Recipe.index', compact('branchs', 'materials'));
     }
 
@@ -38,14 +45,32 @@ class MaterialRecipeController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * store
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  StoreRecipeRequest $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(
+        StoreRecipeRequest $request
+    ): JsonResponse {
+        foreach ($request->validated()['components'] as $component) {
+            MaterialRecipe::updateOrCreate(
+                [
+                    'material_id' => $request->validated()['material_id'],
+                    'material_recipe_id' => $component['code']
+                ],
+                [
+                    'quantity' => $component['quantity'],
+                    'price' => $component['price'] * 100,
+                    'unit' => $component['unit']
+                ]
+
+            );
+        }
+        return response()->json([
+            'message' => "تم إنشاء مكونات الخامة بنجاح",
+            'status' => Response::HTTP_CREATED
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -56,7 +81,6 @@ class MaterialRecipeController extends Controller
      */
     public function show($id)
     {
-        //
     }
 
     /**
@@ -83,13 +107,34 @@ class MaterialRecipeController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * destroy.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param   MaterialRecipe $materialRecipe
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(
+        MaterialRecipe $materialRecipe
+    ): JsonResponse {
+        if ($materialRecipe->delete()) {
+            return response()->json([
+                'message' => 'تم حذف مكون الخامة بنجاح',
+                'status' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+        }
+    }
+
+    /**
+     * filter
+     *
+     * @return AnonymousResourceCollection
+     */
+    public function filter(): AnonymousResourceCollection
     {
-        //
+        return MaterialRecipeResource::collection(
+            MaterialRecipe::get()
+        )->additional([
+            'message' => 'bfbfd',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 }

@@ -94,4 +94,11 @@ class UpdateMaterialRequest extends FormRequest
             return $stockGroup->serial_nr . str_pad($nextSerialNr, strlen(self::INTIAL_MATERIAL_NR), '0', STR_PAD_LEFT);
         }
     }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'price' => !$this->price ? 0 : $this->price * 100,
+        ]);
+    }
 }
