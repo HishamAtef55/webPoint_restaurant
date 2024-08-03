@@ -11,9 +11,11 @@ use App\Casts\MaterialCast;
 use App\Enums\MaterialType;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Material\HasSerialNumber;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Material extends Model
 {
@@ -91,5 +93,50 @@ class Material extends Model
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+
+
+    /**
+     * IsManufactured
+     *
+     * @param  mixed $builder
+     * @return void
+     */
+    public function scopeIsManufactured(Builder $builder)
+    {
+        return $builder->where('material_type', MaterialType::MANUFACTURED_MATERIAL);
+    }
+
+    /**
+     * variants
+     *
+     * @return HasMany
+     */
+
+    public function variants(): HasMany
+    {
+        return $this->hasMany(MaterialRecipe::class, 'material_id', 'id');
+    }
+
+    /**
+     * Calculate the total quantity of the material across all variants.
+     *
+     * @return int
+     */
+    public function getTotalQuantityAttribute()
+    {
+        return $this->variants()->sum('quantity');
+    }
+
+    /**
+     * Calculate the total cost of the material across all variants.
+     *
+     * @return float
+     */
+    public function getTotalCostAttribute()
+    {
+        return $this->variants()->sum(function ($variant) {
+            return $variant->quantity * $variant->price;
+        });
     }
 }

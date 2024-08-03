@@ -74,8 +74,9 @@
                         <a class="text-muted py-1 d-block" href="{{ route('componentDetailsItem') }}"> مكونات تفاصيل
                             الاصناف </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'materialRecipe') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('materialRecipe') }}"> مكونات الخامات </a>
+                    <li class="@if (Route::current()->getName() == 'stock.material.recipe.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.recipe.index') }}"> مكونات
+                            الخامات </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'purchases') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('purchases') }}"> المشتريات </a>

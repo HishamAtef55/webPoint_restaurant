@@ -33,8 +33,8 @@ class StoreMaterialRequest extends FormRequest
         return
             [
                 'name'   => ['required', 'string', 'max:100', 'unique:stock_materials,name'],
-                'cost' => ['nullable', 'integer'],
-                'price' => ['nullable', 'integer'],
+                'cost' => ['required', 'integer'],
+                'price' => ['required', 'integer'],
                 'unit' => ['nullable', 'string', new Enum(Unit::class)],
                 'loss_ratio' => ['nullable', 'integer'],
                 'min_store' => ['nullable', 'integer'],
@@ -59,6 +59,14 @@ class StoreMaterialRequest extends FormRequest
                 'group_id.required' => __('برجاء اختيار المجموعة'),
                 'sectionIds.required'  => __('برجاء اختيار الأقسام'),
             ];
+    }
+
+    protected function prepareForValidation():void
+    {
+        $this->merge([
+            'price' => !$this->price ? 0 : $this->price * 100,
+            'cost' => !$this->cost ? 0 : $this->cost * 100,
+        ]);
     }
 
 
