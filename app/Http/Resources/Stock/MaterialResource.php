@@ -2,10 +2,12 @@
 
 namespace App\Http\Resources\Stock;
 
+use Money\Money;
 use App\Enums\Unit;
 use App\Casts\StorageCast;
 use App\Enums\StorageType;
 use App\Enums\MaterialType;
+use App\Foundation\Moneys\Moneys;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class MaterialResource extends JsonResource
@@ -22,7 +24,7 @@ class MaterialResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'cost' => $this->cost,
-            'price' => $this->price,
+            'price' => (new Moneys($this->price))->format(),
             'unit' =>  Unit::view($this->unit),
             'loss_ratio' => $this->loss_ratio,
             'serial_nr' => $this->serial_nr,

@@ -971,8 +971,8 @@
                         if (data.materials) {
                             data.materials.materials.forEach((material) => {
                                 html += `<li class="material_${material.material_id}">
-                            <span>${material.material_id}</span>
-                            <span>${material.material_name}</span>
+                            <span style="margin-left:15px;">${material.material_id}</span>
+                            <span >${material.material_name}</span>
                              <span style="margin-left:5px;">
                                 <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
                                </span>

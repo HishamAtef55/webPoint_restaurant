@@ -274,7 +274,7 @@
                             </div>
                             <div class="col">
                                 <div class="custom-form ">
-                                    <input type="number" name="price" id="view_model_price">
+                                    <input type="text" name="price" id="view_model_price">
                                     <label for="view_model_price">السعر</label>
                                 </div>
                             </div>

@@ -1,24 +1,53 @@
 <?php
 
 use App\Models\materialRecipe;
+use App\Http\Controllers\Stock\old;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Stock\MaterialHalk;
+use App\Http\Controllers\Stock\MaterialTransfer;
+use App\Http\Controllers\Stock\OrdersControllers;
+use App\Http\Controllers\Stock\ExchangeController;
 use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Stock\PurchasesController;
+use App\Http\Controllers\Stock\materialManufacturing;
+use App\Http\Controllers\Stock\OpenBalanceController;
+use App\Http\Controllers\Stock\InDirectCostController;
 use App\Http\Controllers\Stock\Stores\StoreController;
+use App\Http\Controllers\Stock\BackToStoresControllers;
 use App\Http\Controllers\Stock\ComponentItemsController;
-use App\Http\Controllers\Stock\MaterialRecipeController;
 use App\Http\Controllers\Stock\Groups\SubGroupController;
+use App\Http\Controllers\Stock\BackToSuppliersControllers;
 use App\Http\Controllers\Stock\Groups\MainGroupController;
 use App\Http\Controllers\Stock\Items\FilterItemController;
+use App\Http\Controllers\Stock\OpenBalanceDailyController;
 use App\Http\Controllers\Stock\Sections\SectionController;
 use App\Http\Controllers\Stock\Material\MaterialController;
+use App\Http\Controllers\StockReports\HalkReportsController;
 use App\Http\Controllers\Stock\Suppliers\SuppliersController;
+use App\Http\Controllers\StockReports\ItemsPricingController;
+use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\Stock\ComponentDetailsItemController;
 use App\Http\Controllers\Stock\Items\ItemComponentsController;
+use App\Http\Controllers\StockReports\TransferReportController;
 use App\Http\Controllers\Stock\Material\FilterSectionController;
+use App\Http\Controllers\StockReports\CardItemReportsController;
+use App\Http\Controllers\StockReports\ExchangesReportController;
+use App\Http\Controllers\StockReports\HalkItemReportsController;
+use App\Http\Controllers\StockReports\PurchasesReportController;
+use App\Http\Controllers\Stock\Material\FilterMaterialController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
+use App\Http\Controllers\Stock\Material\MaterialRecipeController;
+use App\Http\Controllers\StockReports\SuppliersReportsController;
+use App\Http\Controllers\StockReports\BackStoresReportsController;
+use App\Http\Controllers\StockReports\OperationsReportsController;
 use App\Http\Controllers\Stock\Items\FilterItemComponentController;
+use App\Http\Controllers\StockReports\BackSuppliersReportsController;
+use App\Http\Controllers\StockReports\ManufacturingReportsController;
+use App\Http\Controllers\Stock\Material\FilterMaterialBranchController;
+use App\Http\Controllers\Stock\Material\FilterMaterialRecipeController;
 use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
+use App\Http\Controllers\Stock\Material\FilterNotRecipeMaterialController;
 
 Route::group(
     [
@@ -92,6 +121,22 @@ Route::group(
         ], function () {
             Route::get('groups/{stockGroup}/filter', FilterSubGroupController::class)->name('groups.filter');
             Route::get('sections/{branch}/filter', FilterSectionController::class)->name('sections.filter');
+            Route::get('filter/{branch}', FilterMaterialController::class)->name('branchfilter');
+            Route::get('{branch}/filter', FilterNotRecipeMaterialController::class)->name('filter');
+
+            // material recipe routes
+            Route::resource('recipe', MaterialRecipeController::class, [
+                'parameters' => [
+                    'recipe' => 'materialRecipe',
+                ],
+
+            ]);
+            Route::post('/recipe/filter', [MaterialRecipeController::class, 'filter'])
+                ->name('recipe.filter');
+            Route::post('/recipe/repeat', [MaterialRecipeController::class, 'repeat'])
+                ->name('recipe.repeat');
+            Route::get('/recipe/{branch}/filter', FilterMaterialBranchController::class);
+            Route::get('/recipe/filter/{material}', FilterMaterialRecipeController::class);
         });
 
         /*
@@ -146,8 +191,11 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
 
+
+
+
 ######################################## Material Recipe ########################################
-Route::group(['prefix' => 'stock', 'controller' => MaterialRecipeController::class], function () {
+Route::group(['prefix' => 'stock', 'controller' => old::class], function () {
     Route::get('materialRecipe', 'index')->name('materialRecipe');
     Route::post('saveMaterialRecipe', 'saveMaterialRecipe')->name('saveMaterialRecipe');
     Route::post('getRecipeMaterialInMaterials', 'getRecipeMaterialInMaterials')->name('getRecipeMaterialInMaterials');
