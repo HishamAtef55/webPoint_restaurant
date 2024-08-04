@@ -533,6 +533,7 @@
                     icon: 'error',
                     title: "برجاء اختيار الخامة",
                 });
+                return ;
             }
             const url = '{{ url('stock/material/recipe/filter') }}';
             const initialParams = {
