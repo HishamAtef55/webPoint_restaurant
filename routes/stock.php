@@ -35,6 +35,7 @@ use App\Http\Controllers\StockReports\CardItemReportsController;
 use App\Http\Controllers\StockReports\ExchangesReportController;
 use App\Http\Controllers\StockReports\HalkItemReportsController;
 use App\Http\Controllers\StockReports\PurchasesReportController;
+use App\Http\Controllers\Stock\Material\FilterMaterialController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
 use App\Http\Controllers\Stock\Material\MaterialRecipeController;
 use App\Http\Controllers\StockReports\SuppliersReportsController;
@@ -46,6 +47,7 @@ use App\Http\Controllers\StockReports\ManufacturingReportsController;
 use App\Http\Controllers\Stock\Material\FilterMaterialBranchController;
 use App\Http\Controllers\Stock\Material\FilterMaterialRecipeController;
 use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
+use App\Http\Controllers\Stock\Material\FilterNotRecipeMaterialController;
 
 Route::group(
     [
@@ -119,6 +121,22 @@ Route::group(
         ], function () {
             Route::get('groups/{stockGroup}/filter', FilterSubGroupController::class)->name('groups.filter');
             Route::get('sections/{branch}/filter', FilterSectionController::class)->name('sections.filter');
+            Route::get('filter/{branch}', FilterMaterialController::class)->name('branchfilter');
+            Route::get('{branch}/filter', FilterNotRecipeMaterialController::class)->name('filter');
+
+            // material recipe routes
+            Route::resource('recipe', MaterialRecipeController::class, [
+                'parameters' => [
+                    'recipe' => 'materialRecipe',
+                ],
+
+            ]);
+            Route::post('/recipe/filter', [MaterialRecipeController::class, 'filter'])
+                ->name('recipe.filter');
+            Route::post('/recipe/repeat', [MaterialRecipeController::class, 'repeat'])
+                ->name('recipe.repeat');
+            Route::get('/recipe/{branch}/filter', FilterMaterialBranchController::class);
+            Route::get('/recipe/filter/{material}', FilterMaterialRecipeController::class);
         });
 
         /*
@@ -139,26 +157,6 @@ Route::group(
                 });
             }
         );
-
-        /*
-      * @route('stores)
-      */
-        Route::group([
-            'prefix' => 'material',
-            'as' => 'material.'
-
-        ], function () {
-            Route::resource('recipe', MaterialRecipeController::class, [
-                'parameters' => [
-                    'recipe' => 'materialRecipe',
-                ],
-
-            ]);
-            Route::post('/recipe/filter', [MaterialRecipeController::class, 'filter'])
-                ->name('recipe.filter');
-            Route::get('/recipe/{branch}/filter', FilterMaterialBranchController::class);
-            Route::get('/recipe/filter/{material}', FilterMaterialRecipeController::class);
-        });
     }
 );
 

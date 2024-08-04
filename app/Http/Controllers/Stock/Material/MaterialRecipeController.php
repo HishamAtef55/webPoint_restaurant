@@ -16,6 +16,7 @@ use App\Http\Resources\Stock\MaterialRecipeResource;
 use App\Http\Requests\Stock\Material\StoreMaterialRequest;
 use App\Http\Requests\Stock\Material\Recipe\StoreRecipeRequest;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\Stock\Material\Recipe\RepeatRecipeRequest;
 
 class MaterialRecipeController extends Controller
 {
@@ -128,12 +129,41 @@ class MaterialRecipeController extends Controller
      *
      * @return AnonymousResourceCollection
      */
-    public function filter(): AnonymousResourceCollection
+    public function filter(Request $request): AnonymousResourceCollection
     {
+        $materialId = $request->query('material_id');
         return MaterialRecipeResource::collection(
-            MaterialRecipe::get()
+            MaterialRecipe::byMaterialId($materialId)->get()
         )->additional([
-            'message' => 'bfbfd',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * repeat.
+     *
+     * @param  RepeatRecipeRequest $request
+     * @return JsonResponse
+     */
+    public function repeat(
+        RepeatRecipeRequest $request,
+    ): JsonResponse {
+        foreach ($request->validated()['material_id'] as $materialId) {
+            foreach ($request->validated()['components'] as $component) {
+                MaterialRecipe::create(
+                    [
+                        'material_id' => $materialId,
+                        'material_recipe_id' => $component['code'],
+                        'quantity' => $component['quantity'],
+                        'price' => $component['price'] * 100,
+                        'unit' => $component['unit']
+                    ]
+
+                );
+            }
+        }
+        return response()->json([
+            'message' => 'تم تكرار الخامة بنجاح',
             'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
     }

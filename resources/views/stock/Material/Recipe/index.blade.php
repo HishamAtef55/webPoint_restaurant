@@ -122,7 +122,7 @@
                             تكرار مكونات الخامات
                         </button>
                         <button id="print_components_model" class="btn btn-warning">طباعة المكونات</button>
-                        {{-- <button id="print_component" class="btn btn-warning">طباعة مكون</button> --}}
+                        <button id="print_component" class="btn btn-warning">طباعة مكون</button>
                     </div>
                 </div>
             </div>
@@ -141,15 +141,22 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-5">
-                            <div class="custom-form mt-3">
-                                <label for="fromItems">بيانات الخامات</label>
-                                <select class="form-control select2" id="fromItems">
+                            <p class="text-center fw-bold">From</p>
+                            <div class="custom-form mb-3">
+                                <label class="form-label" for="from_branch_id">اسم الفرع</label>
+                                <select class="form-control select2" id="from_branch_id" >
                                     <option disabled selected></option>
-                                    @foreach ($materials as $material)
-                                        <option data-price="{{ $material->price }}" value="{{ $material->code }}">
-                                            {{ $material->name }}</option>
-                                    @endforeach
+                                    @forelse ($branchs as $branch)
+                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    @empty
+                                        <option value="">لاتوجد خامات</option>
+                                    @endforelse
                                 </select>
+                            </div>
+                            <div class="custom-form mb-3">
+                                <label for="from_material_id"> اسم الخامة </label>
+                                <select class="form-control select2" 
+                                    id="from_material_id"></select>
                             </div>
                             <ul class='fromComponents'></ul>
                         </div>
@@ -157,18 +164,27 @@
                             <button class="btn dark-btn transAll">TransAll</button>
                         </div>
                         <div class="col-md-5">
-                            <div class="custom-form mt-3">
-                                <label for="toItems"> اسم الخامات </label>
-                                <select class="form-control select2" id="toItems">
+                            <p class="text-center fw-bold">From</p>
+                            <div class="custom-form mb-3">
+                                <label class="form-label" for="to_branch_id">اسم الفرع</label>
+                                <select class="form-control select2" id="to_branch_id">
                                     <option disabled selected></option>
-                                    @foreach ($materials as $material)
-                                        <option data-price="{{ $material->price }}" value="{{ $material->code }}">
-                                            {{ $material->name }}</option>
-                                    @endforeach
+                                    @forelse ($branchs as $branch)
+                                        <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                                    @empty
+                                        <option value="">لاتوجد خامات</option>
+                                    @endforelse
                                 </select>
+                            </div>
+                            <div class="custom-form mb-3">
+                                <label for="to_material_id"> اسم الخامة </label>
+                                <select class="form-control select2"  id="to_material_id"
+                                    multiple="multiple">
+                                    ></select>
                             </div>
                             <ul class='toComponents'></ul>
                         </div>
+
                     </div>
                 </div>
                 <div class="modal-footer">
