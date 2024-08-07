@@ -3,19 +3,21 @@
 namespace App\Models\Stock;
 
 use App\Enums\Unit;
+use App\Models\Item;
 use App\Models\Branch;
 use App\Casts\UnitCast;
 use App\Casts\StorageCast;
 use App\Enums\StorageType;
 use App\Casts\MaterialCast;
 use App\Enums\MaterialType;
+use App\Models\ComponentsItems;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\Material\HasSerialNumber;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Traits\Material\HasSerialNumber;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Material extends Model
 {
@@ -136,5 +138,14 @@ class Material extends Model
     public function getTotalPriceAttribute()
     {
         return $this->recipes()->sum('price');
+    }
+
+    /**
+     * items
+     * @return HasMany
+     */
+    public function items(): HasMany
+    {
+        return $this->hasMany(ComponentsItems::class, 'material_id', 'id');
     }
 }

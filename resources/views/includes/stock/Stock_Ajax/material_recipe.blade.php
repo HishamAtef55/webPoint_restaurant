@@ -60,13 +60,20 @@
                 '#storeMaterialRecipe select[name="manufactured_material_id"]')
 
             const url = '{{ url('stock/material/recipe') }}/' + selectedValue + '/filter';
-
+            let tableBody = $('.table-materials tbody')
             $.ajax({
                 type: "GET",
                 url: url,
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 200) {
+                        tableBody.html(
+                            '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                        );
+                        $('.percentage').val(0)
+                        $('.total-price').val(0)
+                        productQty.val(1)
+                        materialPriceEle.val(0)
                         let html = '<option value="" disabled selected></option>';
 
                         slectedMatrialRecipeEle.html('');
@@ -109,7 +116,6 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 200) {
-                        materialPriceEle.val(price)
                         productQty.focus().select();
                         let html = '';
                         let count = 1;
@@ -148,6 +154,7 @@
         });
 
         productQty.on('keyup', function(e) {
+            calcPricePercent()
             if (e.keyCode === 13) {
                 materials.select2('open');
             }
@@ -172,7 +179,8 @@
                 totalPrice += parseFloat($(this).text());
             });
             totalPriceInput.val(totalPrice.toFixed(2));
-
+            materialPrice = totalPriceInput.val() / productQty.val()
+            materialPriceEle.val(materialPrice.toFixed(2))
             // let percentage = (totalPrice / itemPrice.val()) * 100;
             // percentageInput.val(percentage.toFixed(2));
         }
@@ -237,6 +245,7 @@
                             <td> <button class="btn btn-danger delete_Component"><i class="fa-regular fa-trash-can"></i></button> </td>
 
                         </tr>`;
+
                         tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
                         tableBody.append($(html));
                     }
@@ -533,7 +542,7 @@
                     icon: 'error',
                     title: "برجاء اختيار الخامة",
                 });
-                return ;
+                return;
             }
             const url = '{{ url('stock/material/recipe/filter') }}';
             const initialParams = {

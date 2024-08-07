@@ -61,6 +61,11 @@
                 },
                 success: function(data) {
                     if (data.status == true) {
+                        tableBody.html(
+                            '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                        );
+                        $('.percentage').val(0)
+                        $('.total-price').val(0)
                         let html = '<option value="" disabled selected></option>';
                         let materialHtml = '<option value="" disabled selected></option>';
                         data.items.forEach((item) => {
@@ -141,6 +146,12 @@
                 },
                 success: function(data) {
                     if (data.status == true) {
+                        tableBody.html(
+                            '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                        );
+                        $('.percentage').val(0)
+                        $('.total-price').val(0)
+
                         let html = '<option value="" disabled selected></option>';
                         data.data.forEach((details) => {
                             html +=

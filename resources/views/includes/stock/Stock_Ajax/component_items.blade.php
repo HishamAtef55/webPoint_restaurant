@@ -59,11 +59,20 @@
 
         /*  ======================== Start All Functions ============================== */
         function getItems(branchVal, itemsDiv, materialDiv) {
+            let tableBody = $('.table-materials tbody');
+
             $.ajax({
                 type: "GET",
                 url: '{{ url('stock/items') }}/' + branchVal + '/filter',
                 dataType: 'json',
                 success: function(response) {
+                    tableBody.html(
+                        '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                    );
+                    $('.percentage').val(0)
+                    $('.total-price').val(0)
+
+
                     if (response.status == 200) {
                         let html = '<option value="" disabled selected></option>';
                         let materialHtml = '<option value="" disabled selected></option>';
@@ -151,16 +160,16 @@
                         let html = '';
                         let count = 1;
                         tableBody.html('');
-                            if (!data.materials || !data.materials.materials.length) {
-                                tableBody.html(
-                                    '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
-                                );
-                                $('.percentage').val(0)
-                                $('.total-price').val(0)
-                                return;
-                            }
-                                data.materials.materials.forEach((material) => {
-                                    html += `<tr id="${material.material_id}">
+                        if (!data.materials || !data.materials.materials.length) {
+                            tableBody.html(
+                                '<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>'
+                            );
+                            $('.percentage').val(0)
+                            $('.total-price').val(0)
+                            return;
+                        }
+                        data.materials.materials.forEach((material) => {
+                            html += `<tr id="${material.material_id}">
                                 <td>${count}</td>
                                 <td>${material.material_id}</td>
                                 <td>${material.material_name}</td>
@@ -426,6 +435,7 @@
                     title: "برجاء اختيار الفرع",
                 });
             }
+
             $.ajax({
                 type: "GET",
                 url: '{{ url('stock/items/components') }}/' + branchVal + '/filter',
@@ -440,6 +450,7 @@
                                     <th>الاسم</th>
                                     <th>السعر</th> 
                                     <th>التكلفة</th>
+                                    <th>الفرع</th>
                                 </tr>
                             </thead>
                             <tbody>`;
@@ -449,6 +460,7 @@
                                 <td>${item.name}</td>
                                 <td>${item.price}</td>
                                 <td>${item.cost}</td>
+                                <td>${item.branch}</td>
                             </tr>`;
                         });
                         html += `</tbody></table>`;
@@ -466,6 +478,15 @@
                                     orientation: 'landscape',
                                     download: "open",
                                     customize: function(doc) {
+                                        function getCurrentDateTime() {
+                                            const now = new Date();
+                                            // Format the date and time as needed, e.g., "dd/mm/yyyy hh:mm:ss"
+                                            const formattedDate = now
+                                                .toLocaleDateString(); // Arabic date format
+
+                                            return `${formattedDate}`;
+                                        }
+
                                         // Define custom styles
                                         doc.defaultStyle.font = "Cairo";
                                         doc.styles = {
@@ -510,7 +531,7 @@
 
                                         // Add a header
                                         doc.header = {
-                                            text: 'مكونات على لاتحتوى اصناف ', // Arabic text
+                                            text: `مكونات على لاتحتوى اصناف  - ${getCurrentDateTime()}`,
                                             fontSize: 16,
                                             bold: true,
                                             alignment: 'center',
@@ -580,7 +601,7 @@
 
                                         // Adjust column widths
                                         table.widths = [50, '*', '*',
-                                            '*'
+                                            '*', '*'
                                         ]; // Define widths for each column
                                     }
                                 },
@@ -598,35 +619,42 @@
         /*  ======================== End itemsWithOutMaterials ============================== */
         /*  ======================== Start componentWithoutItems ============================== */
         componentWithoutItems.on('click', function() {
+
+            let branchVal = branch.val();
+            if (!branchVal) {
+                Toast.fire({
+                    icon: 'error',
+                    title: "برجاء اختيار الفرع",
+                });
+            }
+
             let title = $(this).text();
             $.ajax({
-                url: "{{ route('componentWithoutItems') }}",
-                method: 'post',
-                data: {
-                    _token,
-                    branch: branch.val()
-                },
-                success: function(data) {
-                    if (data.status == true) {
+                url: '{{ url('stock/componentWithoutItems') }}/' + branchVal + '/filter',
+                type: "GET",
+                dataType: "json",
+                success: function(response) {
+                    if (response.status == 200) {
                         let html = `<table class="report_table table table-striped w-100">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
+                            <th>رقم</th>
+                            <th>اسم</th>
+                            <th>الفرع</th>
                         </tr>
                     </thead>
                     <tbody>`;
-                        data.data.forEach(component => {
+                        response.data.forEach(material => {
                             html += `<tr>
-                            <td>${component.code}</td>
-                            <td>${component.material}</td>
+                            <td>${material.id}</td>
+                            <td>${material.name}</td>
+                            <td>${material.branch.name}</td>
                         </tr>`
                         });
                         html += `</tbody></table>`;
                         reportModal.find('.report_content').html(html)
                         $(".report_table").DataTable({
                             scrollY: '405px',
-                            // scrollCollapse: true,
                             paging: false,
                             dom: "<'.row'<'.col-md-6 mb-2'f><'.col-md-6 report_setting text-start mb-2'B><'.col-12 mt-2 text-center't><'.col-12'i>>",
                             buttons: [
@@ -637,21 +665,134 @@
                                     extend: "pdfHtml5",
                                     download: "open",
                                     customize: function(doc) {
+                                        function getCurrentDateTime() {
+                                            const now = new Date();
+                                            // Format the date and time as needed, e.g., "dd/mm/yyyy hh:mm:ss"
+                                            const formattedDate = now
+                                                .toLocaleDateString(); // Arabic date format
+
+                                            return `${formattedDate}`;
+                                        }
+
+                                        // Define custom styles
                                         doc.defaultStyle.font = "Cairo";
-                                        doc.styles.tableBodyEven.alignment =
-                                            "center";
-                                        doc.styles.tableBodyOdd.alignment =
-                                            "center";
-                                        doc.styles.tableBodyEven
-                                            .lineHeight = "1.5";
-                                        doc.styles.tableBodyOdd.lineHeight =
-                                            "1.5";
-                                        doc.styles.tableFooter.alignment =
-                                            "center";
-                                        doc.styles.tableHeader.alignment =
-                                            "center";
-                                    },
+                                        doc.styles = {
+                                            tableHeader: {
+                                                bold: true,
+                                                fontSize: 12,
+                                                fillColor: '#f0f0f0',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                color: 'black',
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyEven: {
+                                                fontSize: 10,
+                                                fillColor: '#ffffff',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableBodyOdd: {
+                                                fontSize: 10,
+                                                fillColor: '#f9f9f9',
+                                                alignment: 'center',
+                                                margin: [0, 5, 0, 5],
+                                                lineHeight: "1.5",
+                                                border: [false, false,
+                                                    false, true
+                                                ], // Bottom border
+                                            },
+                                            tableFooter: {
+                                                fontSize: 10,
+                                                alignment: 'center',
+                                                margin: [0, 10, 0, 10],
+                                                direction: 'rtl' // Ensure RTL direction
+                                            }
+                                        };
+
+                                        // Add a header
+                                        doc.header = {
+                                            text: `اصناف على لاتحتوى مكونات  - ${getCurrentDateTime()}`,
+                                            fontSize: 16,
+                                            bold: true,
+                                            alignment: 'center',
+                                            margin: [0, 20, 0,
+                                                20
+                                            ], // Top, right, bottom, left
+                                        };
+
+                                        // Add a footer with page numbers
+                                        doc.footer = function(currentPage,
+                                            pageCount) {
+                                            return {
+                                                text: 'Page ' +
+                                                    currentPage +
+                                                    ' of ' + pageCount,
+                                                alignment: 'center',
+                                                fontSize: 10,
+                                                margin: [0, 10, 0,
+                                                    10
+                                                ], // Top, right, bottom, left
+                                            };
+                                        };
+
+                                        // Adjust page margins for more width
+                                        doc.pageMargins = [40, 60, 40,
+                                            60
+                                        ]; // left, top, right, bottom
+
+                                        // Adjust table styles
+                                        const table = doc.content[1].table;
+
+                                        // Reverse column order in table body
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.reverse();
+                                            }
+                                        });
+
+                                        // Reverse column widths if they are defined
+                                        if (table.widths) {
+                                            table.widths.reverse();
+                                        }
+
+                                        // Apply general row styles
+                                        table.body.forEach(row => {
+                                            if (row.length) {
+                                                row.forEach(
+                                                    cell => {
+                                                        if (cell
+                                                            .text
+                                                        ) {
+                                                            cell.fontSize =
+                                                                10;
+                                                            cell.alignment =
+                                                                'right';
+                                                            cell.border = [
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                true
+                                                            ]; // Bottom border for each cell
+
+                                                        }
+                                                    });
+                                            }
+                                        });
+
+                                        // Adjust column widths
+                                        table.widths = [40, '*',
+                                            '*'
+                                        ]; // Define widths for each column
+                                    }
                                 },
+
                                 "print",
                             ],
                         });
@@ -1294,6 +1435,7 @@
                 groups.push(+$(this).val());
             });
 
+
             $.ajax({
                 url: "{{ route('printComponents') }}",
                 method: 'post',
@@ -1304,54 +1446,55 @@
                     details,
                 },
                 success: function(data) {
+
                     if (data.status == true) {
                         let html = `<table class="report_table table w-100">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>quantity</th>
-                            <th>Price</th>
-                            <th>percentage</th>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>النسبة</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>`;
                         data.data.forEach(item => {
-                            if (groups.indexOf(item.group_id) != -1) {
-                                html += `<tr>
-                            <td>${item.id}</td>
-                            <td>${item.name}</td>
-                            <td></td>
-                            <td>${item.cost_price || 0}</td>
-                            <td></td>
-                            <td>item</td>
-                        </tr>`
-                                if (item.custom_materials != null) {
-                                    html += `<tr class="table-warning">
-                                <td></td>
-                                <td>الخامات</td>
-                                <td></td>
-                                <td>${item.custom_materials.cost}</td>
-                                <td>${item.custom_materials.percentage}</td>
-                                <td>details components</td>
-                            </tr>`
-                                    item.custom_materials.materials.forEach(
-                                        material => {
-                                            html += `<tr class="table-success">
-                                    <td>${material.material_id}</td>
-                                    <td>${material.material_name}</td>
-                                    <td>${material.quantity}</td>
-                                    <td>${material.cost}</td>
-                                    <td></td>
-                                    <td>material</td>
-                                </tr>`
-                                        });
-                                }
-                                if (item.details) {
-                                    if (item.details.length > 0) {
-                                        item.details.forEach(detail => {
-                                            html += `<tr class="table-info">
+                            console.log(item)
+                            html += `<tr>
+                                            <td>${item.id}</td>
+                                            <td>${item.name}</td>
+                                            <td></td>
+                                            <td>${item.cost_price || 0}</td>
+                                            <td></td>
+                                            <td>item</td>
+                                        </tr>`
+                            if (item.custom_materials != null) {
+                                html += `<tr class="table-warning">
+                                                <td></td>
+                                                <td>الخامات</td>
+                                                <td></td>
+                                                <td>${item.custom_materials.cost}</td>
+                                                <td>${item.custom_materials.percentage}</td>
+                                                <td>details components</td>
+                                            </tr>`
+                                item.custom_materials.materials.forEach(
+                                    material => {
+                                        html += `<tr class="table-success">
+                                                        <td>${material.material_id}</td>
+                                                        <td>${material.material_name}</td>
+                                                        <td>${material.quantity}</td>
+                                                        <td>${material.cost}</td>
+                                                        <td></td>
+                                                        <td>material</td>
+                                                    </tr>`
+                                    });
+                            }
+                            if (item.details) {
+                                if (item.details.length > 0) {
+                                    item.details.forEach(detail => {
+                                        html += `<tr class="table-info">
                                         <td>${detail.detail_id}</td>
                                         <td>${detail.details.name}</td>
                                         <td></td>
@@ -1359,9 +1502,9 @@
                                         <td></td>
                                         <td>detail</td>
                                     </tr>`
-                                            if (detail.materials.length ==
-                                                1) {
-                                                html += `<tr class="table-warning">
+                                        if (detail.materials.length ==
+                                            1) {
+                                            html += `<tr class="table-warning">
                                             <td></td>
                                             <td>الخامات</td>
                                             <td></td>
@@ -1369,10 +1512,10 @@
                                             <td>${detail.materials[0].percentage}</td>
                                             <td>details components</td>
                                         </tr>`
-                                                detail.materials[0]
-                                                    .materials.forEach(
-                                                        material => {
-                                                            html += `<tr class="table-success">
+                                            detail.materials[0]
+                                                .materials.forEach(
+                                                    material => {
+                                                        html += `<tr class="table-success">
                                                 <td>${material.material_id}</td>
                                                 <td>${material.material_name}</td>
                                                 <td>${material.quantity}</td>
@@ -1380,12 +1523,12 @@
                                                 <td></td>
                                                 <td>material</td>
                                             </tr>`
-                                                        });
-                                            }
-                                        });
-                                    }
+                                                    });
+                                        }
+                                    });
                                 }
                             }
+
                         });
                         html += `</tbody></table>`;
                         $('.details-report').html(html)
@@ -1573,7 +1716,5 @@
                 e.preventDefault(); // Prevent the modal from closing
             }
         });
-
-
     });
 </script>

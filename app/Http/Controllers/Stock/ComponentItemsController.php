@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Stock;
 use App\Models\Item;
 use App\Models\Units;
 use App\Models\Branch;
-use App\Models\material;
 use App\Models\MainGroup;
 use Illuminate\Http\Request;
 use App\Models\MainComponents;
+use App\Models\Stock\Material;
 use App\Models\ComponentsItems;
 use App\Models\MaterialSections;
 use App\Models\Stock\StockGroup;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Stock\MaterialResource;
+use Symfony\Component\HttpFoundation\Response;
 use App\Models\Stock\Material as StockMaterial;
 use App\Http\Requests\Stock\Item\TransferItemComponentRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ComponentItemsController extends Controller
 {
@@ -182,28 +185,22 @@ class ComponentItemsController extends Controller
         }
         return ['status' => $this->status, 'data' => $data];
     }
-    public function componentWithoutItems(Request $request)
-    {
-        $data = [];
-        $counter = 0;
-        if ($request->branch) {
-            $branch = $request->branch;
-            $material = material::with(['components' => function ($query) use ($branch) {
-                $query->where('branch', $branch);
-            }])->get();
-            foreach ($material as $ma) {
-                $con = sizeof($ma->components);
-                if ($con == 0) {
-                    $data[$counter]['material'] = $ma->name;
-                    $data[$counter]['code'] = $ma->code;
-                    $counter++;
-                }
-            }
-            $this->status = true;
-        } else {
-            $this->status = false;
-            $data = 'select branch please';
-        }
-        return ['status' => $this->status, 'data' => $data];
+    /**
+     * @param Branch $branch
+     * @return AnonymousResourceCollection
+     */
+    public function componentWithoutItems(
+        Branch $branch
+    ): AnonymousResourceCollection {
+
+        return MaterialResource::collection(
+            Material::doesntHave('items')
+                ->whereBelongsTo($branch)
+                ->get()
+        )->additional([
+            'message' => null,
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
+
     }
 }

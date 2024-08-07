@@ -174,7 +174,7 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentItemsController::cla
     Route::post('printComponents', 'printComponents')->name('printComponents');
     Route::post('printItems', 'printItems')->name('printItems');
     Route::post('printComponent', 'printComponent')->name('printComponent');
-    Route::post('componentWithoutItems', 'componentWithoutItems')->name('componentWithoutItems');
+    Route::get('componentWithoutItems/{branch}/filter', 'componentWithoutItems')->name('componentWithoutItems');
 });
 
 #################################### Component details item ############################################
