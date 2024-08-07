@@ -27,11 +27,12 @@ class StoreRecipeRequest extends FormRequest
     {
         return [
             'material_id' => ['required', 'integer', 'exists:stock_materials,id'],
+            'component_qty' => ['required','integer'],
             'components' => ['required', 'array'],
             'components.*.code' => ['required', 'integer', 'exists:stock_materials,id'],
             'components.*.quantity' => ['required', 'integer', 'min:1'],
             'components.*.price' => ['required'],
-            'components.*.unit' => ['required', 'string', new Enum(Unit::class)]
+            'components.*.unit' => ['required', 'string', new Enum(Unit::class)],
         ];
     }
 

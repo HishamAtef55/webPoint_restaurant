@@ -115,6 +115,7 @@
                 url: '{{ url('stock/material/recipe/filter') }}/' + selectedValue,
                 dataType: 'json',
                 success: function(response) {
+                    console.log(response)
                     if (response.status === 200) {
                         productQty.focus().select();
                         let html = '';
@@ -145,8 +146,10 @@
                             });
                         });
                         // $('.percentage').val(data.materials.percentage)
+                        productQty.val(response.component_qty)
                         totalPriceInput.val(response.total_price)
                         tableBody.append($(html));
+                        calcPricePercent()
 
                     }
                 }
@@ -283,6 +286,7 @@
                 data: {
                     material_id: manfacturedMaterialSelectEle.val(),
                     components: materialArray,
+                    component_qty: productQty.val()
                 },
                 success: function(response) {
 

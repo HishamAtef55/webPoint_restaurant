@@ -17,6 +17,7 @@ use App\Http\Requests\Stock\Material\StoreMaterialRequest;
 use App\Http\Requests\Stock\Material\Recipe\StoreRecipeRequest;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Requests\Stock\Material\Recipe\RepeatRecipeRequest;
+use App\Models\Stock\MaterialComponent;
 
 class MaterialRecipeController extends Controller
 {
@@ -67,7 +68,16 @@ class MaterialRecipeController extends Controller
                 ]
 
             );
+            MaterialComponent::updateOrCreate(
+                [
+                    'material_id' => $request->validated()['material_id'],
+                ],
+                [
+                    'qty' => $request->validated()['component_qty'],
+                ]
+                );
         }
+
         return response()->json([
             'message' => "تم إنشاء مكونات الخامة بنجاح",
             'status' => Response::HTTP_CREATED

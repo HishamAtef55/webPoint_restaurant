@@ -15,7 +15,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class FilterMaterialRecipeController extends Controller
 {
-    // $materials = Material::IsManufactured()->whereBelongsTo($branch)->get();
     /**
      * __invoke
      *
@@ -30,6 +29,7 @@ class FilterMaterialRecipeController extends Controller
             $material->recipes
         )->additional([
             'total_price' => $material->total_price / 100,
+            'component_qty' => $material->component->qty,
             'message' => null,
             'status' => Response::HTTP_OK
         ]);

@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Material extends Model
 {
@@ -118,6 +119,17 @@ class Material extends Model
     public function recipes(): HasMany
     {
         return $this->hasMany(MaterialRecipe::class, 'material_id', 'id');
+    }
+
+    /**
+     * component
+     *
+     * @return HasOne
+     */
+
+    public function component(): HasOne
+    {
+        return $this->hasOne(MaterialComponent::class, 'material_id', 'id');
     }
 
     /**
