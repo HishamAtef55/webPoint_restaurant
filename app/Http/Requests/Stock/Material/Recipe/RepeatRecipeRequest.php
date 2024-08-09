@@ -27,6 +27,7 @@ class RepeatRecipeRequest extends FormRequest
     {
         return [
             'material_id' => ['required', 'array'],
+            'component_qty' => ['required','integer'],
             'material_id.*' => ['required', 'integer', 'exists:stock_materials,id'],
             'components' => ['required', 'array'],
             'components.*.code' => ['required', 'integer', 'exists:stock_materials,id'],

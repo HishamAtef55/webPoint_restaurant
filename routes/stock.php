@@ -195,16 +195,16 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
 
 
 ######################################## Material Recipe ########################################
-Route::group(['prefix' => 'stock', 'controller' => old::class], function () {
-    Route::get('materialRecipe', 'index')->name('materialRecipe');
-    Route::post('saveMaterialRecipe', 'saveMaterialRecipe')->name('saveMaterialRecipe');
-    Route::post('getRecipeMaterialInMaterials', 'getRecipeMaterialInMaterials')->name('getRecipeMaterialInMaterials');
-    Route::post('transferMaterialRecipe', 'transferMaterialRecipe')->name('transferMaterialRecipe');
-    Route::post('deleteMaterialRecipe', 'deleteMaterialRecipe')->name('deleteMaterialRecipe');
-    // This is Routs Reports in page
-    Route::post('getMaterialReports', 'getMaterialReports')->name('getMaterialReports');
-    Route::post('getMaterialsReports', 'getMaterialsReports')->name('getMaterialsReports');
-});
+// Route::group(['prefix' => 'stock', 'controller' => old::class], function () {
+//     Route::get('materialRecipe', 'index')->name('materialRecipe');
+//     Route::post('saveMaterialRecipe', 'saveMaterialRecipe')->name('saveMaterialRecipe');
+//     Route::post('getRecipeMaterialInMaterials', 'getRecipeMaterialInMaterials')->name('getRecipeMaterialInMaterials');
+//     Route::post('transferMaterialRecipe', 'transferMaterialRecipe')->name('transferMaterialRecipe');
+//     Route::post('deleteMaterialRecipe', 'deleteMaterialRecipe')->name('deleteMaterialRecipe');
+//     // This is Routs Reports in page
+//     Route::post('getMaterialReports', 'getMaterialReports')->name('getMaterialReports');
+//     Route::post('getMaterialsReports', 'getMaterialsReports')->name('getMaterialsReports');
+// });
 
 ######################################## Purchases #############################################
 Route::group(['prefix' => 'stock', 'controller' => PurchasesController::class], function () {

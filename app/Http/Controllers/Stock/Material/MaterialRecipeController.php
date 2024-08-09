@@ -9,15 +9,16 @@ use App\Models\Stock\Material;
 use App\Models\Stock\StockGroup;
 use App\Http\Controllers\Controller;
 use App\Models\Stock\MaterialRecipe;
-use Symfony\Component\HttpFoundation\Response;
+use App\Models\Stock\MaterialComponent;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Resources\Stock\MaterialRecipeResource;
+use App\Http\Resources\Stock\MaterialComponentResource;
 use App\Http\Requests\Stock\Material\StoreMaterialRequest;
 use App\Http\Requests\Stock\Material\Recipe\StoreRecipeRequest;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Requests\Stock\Material\Recipe\RepeatRecipeRequest;
-use App\Models\Stock\MaterialComponent;
 
 class MaterialRecipeController extends Controller
 {
@@ -75,7 +76,7 @@ class MaterialRecipeController extends Controller
                 [
                     'qty' => $request->validated()['component_qty'],
                 ]
-                );
+            );
         }
 
         return response()->json([
@@ -136,15 +137,17 @@ class MaterialRecipeController extends Controller
 
     /**
      * filter
-     *
+     * @param Request $request
      * @return AnonymousResourceCollection
      */
     public function filter(Request $request): AnonymousResourceCollection
     {
         $materialId = $request->query('material_id');
+        $MaterialComponent = MaterialComponent::firstWhere('material_id', $materialId);
         return MaterialRecipeResource::collection(
             MaterialRecipe::byMaterialId($materialId)->get()
         )->additional([
+            'material_component' => MaterialComponentResource::make($MaterialComponent),
             'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
     }
@@ -159,6 +162,14 @@ class MaterialRecipeController extends Controller
         RepeatRecipeRequest $request,
     ): JsonResponse {
         foreach ($request->validated()['material_id'] as $materialId) {
+
+            MaterialComponent::create(
+                [
+                    'material_id' => $materialId,
+                    'qty' => $request->validated()['component_qty'],
+                ],
+            );
+
             foreach ($request->validated()['components'] as $component) {
                 MaterialRecipe::create(
                     [

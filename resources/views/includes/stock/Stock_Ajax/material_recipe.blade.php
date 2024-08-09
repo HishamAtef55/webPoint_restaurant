@@ -805,16 +805,16 @@
                         if (response.data) {
                             response.data.forEach((material) => {
                                 html += `<li class="material_${material.material_recipe_id}">
-                            <span style="margin-left:15px;">${material.material_recipe_id}</span>
-                            <span>${material.material_recipe_name}</span>
-                             <span style="margin-left:5px;">
-                                <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
-                               </span>
-                            <span><input type="number" value="${material.quantity}" class="qty" readonly /></span>
-                            <span class="price d-none">${material.price}</span>
-                            <input type="hidden" value="${material.price / material.quantity}"/>`
-                                html += `</li>`;
+                                    <span style="margin-left:15px;">${material.material_recipe_id}</span>
+                                    <span>${material.material_recipe_name}</span>
+                                    <span style="margin-left:5px;">
+                                        <input class="unit" data-unit=${material.unit} value="${unitToArabic[material.unit]}" />
+                                    </span>
+                                    <span><input type="number" value="${material.quantity}" class="qty" readonly /></span>
+                                    <span class="price d-none">${material.price}</span>
+                                </li>`;
                             });
+                            html += `<input type="hidden" class="component_qty" value="${response.material_component.qty}" />`;
                         }
                         fromList.html(html)
                     }
@@ -979,9 +979,9 @@
 
             let dataToSend = {
                 material_id: to_manfuactured_material_id,
-                components: componentsArray
+                components: componentsArray,
+                component_qty:$('.component_qty').val()
             };
-            console.log(dataToSend)
 
             let button = $(this);
             let originalHtml = button.html();
