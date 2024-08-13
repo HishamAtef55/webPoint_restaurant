@@ -118,6 +118,20 @@ class MaterialController extends Controller
     public function destroy(
         Material $material
     ): JsonResponse {
+
+        if ($material->hasRecipe()) {
+            return response()->json([
+                'message' => 'لايمكن حذف الخامة لإنها تحتوى على خامات',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ]);
+        }
+
+        if ($material->hasDetails()) {
+            return response()->json([
+                'message' => 'لايمكن حذف الخامة لإنها تحتوى على فواتير',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ]);
+        }
         if ($material->delete()) {
             return response()->json([
                 'message' => 'تم حذف الخامة',

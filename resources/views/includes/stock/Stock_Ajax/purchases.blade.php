@@ -361,9 +361,10 @@
 
             Swal.fire({
                 title: 'حذف !',
-                text: 'هل أنت متأكد من حذف الخامة',
+                text: 'هل انت متأكد من حذف الخامة',
                 icon: 'warning',
                 showCancelButton: true,
+                showLoaderOnConfirm: true,
                 confirmButtonColor: '#5cb85c',
                 cancelButtonColor: '#d33',
                 cancelButtonText: 'لا',
@@ -402,17 +403,18 @@
                                 },
                             });
                         }
-                    }).then(() => {
-                        if (tableBody.find('tr').length === 0) {
-                            tableBody.append(
-                                `<tr class="not-found">
+                    })
+                }
+
+            });
+
+            if (tableBody.find('tr').length === 0) {
+                tableBody.append(
+                    `<tr class="not-found">
                             <td colspan="10">لا يوجد بيانات</td>
                         </tr>`
-                            );
-                        }
-                    });
-                }
-            });
+                );
+            }
         });
 
 

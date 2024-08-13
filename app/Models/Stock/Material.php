@@ -182,4 +182,27 @@ class Material extends Model
     {
         return $this->hasMany(PurchasesDetails::class, 'material_id', 'id');
     }
+
+
+    /**
+     * hasDetails
+     *
+     * @return bool
+     */
+
+    public function hasDetails(): bool
+    {
+        return (bool) $this->details()->count();
+    }
+
+    /**
+     * storageCapacity
+     *
+     * @return bool
+     */
+
+    public function hasRecipe(): bool
+    {
+        return (bool) $this->recipes()->count();
+    }
 }

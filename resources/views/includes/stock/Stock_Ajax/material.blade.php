@@ -219,15 +219,11 @@
         const id = $(this).data('id');
         const row = $(this).closest('tr');
         Swal.fire({
-            title: 'حذف !',
-            text: 'هل انت متأكد من حذف الخامة',
-            icon: 'warning',
-            showCancelButton: true,
-            showLoaderOnConfirm: true,
-            confirmButtonColor: '#5cb85c',
-            cancelButtonColor: '#d33',
-            cancelButtonText: 'لا',
-            confirmButtonText: 'نعم',
+            if (response.status == 422) {
+                                handleResponseMessageError(response.message,
+                                    'خطأ', 'error')
+                                resolve();
+                            }
             preConfirm: () => {
                 return new Promise((resolve) => {
                     $.ajax({
@@ -240,6 +236,12 @@
                                     'تم الحذف', 'success')
 
                                 row.remove();
+                                resolve();
+                            }
+
+                            if (response.status == 422) {
+                                handleResponseMessageError(response.message,
+                                    'خطأ', 'error')
                                 resolve();
                             }
                         },
