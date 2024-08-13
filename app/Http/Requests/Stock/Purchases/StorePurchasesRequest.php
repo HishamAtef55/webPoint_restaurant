@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Http\Requests\Stock\Purchases;
+
+use App\Enums\PaymentType;
+use App\Enums\PurchasesMethod;
+use Illuminate\Validation\Rules\Enum;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StorePurchasesRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+
+            'payment_type' => ['required', 'string'],
+
+            'purchases_method' => ['required', 'string'],
+
+            'serial_nr' => ['required', 'string', 'unique:stock_purchases,serial_nr'],
+
+            'notes' => 'nullable|string',
+
+
+            'tax' => 'required|integer',
+
+            'sumTotal' => 'required',
+
+
+            'purchases_date' => 'required|date',
+
+
+            'supplier_id' => [
+                'required',
+                'exists:stock_suppliers,id'
+            ],
+
+            'store_id' => [
+                'required_if:purchases_method,' . PurchasesMethod::STORES->value,
+            ],
+
+            'section_id' => [
+                'required_if:purchases_method,' . PurchasesMethod::SECTIONS->value,
+            ],
+
+
+            'materialArray' => 'required',
+            'materialArray.*.material_id' => [
+                'required',
+                'integer',
+                'exists:stock_materials,id'
+            ],
+            'materialArray.*.expire_date' => [
+                'required',
+                'date'
+            ],
+            'materialArray.*.qty' => [
+                'required',
+                'integer'
+            ],
+            'materialArray.*.price' => [
+                'required',
+                'integer'
+            ],
+            'materialArray.*.discount' => [
+                'required',
+                'integer'
+            ],
+            'materialArray.*.total' => [
+                'required',
+                'integer'
+            ],
+
+            'purchases_image' => 'nullable'
+        ];
+    }
+}

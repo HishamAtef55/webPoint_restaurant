@@ -78,8 +78,8 @@
                         <a class="text-muted py-1 d-block" href="{{ route('stock.material.recipe.index') }}"> مكونات
                             الخامات </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'purchases') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('purchases') }}"> المشتريات </a>
+                    <li class="@if (Route::current()->getName() == 'stock.purchases.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.purchases.index') }}"> المشتريات </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'exchange') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('exchange') }}"> إذن صرف </a>

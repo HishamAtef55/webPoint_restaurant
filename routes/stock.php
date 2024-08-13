@@ -2,20 +2,20 @@
 
 use App\Models\materialRecipe;
 use App\Http\Controllers\Stock\old;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Stock\MaterialHalk;
 use App\Http\Controllers\Stock\MaterialTransfer;
 use App\Http\Controllers\Stock\OrdersControllers;
 use App\Http\Controllers\Stock\ExchangeController;
 use App\Http\Controllers\Stock\MaterialOperations;
-use App\Http\Controllers\Stock\PurchasesController;
+use App\Http\Controllers\Stock\Purchases\PurchasesController;
 use App\Http\Controllers\Stock\materialManufacturing;
 use App\Http\Controllers\Stock\OpenBalanceController;
 use App\Http\Controllers\Stock\InDirectCostController;
 use App\Http\Controllers\Stock\Stores\StoreController;
 use App\Http\Controllers\Stock\BackToStoresControllers;
 use App\Http\Controllers\Stock\ComponentItemsController;
+use App\Http\Controllers\Stock\Purchases\FilterSections;
 use App\Http\Controllers\Stock\Groups\SubGroupController;
 use App\Http\Controllers\Stock\BackToSuppliersControllers;
 use App\Http\Controllers\Stock\Groups\MainGroupController;
@@ -157,9 +157,26 @@ Route::group(
                 });
             }
         );
+
+        /*
+        * @routes('/purchases)
+        */
+
+        Route::group(
+            [
+                'prefix' => 'purchases',
+                'as' => 'purchases.',
+            ],
+            function () {
+                Route::get('/', [PurchasesController::class, 'index'])->name('index');
+                Route::post('/', [PurchasesController::class, 'store'])->name('store');
+                Route::get('/{purchase}', [PurchasesController::class, 'show'])->name('show');
+                Route::post('/{purchase}', [PurchasesController::class, 'update'])->name('update');
+                Route::get('/sections/filter/{branch}', FilterSections::class)->name('sections.filter');
+            }
+        );
     }
 );
-
 
 
 ################################## Component Items ###################################
@@ -191,37 +208,22 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
 
-
-
-
-######################################## Material Recipe ########################################
-// Route::group(['prefix' => 'stock', 'controller' => old::class], function () {
-//     Route::get('materialRecipe', 'index')->name('materialRecipe');
-//     Route::post('saveMaterialRecipe', 'saveMaterialRecipe')->name('saveMaterialRecipe');
-//     Route::post('getRecipeMaterialInMaterials', 'getRecipeMaterialInMaterials')->name('getRecipeMaterialInMaterials');
-//     Route::post('transferMaterialRecipe', 'transferMaterialRecipe')->name('transferMaterialRecipe');
-//     Route::post('deleteMaterialRecipe', 'deleteMaterialRecipe')->name('deleteMaterialRecipe');
-//     // This is Routs Reports in page
-//     Route::post('getMaterialReports', 'getMaterialReports')->name('getMaterialReports');
-//     Route::post('getMaterialsReports', 'getMaterialsReports')->name('getMaterialsReports');
-// });
-
 ######################################## Purchases #############################################
-Route::group(['prefix' => 'stock', 'controller' => PurchasesController::class], function () {
-    Route::get('purchases', 'index')->name('purchases');
-    Route::post('changePurchasesType', 'changeType')->name('changePurchasesType');
-    Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
-    Route::post('changePurchasesSection', 'changeSection')->name('changePurchasesSection');
-    Route::post('changePurchasesStore', 'changeStore')->name('changePurchasesStore');
-    Route::post('changePurchasesUnit', 'getUnit')->name('changePurchasesUnit');
-    Route::post('savePurchase', 'save')->name('savePurchase');
-    Route::post('getPurchase', 'getPurchase')->name('getPurchase');
-    Route::post('getPurchaseViaSerial', 'getPurchaseViaSerial')->name('getPurchaseViaSerial');
-    Route::post('deletePurchase', 'deletePurchase')->name('deletePurchase');
-    Route::post('deleteItemPurchase', 'deleteItemPurchase')->name('deleteItemPurchase');
-    Route::post('updatePurchase', 'updatePurchase')->name('updatePurchase');
-    Route::post('updateItemPurchase', 'updateItemPurchase')->name('updateItemPurchase');
-});
+// Route::group(['prefix' => 'stock', 'controller' => PurchasesController::class], function () {
+//     Route::get('purchases', 'index')->name('purchases');
+//     Route::post('changePurchasesType', 'changeType')->name('changePurchasesType');
+//     Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
+//     Route::post('changePurchasesSection', 'changeSection')->name('changePurchasesSection');
+//     Route::post('changePurchasesStore', 'changeStore')->name('changePurchasesStore');
+//     Route::post('changePurchasesUnit', 'getUnit')->name('changePurchasesUnit');
+//     Route::post('savePurchase', 'save')->name('savePurchase');
+//     Route::post('getPurchase', 'getPurchase')->name('getPurchase');
+//     Route::post('getPurchaseViaSerial', 'getPurchaseViaSerial')->name('getPurchaseViaSerial');
+//     Route::post('deletePurchase', 'deletePurchase')->name('deletePurchase');
+//     Route::post('deleteItemPurchase', 'deleteItemPurchase')->name('deleteItemPurchase');
+//     Route::post('updatePurchase', 'updatePurchase')->name('updatePurchase');
+//     Route::post('updateItemPurchase', 'updateItemPurchase')->name('updateItemPurchase');
+// });
 
 Route::group(['prefix' => 'stock', 'controller' => ExchangeController::class], function () {
     Route::get('exchange', 'index')->name('exchange');

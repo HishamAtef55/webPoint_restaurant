@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use App\Models\exchangeDetails;
-use App\Models\exchangeMain;
+use App\Models\Stores;
+use App\Models\storeCost;
+use App\Models\Suppliers;
+use App\Models\stock_unit;
 use App\Models\materialLog;
 use App\Models\sectionCost;
-use App\Models\stock_unit;
-use App\Models\storeCost;
-use App\Models\Stores;
-use App\Models\Suppliers;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Models\Stock\Store;
+use App\Models\exchangeMain;
 use App\Traits\MainFunction;
+use Illuminate\Http\Request;
+use App\Models\Stock\Supplier;
+use App\Models\exchangeDetails;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ExchangeController extends Controller
 {
@@ -33,9 +35,9 @@ class ExchangeController extends Controller
 
     public function index(){
         $serial = $this->getSerial();
-        $stores    = Stores::get()->all();
+        $stores    = Store::get()->all();
         $branches = Branch::get()->all();
-        $suppliers = Suppliers::get()->all();
+        $suppliers = Supplier::get()->all();
         return view('stock.stock.exchange',compact(['serial','stores','branches','suppliers']));
     }
 
