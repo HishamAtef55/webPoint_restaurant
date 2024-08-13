@@ -144,7 +144,9 @@
                         <select class="form-select" name="material_id" id="material_id">
                             <option value="" selected disabled>اختر الخامة</option>
                             @forelse ($materials as $material)
+                            
                                 <option value="{{ $material->id }}"
+                                    data-last-price="{{$material->details?->price}}"
                                     data-unit="{{ $material->unit['sub_unit']['name_ar'] }}"
                                     data-unit-name-en="{{ $material->unit['sub_unit']['name_en'] }}"
                                     data-unit-value="{{ $material->unit['sub_unit']['value'] }}">

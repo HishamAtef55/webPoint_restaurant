@@ -8,12 +8,16 @@ use App\Models\Branch;
 use App\Models\Purchases;
 use Illuminate\View\View;
 use App\Models\Stock\Store;
+use Illuminate\Http\Request;
 use App\Enums\PurchasesMethod;
 use App\Models\Stock\Material;
 use App\Models\Stock\Supplier;
+use App\Models\PurchasesDetails;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\Stock\MaterialResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Stock\PurchasesResource;
@@ -21,7 +25,6 @@ use App\Http\Requests\Stock\Material\StoreMaterialRequest;
 use App\Http\Requests\Stock\Material\UpdateMaterialRequest;
 use App\Http\Requests\Stock\Purchases\StorePurchasesRequest;
 use App\Http\Requests\Stock\Purchases\UpdatePurchasesRequest;
-use App\Models\PurchasesDetails;
 
 class PurchasesController extends Controller
 {
@@ -37,8 +40,9 @@ class PurchasesController extends Controller
         $stores    = Store::get();
         $branches = Branch::get();
         $suppliers = Supplier::get();
-        $materials = Material::get();
+        $materials = Material::with('details')->get();
         $materials->map(function ($material) {
+            $material->details =   $material->details()->latest('created_at')->first();
             $material->unit = Unit::view($material->unit);
         });
         return view('stock.stock.purchases', compact('lastPurchaseslNr', 'stores', 'branches', 'suppliers', 'materials', 'invoices'));
@@ -95,7 +99,7 @@ class PurchasesController extends Controller
             return PurchasesResource::make(
                 $invoice
             )->additional([
-                'message' => __('invoice created successfully'),
+                'message' => 'تم إنشاء الفاتورة بنجاح',
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
         }
@@ -153,12 +157,11 @@ class PurchasesController extends Controller
             $data['section_id'] = $request->validated()['section_id'];
             $data['store_id'] = null;
         }
+
         $purchase->update($data);
-        $materials  =  json_decode($request->validated()['materialArray']);
         $purchase->details()->delete();
-        $purchase->refresh();
+        $materials  =  json_decode($request->validated()['materialArray']);
         foreach ($materials  as $material) {
-            \Log::debug(["materials is" => $material]);
             $purchase->details()->create([
                 'material_id' => $material->material_id,
                 'expire_date' => $material->expire_date,
@@ -180,12 +183,25 @@ class PurchasesController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * destroy
      *
-     * @param  Material  $material
-     * @return JsonResponse
+     * @param  Purchases  $purchase
+     * @return PurchasesResource
      */
-    public function destroy() {}
+    public function destroy(
+        Purchases  $purchase,
+        Request $request
+    ): PurchasesResource {
+        if ($purchase->details()->where('id', $request->details_id)->delete()) {
+
+            return PurchasesResource::make(
+                $purchase
+            )->additional([
+                'message' => "تم حذف الخامة",
+                'status' => Response::HTTP_OK
+            ]);
+        }
+    }
 
 
     /**

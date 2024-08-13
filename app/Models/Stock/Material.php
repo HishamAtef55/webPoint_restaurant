@@ -11,6 +11,7 @@ use App\Enums\StorageType;
 use App\Casts\MaterialCast;
 use App\Enums\MaterialType;
 use App\Models\ComponentsItems;
+use App\Models\PurchasesDetails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Traits\Material\HasSerialNumber;
@@ -37,9 +38,21 @@ class Material extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'serial_nr', 'cost', 'price', 'unit', 'loss_ratio', 'min_store', 'max_store',
-        'min_section', 'max_section', 'storage_type', 'material_type', 'expire_date',
-        'group_id', 'branch_id',
+        'name',
+        'serial_nr',
+        'cost',
+        'price',
+        'unit',
+        'loss_ratio',
+        'min_store',
+        'max_store',
+        'min_section',
+        'max_section',
+        'storage_type',
+        'material_type',
+        'expire_date',
+        'group_id',
+        'branch_id',
     ];
 
     /**
@@ -159,5 +172,14 @@ class Material extends Model
     public function items(): HasMany
     {
         return $this->hasMany(ComponentsItems::class, 'material_id', 'id');
+    }
+
+    /*
+     * items
+     * @return HasMany
+    */
+    public function details(): HasMany
+    {
+        return $this->hasMany(PurchasesDetails::class, 'material_id', 'id');
     }
 }

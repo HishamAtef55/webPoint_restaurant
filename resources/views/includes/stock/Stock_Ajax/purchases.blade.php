@@ -14,6 +14,7 @@
     let material_price = $('#material_purchases').find('input[name="price"]')
     let material_discount = $('#material_purchases').find('input[name="discount"]')
     let material_total_price = $('#material_purchases').find('input[name="total_price"]')
+    let material_last_price = $('#material_purchases').find('input[name="last_price"]')
     let notes = $('#notes');
     let tableBody = $('.table-purchases tbody');
     let tableFoot = $('.table-purchases tfoot');
@@ -52,6 +53,15 @@
             });
         }
 
+        // Common function to error response message
+        function handleResponseMessageError(message, title, icon) {
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: icon,
+                timer: 5000
+            });
+        }
 
         $('#invoice_image').on('change', function(e) {
             purchases_image = e.target.files[0]
@@ -124,7 +134,8 @@
          */
         function displaySections(sections) {
             let container = $("#section_id");
-            let html = '<option selected disabled>اختر القسم</option>';
+            // let html = '<option selected disabled>اختر القسم</option>';
+            let html = '';
             if (!sections.length) {
                 html += `<option value="">لاتوجد اقسام</option>`;
             } else {
@@ -146,6 +157,12 @@
         materials.on('change', function(params) {
             let material = $(this).find("option:selected");
             material_unit.val(material.attr('data-unit'))
+            const lastPriceAttr = material.attr('data-last-price');
+            const lastPrice = parseFloat(lastPriceAttr) / 100;
+
+            // Check if lastPrice is a valid number, otherwise default to 0
+            const formattedLastPrice = isNaN(lastPrice) ? '0.00' : lastPrice.toFixed(2);
+            material_last_price.val(formattedLastPrice)
             checkForm()
             setTimeout(() => {
                 material_price.focus();
@@ -257,7 +274,7 @@
                         <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
                         <button class="btn btn-warning edit_material"><i class="fa-regular fa-pen-to-square"></i></button>
                     </div>
-                    <button class="btn btn-primary update_material update">Update</button>
+                    <button class="btn btn-primary update_material update">تعديل</button>
                 </td>
                 </tr>`
 
@@ -339,30 +356,65 @@
 
 
         $(document).on('click', '.delete_material', function() {
-            let rowParent = $(this).parents('tr');
-            Swal.fire({
-                title: 'هل أنت متأكد؟',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: 'rgb(21, 157, 113)',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'نعم',
-                cancelButtonText: 'لا'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    rowParent.remove();
-                    calcTotal();
-                    if (tableBody.find('tr')
-                        .length === 0) {
-                        tableBody.append(
-                            `<tr class="not-found">
-                            <td colspan="10">لا يوجد بيانات</td>
-                                                </tr>`);
-                    }
-                }
-            })
+            let rowParent = $(this).closest('tr');
+            let rowId = rowParent.attr('rowId');
 
+            Swal.fire({
+                title: 'حذف !',
+                text: 'هل أنت متأكد من حذف الخامة',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#5cb85c',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'لا',
+                confirmButtonText: 'نعم',
+                preConfirm: () => {
+                    return new Promise((resolve) => {
+                        if (rowParent.hasClass('new')) {
+                            rowParent.remove();
+                            calcTotal();
+                            resolve();
+                        } else {
+                            let id = $('#purchases_id').val();
+                            if (!id) return;
+                            $.ajax({
+                                type: 'DELETE',
+                                url: `{{ url('stock/purchases') }}/${id}`,
+                                dataType: 'json',
+                                data: {
+                                    "details_id": rowId,
+                                },
+                                success: function(response) {
+                                    if (response.status === 200) {
+                                        handleResponseMessageError(
+                                            response.message,
+                                            'تم الحذف', 'success')
+                                        rowParent.remove();
+                                        calcTotal();
+                                        resolve();
+                                    }
+                                },
+                                error: function(error) {
+                                    handleResponseMessageError(error
+                                        .responseJSON
+                                        .message, 'خطأ', 'error')
+                                    resolve();
+                                },
+                            });
+                        }
+                    }).then(() => {
+                        if (tableBody.find('tr').length === 0) {
+                            tableBody.append(
+                                `<tr class="not-found">
+                            <td colspan="10">لا يوجد بيانات</td>
+                        </tr>`
+                            );
+                        }
+                    });
+                }
+            });
         });
+
 
 
         $(document).on('click', '.edit_material', function() {
@@ -399,7 +451,7 @@
             let materialArray = [];
             let purchases_method = $('input[name="purchases_method"]:checked').val();
             let payType = $('input[name="pay_method"]:checked').val();
-            tableBody.find('tr.new').each(function() {
+            tableBody.find('tr').each(function() {
                 materialArray.push({
                     material_id: $(this).find('td').eq(0).text(),
                     expire_date: $(this).find('td').eq(2).text(),
@@ -409,6 +461,7 @@
                     total: $(this).find('td').eq(8).text(),
                 });
             });
+            console.log(materialArray)
 
             let formData = new FormData();
             if (method) {
@@ -462,6 +515,13 @@
                         setTimeout(() => {
                             window.location.reload();
                         }, 300)
+                    }
+
+                    if (response.status == 500) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
                     }
                 },
                 error: handleAjaxError,
@@ -534,8 +594,8 @@
             let html = ''; // Initialize html as an empty string
 
             details.forEach((item) => {
-                html += `<tr rowId="${item.id}" class="new">
-            <td>${item.id}</td>
+                html += `<tr rowId="${item.id}" class="old">
+            <td>${item.material.id}</td>
             <td>${item.material.name}</td>
             <td>${item.expire_date}</td>
             <td>${item.material.unit.name_ar}</td>
@@ -547,7 +607,7 @@
                 <input type="number" class="material_quantity" value="${item.qty}"/>
                 <span>${item.qty}</span>
             </td>
-            <td class="totalPrice">${item.total}</td>
+            <td class="totalPrice">${parseFloat(item.qty * item.price).toFixed(2)}</td>
             <td class="material_discount">${parseFloat(item.discount).toFixed(2)}</td>
             <td class="finalTotal">${parseFloat(item.total).toFixed(2)}</td>
             <td>
@@ -555,7 +615,7 @@
                     <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
                     <button class="btn btn-warning edit_material"><i class="fa-regular fa-pen-to-square"></i></button>
                 </div>
-                <button class="btn btn-primary update_material update">Update</button>
+                <button class="btn btn-primary update_material update">تعديل</button>
             </td>
         </tr>`;
             });
@@ -574,7 +634,7 @@
             if (!id) return;
             let originalHtml = button.html();
             button.html(spinner).prop('disabled', true);
-            let url = '{{ url("stock/purchases") }}/' + id;
+            let url = '{{ url('stock/purchases') }}/' + id;
             $.ajax({
                 type: 'POST',
                 url: url,

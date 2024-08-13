@@ -23,7 +23,8 @@ class PurchasesDetails extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [];
+    protected $fillable = [
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
