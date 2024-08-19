@@ -213,7 +213,7 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
 // Route::group(['prefix' => 'stock', 'controller' => PurchasesController::class], function () {
 //     Route::get('purchases', 'index')->name('purchases');
 //     Route::post('changePurchasesType', 'changeType')->name('changePurchasesType');
-//     Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
+    // Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
 //     Route::post('changePurchasesSection', 'changeSection')->name('changePurchasesSection');
 //     Route::post('changePurchasesStore', 'changeStore')->name('changePurchasesStore');
 //     Route::post('changePurchasesUnit', 'getUnit')->name('changePurchasesUnit');

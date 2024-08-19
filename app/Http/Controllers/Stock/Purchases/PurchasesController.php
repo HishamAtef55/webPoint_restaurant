@@ -5,18 +5,19 @@ namespace App\Http\Controllers\Stock\Purchases;
 use App\Enums\Unit;
 
 use App\Models\Branch;
-use App\Models\Purchases;
 use Illuminate\View\View;
 use App\Models\Stock\Store;
 use Illuminate\Http\Request;
 use App\Enums\PurchasesMethod;
 use App\Models\Stock\Material;
 use App\Models\Stock\Supplier;
-use App\Models\PurchasesDetails;
+use App\Models\Stock\Purchases;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Stock\PurchasesDetails;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\Stock\MaterialResource;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,7 @@ use App\Http\Requests\Stock\Material\StoreMaterialRequest;
 use App\Http\Requests\Stock\Material\UpdateMaterialRequest;
 use App\Http\Requests\Stock\Purchases\StorePurchasesRequest;
 use App\Http\Requests\Stock\Purchases\UpdatePurchasesRequest;
+use App\Invoices\Invoice;
 
 class PurchasesController extends Controller
 {
@@ -45,64 +47,29 @@ class PurchasesController extends Controller
             $material->details =   $material->details()->latest('created_at')->first();
             $material->unit = Unit::view($material->unit);
         });
-        return view('stock.stock.purchases', compact('lastPurchaseslNr', 'stores', 'branches', 'suppliers', 'materials', 'invoices'));
+        return view('stock.Purchases.index', compact('lastPurchaseslNr', 'stores', 'branches', 'suppliers', 'materials', 'invoices'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  StorePurchasesRequest  $request
-     * @return PurchasesResource
+     * @return JsonResponse
      */
     public function store(
-        StorePurchasesRequest  $request
-    ): PurchasesResource {
-        $data = [
-            'serial_nr' => $request->validated()['serial_nr'],
-            'purchases_method' => $request->validated()['purchases_method'],
-            'supplier_id' => $request->validated()['supplier_id'],
-            'user_id' => Auth::id(),
-            'purchases_date' => $request->validated()['purchases_date'],
-            'payment_type' => $request->validated()['payment_type'],
-            'tax' => $request->validated()['tax'],
-            'total' => $request->validated()['sumTotal'] * 100,
-            'note' => $request->validated()['notes'],
-
-        ];
-
-        if ($request->validated()['purchases_image'] != 'undefined') {
-            $data['image'] = $this->storeInvoiceImage($request->validated()['purchases_image']);
-        }
-
-        if ($request->validated()['purchases_method'] === PurchasesMethod::STORES->value) {
-            $data['store_id'] = $request->validated()['store_id'];
-            $data['section_id'] = null;
-        } elseif ($request->validated()['purchases_method'] === PurchasesMethod::SECTIONS->value) {
-            $data['section_id'] = $request->validated()['section_id'];
-            $data['store_id'] = null;
-        }
-
-        $invoice = Purchases::create($data);
-        if ($invoice) {
-            $materials  =  json_decode($request->validated()['materialArray']);
-            foreach ($materials  as $material) {
-                $invoice->details()->create([
-                    'material_id' => $material->material_id,
-                    'expire_date' => $material->expire_date,
-                    'qty' => $material->qty,
-                    'price' => $material->price * 100,
-                    'discount' => $material->discount * 100,
-                    'total' => $material->total * 100,
-                ]);
-            }
-
-            return PurchasesResource::make(
-                $invoice
-            )->additional([
+        StorePurchasesRequest  $request,
+        Invoice $invoice
+    ): JsonResponse {
+        if ($invoice->create($request->validated())) {
+            return response()->json([
                 'message' => 'تم إنشاء الفاتورة بنجاح',
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
         }
+        return response()->json([
+            'message' => 'something went wrong',
+            'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -143,7 +110,8 @@ class PurchasesController extends Controller
             'tax' => $request->validated()['tax'],
             'total' => $request->validated()['sumTotal'] * 100,
             'note' => $request->validated()['notes'],
-
+            'section_id' => null,
+            'store_id' => null,
         ];
 
         if ($request->validated()['purchases_image'] != 'undefined') {
@@ -152,24 +120,25 @@ class PurchasesController extends Controller
 
         if ($request->validated()['purchases_method'] === PurchasesMethod::STORES->value) {
             $data['store_id'] = $request->validated()['store_id'];
-            $data['section_id'] = null;
         } elseif ($request->validated()['purchases_method'] === PurchasesMethod::SECTIONS->value) {
             $data['section_id'] = $request->validated()['section_id'];
-            $data['store_id'] = null;
         }
 
         $purchase->update($data);
-        $purchase->details()->delete();
         $materials  =  json_decode($request->validated()['materialArray']);
         foreach ($materials  as $material) {
-            $purchase->details()->create([
-                'material_id' => $material->material_id,
-                'expire_date' => $material->expire_date,
-                'qty' => $material->qty,
-                'price' => $material->price * 100,
-                'discount' => $material->discount * 100,
-                'total' => $material->total * 100,
-            ]);
+            $purchase->details()->updateOrCreate(
+                [
+                    'material_id' => $material->material_id,
+                ],
+                [
+                    'expire_date' => $material->expire_date,
+                    'qty' => $material->qty,
+                    'price' => $material->price * 100,
+                    'discount' => $material->discount * 100,
+                    'total' => $material->total * 100,
+                ]
+            );
         }
 
 
@@ -201,21 +170,5 @@ class PurchasesController extends Controller
                 'status' => Response::HTTP_OK
             ]);
         }
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  $image
-     * @return string
-     */
-    private function storeInvoiceImage($image): string
-    {
-        $extension = $image->getClientOriginalExtension();
-        $fileName = time() . '_' . rand(1000, 9999) . '.' . $extension;
-        $path = 'stock/images/purchases';
-        $image->move(public_path($path), $fileName);
-        return asset($path . '/' . $fileName);
     }
 }

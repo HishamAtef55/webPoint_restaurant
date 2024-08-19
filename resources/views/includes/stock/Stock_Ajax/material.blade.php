@@ -219,11 +219,15 @@
         const id = $(this).data('id');
         const row = $(this).closest('tr');
         Swal.fire({
-            if (response.status == 422) {
-                                handleResponseMessageError(response.message,
-                                    'خطأ', 'error')
-                                resolve();
-                            }
+            title: 'حذف !',
+            text: 'هل انت متأكد من حذف المخزن',
+            icon: 'warning',
+            showCancelButton: true,
+            showLoaderOnConfirm: true,
+            confirmButtonColor: '#5cb85c',
+            cancelButtonColor: '#d33',
+            cancelButtonText: 'لا',
+            confirmButtonText: 'نعم',
             preConfirm: () => {
                 return new Promise((resolve) => {
                     $.ajax({

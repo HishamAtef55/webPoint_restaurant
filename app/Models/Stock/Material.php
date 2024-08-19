@@ -11,15 +11,15 @@ use App\Enums\StorageType;
 use App\Casts\MaterialCast;
 use App\Enums\MaterialType;
 use App\Models\ComponentsItems;
-use App\Models\PurchasesDetails;
+use App\Models\Stock\PurchasesDetails;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use App\Models\Traits\Material\HasSerialNumber;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Material extends Model
 {

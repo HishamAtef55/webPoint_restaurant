@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Stock;
 
-use App\Models\Stock\Section;
+use App\Models\User;
 use App\Models\Stock\Store;
+use App\Models\Stock\Section;
 use App\Models\Stock\Supplier;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Purchases extends Model
 {
@@ -26,18 +27,7 @@ class Purchases extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        // 'serial_nr',
-        // 'purchases_method',
-        // 'supplier_id',
-        // 'store_id',
-        // 'section_id',
-        // 'user_id',
-        // 'purchases_date',
-        // 'image',
-        // 'payment_type',
-        // 'tax',
-    ];
+    protected $fillable = [];
 
     /**
      * The attributes that should be hidden for serialization.

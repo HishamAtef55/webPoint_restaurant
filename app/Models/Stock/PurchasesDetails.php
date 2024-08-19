@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Stock;
 
 use App\Models\Stock\Material;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,8 +23,7 @@ class PurchasesDetails extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-    ];
+    protected $fillable = [];
 
     /**
      * The attributes that should be hidden for serialization.

@@ -35,8 +35,10 @@
 
     let today = now.getFullYear() + "-" + (month) + "-" + (day);
 
-    $(document).ready(function() {
+    let preventChangeEvent = false; // Flag to control change event execution
 
+    $(document).ready(function() {
+        getSections();
 
 
         $.ajaxSetup({
@@ -115,12 +117,12 @@
         /*
          * getSections
          */
-        function getSections(event) {
-            const branchSelectId = event.target.value;
+        function getSections() {
+            const branchSelectId = branchs.val();
             if (!branchSelectId) {
                 return;
             }
-
+            if (preventChangeEvent) return;
             fetch(`/stock/purchases/sections/filter/${branchSelectId}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -489,6 +491,7 @@
             formData.append("payment_type", payType);
             formData.append("notes", notes.val());
             formData.append("purchases_image", purchases_image);
+            console.log(formData)
             return formData;
         }
 
@@ -506,6 +509,8 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
+                    console.log(response)
+                    return false;
                     if (response.status == 201) {
                         Toast.fire({
                             icon: 'success',
@@ -565,6 +570,7 @@
                 `input[name="purchases_method"][value="${method}"]`).checked = true;
 
             if (method === "sections") {
+                preventChangeEvent = true;
                 sections.empty()
                     .val("<option selected disabled>اختر القسم </option>")
                     .trigger("change");
@@ -575,8 +581,10 @@
                     .querySelectorAll(".branch-sec")
                     .forEach((el) => el.classList.remove("d-none"));
                 branchs.val(invoice.section.branch.id).trigger('change')
-
-                sections.val(invoice.section.id).trigger('change')
+                sections.append(
+                    `<option  value="${invoice.section.id}" selected>${invoice.section.name}</option>`
+                )
+                // sections.val(invoice.section.id).trigger('change')
 
             } else if (method === "stores") {
                 document
@@ -588,6 +596,7 @@
                 stores.val(invoice.store.id).trigger('change')
 
             }
+            preventChangeEvent = false;
         }
 
         function updateTableData(details) {
