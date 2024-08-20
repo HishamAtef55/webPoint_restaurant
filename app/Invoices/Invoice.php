@@ -2,6 +2,7 @@
 
 namespace App\Invoices;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Enums\PurchasesMethod;
 use App\Models\Stock\Purchases;
@@ -22,77 +23,153 @@ class Invoice implements InvoiceInterface
     ) {}
 
     /**
-     * @param array $params
      * store
+     * @param array $params
+     * @return bool
      */
     public function create(
         array $params
-    ) {
+    ): bool {
+        try {
 
-        $data = [
-            'serial_nr' => $params['serial_nr'],
-            'purchases_method' => $params['purchases_method'],
-            'supplier_id' => $params['supplier_id'],
-            'user_id' => 10,
-            'purchases_date' => $params['purchases_date'],
-            'payment_type' => $params['payment_type'],
-            'tax' => $params['tax'],
-            'total' => $params['sumTotal'] * 100,
-            'note' => $params['notes'],
-            'section_id' => null,
-            'store_id' => null,
-        ];
+            $data = [
+                'serial_nr' => $params['serial_nr'],
+                'purchases_method' => $params['purchases_method'],
+                'supplier_id' => $params['supplier_id'],
+                'user_id' => 10,
+                'purchases_date' => $params['purchases_date'],
+                'payment_type' => $params['payment_type'],
+                'tax' => $params['tax'],
+                'total' => $params['sumTotal'] * 100,
+                'note' => $params['notes'],
+                'section_id' => null,
+                'store_id' => null,
+            ];
 
-        if ($params['purchases_image'] != 'undefined') {
-            $data['image'] = $this->storeInvoiceImage($data['purchases_image']);
+            if ($params['purchases_image'] != 'undefined') {
+                $data['image'] = $this->storeInvoiceImage($params['purchases_image']);
+            }
+
+            if ($params['purchases_method'] === PurchasesMethod::STORES->value) {
+                $data['store_id'] = $params['store_id'];
+            } elseif ($params['purchases_method'] === PurchasesMethod::SECTIONS->value) {
+                $data['section_id'] = $params['section_id'];
+            }
+            Log::info('Starting transaction...');
+            DB::beginTransaction();
+            $purchases = Purchases::create($data);
+
+            $params['materialArray'] = json_decode($params['materialArray'], true);
+
+            // Check if decoding was successful
+            if (json_last_error() === JSON_ERROR_NONE) {
+                foreach ($params['materialArray'] as $material) {
+                    $material['price'] = trim($material['price']);
+                    $material['qty'] = trim($material['qty']);
+                    // Create the purchase details record
+                    $purchases->details()->create([
+                        'material_id' => $material['material_id'],
+                        'expire_date' => $material['expire_date'],
+                        'qty' => $material['qty'],
+                        'price' => $material['price'] * 100,
+                        'discount' => $material['discount'] * 100,
+                        'total' => $material['total'] * 100,
+                    ]);
+                }
+            } else {
+                // Handle JSON decoding error
+                Log::error('Error decoding JSON: ' . json_last_error_msg());
+            }
+            Log::info('Transaction successful.');
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('Purchase creation failed: ' . $e->getMessage(), [
+                // 'data' => $data,
+                'params' => $params,
+            ]);
+            DB::rollBack();
+            return false;
         }
+    }
 
-        if ($params['purchases_method'] === PurchasesMethod::STORES->value) {
-            $data['store_id'] = $data['store_id'];
-        } elseif ($params['purchases_method'] === PurchasesMethod::SECTIONS->value) {
-            $data['section_id'] = $data['section_id'];
-        }
+    /**
+     * update
+     * @param array $params
+     * @param $purchase,
+     * @return bool
+     */
+    public function update(
+        array $params,
+        $purchase,
+    ): bool {
 
         try {
-            $result = DB::transaction(function () use ($data, $params) {
-                Log::info('Starting transaction...');
-                $purchases = Purchases::create($data);
-                if (!$purchases) {
-                    Log::error('Failed to create purchase record.');
-                    throw new \Exception('Failed to create purchase record');
-                    return false;
-                }
+
+            $data = [
+                'serial_nr' => $params['serial_nr'],
+                'purchases_method' => $params['purchases_method'],
+                'supplier_id' => $params['supplier_id'],
+                'user_id' => 10,
+                'purchases_date' => $params['purchases_date'],
+                'payment_type' => $params['payment_type'],
+                'tax' => $params['tax'],
+                'total' => $params['sumTotal'] * 100,
+                'note' => $params['notes'],
+                'section_id' => null,
+                'store_id' => null,
+            ];
+
+            if ($params['purchases_image'] != 'undefined') {
+                $data['image'] = $this->storeInvoiceImage($params['purchases_image']);
+            }
+
+            if ($params['purchases_method'] === PurchasesMethod::STORES->value) {
+                $data['store_id'] = $params['store_id'];
+            } elseif ($params['purchases_method'] === PurchasesMethod::SECTIONS->value) {
+                $data['section_id'] = $params['section_id'];
+            }
+            Log::info('Starting updated transaction...');
+            DB::beginTransaction();
+            $purchase->update($data);
+
+            $params['materialArray'] = json_decode($params['materialArray'], true);
+
+            // Check if decoding was successful
+            if (json_last_error() === JSON_ERROR_NONE) {
                 foreach ($params['materialArray'] as $material) {
-                    try {
-                        // Create a new purchase detail record for each material
-                        $purchases->details()->create([
+                    $material['price'] = trim($material['price']);
+                    $material['qty'] = trim($material['qty']);
+                    // Create the purchase details record
+                    $purchase->details()->updateOrCreate(
+                        [
                             'material_id' => $material['material_id'],
+                        ],
+                        [
                             'expire_date' => $material['expire_date'],
                             'qty' => $material['qty'],
                             'price' => $material['price'] * 100,
                             'discount' => $material['discount'] * 100,
                             'total' => $material['total'] * 100,
-                        ]);
-                    } catch (\Exception $e) {
-                        Log::error('Failed to create purchase detail: ' . $e->getMessage(), [
-                            'material' => $material,
-                        ]);
-                        throw new \Exception('Failed to create purchase details records');
+                        ]
+                    );
+                }
+            } else {
+                // Handle JSON decoding error
+                Log::error('Error decoding JSON: ' . json_last_error_msg());
+            }
 
-                        return false;
-                    }
-                };
-
-                Log::info('Transaction successful.');
-                return true;
-            }, 3);
-            return $result;
+            Log::info('Transaction updated successful.');
+            DB::commit();
+            return true;
         } catch (\Exception $e) {
             // Log the exception for debugging
             Log::error('Purchase creation failed: ' . $e->getMessage(), [
                 'data' => $data,
                 'params' => $params,
             ]);
+            DB::rollBack();
             return false;
         }
     }

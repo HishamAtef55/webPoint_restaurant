@@ -49,6 +49,10 @@
 
         // Common function to handle AJAX errors
         function handleAjaxError(reject) {
+            Toast.fire({
+                icon: 'error',
+                title: "حدث خطأ"
+            });
             let response = $.parseJSON(reject.responseText);
             $.each(response.errors, function(key, val) {
                 errorMsg(val[0]);
@@ -509,8 +513,6 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
-                    console.log(response)
-                    return false;
                     if (response.status == 201) {
                         Toast.fire({
                             icon: 'success',
@@ -524,12 +526,6 @@
                         }, 300)
                     }
 
-                    if (response.status == 500) {
-                        Toast.fire({
-                            icon: 'error',
-                            title: response.message
-                        });
-                    }
                 },
                 error: handleAjaxError,
                 complete: function() {

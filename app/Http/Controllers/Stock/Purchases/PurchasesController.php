@@ -66,10 +66,6 @@ class PurchasesController extends Controller
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
         }
-        return response()->json([
-            'message' => 'something went wrong',
-            'status' => Response::HTTP_INTERNAL_SERVER_ERROR
-        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -98,57 +94,17 @@ class PurchasesController extends Controller
      */
     public function update(
         Purchases  $purchase,
-        UpdatePurchasesRequest  $request
+        UpdatePurchasesRequest  $request,
+        Invoice $invoice
     ): PurchasesResource {
-        $data = [
-            'serial_nr' => $request->validated()['serial_nr'],
-            'purchases_method' => $request->validated()['purchases_method'],
-            'supplier_id' => $request->validated()['supplier_id'],
-            'user_id' => Auth::id(),
-            'purchases_date' => $request->validated()['purchases_date'],
-            'payment_type' => $request->validated()['payment_type'],
-            'tax' => $request->validated()['tax'],
-            'total' => $request->validated()['sumTotal'] * 100,
-            'note' => $request->validated()['notes'],
-            'section_id' => null,
-            'store_id' => null,
-        ];
-
-        if ($request->validated()['purchases_image'] != 'undefined') {
-            $data['image'] = $this->storeInvoiceImage($request->validated()['purchases_image']);
+        if ($invoice->update($request->validated(), $purchase)) {
+            return PurchasesResource::make(
+                $purchase
+            )->additional([
+                'message' => 'تم تعديل الفاتورة بنجاح',
+                'status' => Response::HTTP_OK
+            ], Response::HTTP_OK);
         }
-
-        if ($request->validated()['purchases_method'] === PurchasesMethod::STORES->value) {
-            $data['store_id'] = $request->validated()['store_id'];
-        } elseif ($request->validated()['purchases_method'] === PurchasesMethod::SECTIONS->value) {
-            $data['section_id'] = $request->validated()['section_id'];
-        }
-
-        $purchase->update($data);
-        $materials  =  json_decode($request->validated()['materialArray']);
-        foreach ($materials  as $material) {
-            $purchase->details()->updateOrCreate(
-                [
-                    'material_id' => $material->material_id,
-                ],
-                [
-                    'expire_date' => $material->expire_date,
-                    'qty' => $material->qty,
-                    'price' => $material->price * 100,
-                    'discount' => $material->discount * 100,
-                    'total' => $material->total * 100,
-                ]
-            );
-        }
-
-
-
-        return PurchasesResource::make(
-            $purchase
-        )->additional([
-            'message' => "تم تعديل الفاتورة بنجاح",
-            'status' => Response::HTTP_OK
-        ]);
     }
 
     /**
@@ -162,7 +118,6 @@ class PurchasesController extends Controller
         Request $request
     ): PurchasesResource {
         if ($purchase->details()->where('id', $request->details_id)->delete()) {
-
             return PurchasesResource::make(
                 $purchase
             )->additional([

@@ -10,11 +10,24 @@ interface InvoiceInterface
 
     /**
      * @param array $params
-     * store
+     * create
      *
-     * @return void
+     * @return bool
      */
     public function create(
         array $params
-    );
+    ): bool;
+
+
+    /**
+     * @param array $params
+     * @param $purchase
+     * update
+     *
+     * @return bool
+     */
+    public function update(
+        array $params,
+        $purchase
+    ): bool;
 }
