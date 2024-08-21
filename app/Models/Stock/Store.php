@@ -20,7 +20,9 @@ class Store extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'phone', 'address'
+        'name',
+        'phone',
+        'address'
     ];
 
     /**
@@ -48,7 +50,7 @@ class Store extends Model
     }
 
     /**
-     * storageCapacity
+     * sections
      *
      * @return HasMany
      */
@@ -58,7 +60,7 @@ class Store extends Model
     }
 
     /**
-     * storageCapacity
+     * hasSection
      *
      * @return bool
      */
@@ -66,5 +68,16 @@ class Store extends Model
     public function hasSection(): bool
     {
         return (bool) $this->sections()->count();
+    }
+
+    /**
+     * balance
+     *
+     * @return HasMany
+     */
+
+    public function balance(): HasMany
+    {
+        return $this->hasMany(StoreBalance::class, 'store_id', 'id');
     }
 }

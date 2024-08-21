@@ -2,6 +2,7 @@
 
 namespace App\Invoices;
 
+use App\Balances\Facades\Balance;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Enums\PurchasesMethod;
@@ -56,7 +57,11 @@ class Invoice implements InvoiceInterface
                 $data['section_id'] = $params['section_id'];
             }
             Log::info('Starting transaction...');
+
             DB::beginTransaction();
+            /*
+            * store new invoice
+            */
             $purchases = Purchases::create($data);
 
             $params['materialArray'] = json_decode($params['materialArray'], true);
@@ -79,14 +84,23 @@ class Invoice implements InvoiceInterface
             } else {
                 // Handle JSON decoding error
                 Log::error('Error decoding JSON: ' . json_last_error_msg());
-            }
+                throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
+            };
+
+            match ($purchases->purchases_method) {
+                PurchasesMethod::STORES->value => Balance::storeBalance()->validate($purchases)->create(),
+                PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->validate($purchases)->create(),
+                default => throw new \Exception("Un supported purchase method", 1),
+            };
+
             Log::info('Transaction successful.');
+
             DB::commit();
             return true;
         } catch (\Exception $e) {
             // Log the exception for debugging
             Log::error('Purchase creation failed: ' . $e->getMessage(), [
-                // 'data' => $data,
+                'data' => $data,
                 'params' => $params,
             ]);
             DB::rollBack();
@@ -186,5 +200,20 @@ class Invoice implements InvoiceInterface
         $path = 'stock/images/purchases';
         $image->move(public_path($path), $fileName);
         return asset($path . '/' . $fileName);
+    }
+
+
+    private function increaseStoreBalance($purchases)
+    {
+        dd($purchases->store->balance);
+        $purchases->store()->balance()->updateOrCreate(
+            [
+                'material_id' => $purchases->details->material_id,
+            ],
+            [
+                'qty' => $purchases->store->balance + $purchases->details->qty,
+                'price' => $purchases->store->price + $purchases->details->price,
+            ]
+        );
     }
 }

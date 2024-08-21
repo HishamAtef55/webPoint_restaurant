@@ -111,19 +111,26 @@ class PurchasesController extends Controller
      * destroy
      *
      * @param  Purchases  $purchase
-     * @return PurchasesResource
+     * @return PurchasesResource|JsonResponse
      */
     public function destroy(
         Purchases  $purchase,
         Request $request
-    ): PurchasesResource {
-        if ($purchase->details()->where('id', $request->details_id)->delete()) {
-            return PurchasesResource::make(
-                $purchase
-            )->additional([
-                'message' => "تم حذف الخامة",
-                'status' => Response::HTTP_OK
-            ]);
+    ): PurchasesResource|JsonResponse {
+
+        if($purchase->details->count() > 1){
+            $purchase->details()->where('id', $request->details_id)->delete();
+                return PurchasesResource::make(
+                    $purchase
+                )->additional([
+                    'message' => "تم حذف الخامة",
+                    'status' => Response::HTTP_OK
+                ]);
+        }else{
+            return response()->json([
+                'message' => 'لا يمكن حذف خامة على الاقل',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ],Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

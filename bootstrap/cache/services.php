@@ -40,6 +40,7 @@
     36 => 'App\\Providers\\EventServiceProvider',
     37 => 'App\\Providers\\RouteServiceProvider',
     38 => 'App\\Providers\\InvoiceServiceProvider',
+    39 => 'App\\Providers\\BalanceServiceProvider',
   ),
   'eager' => 
   array (
@@ -67,6 +68,7 @@
     21 => 'App\\Providers\\EventServiceProvider',
     22 => 'App\\Providers\\RouteServiceProvider',
     23 => 'App\\Providers\\InvoiceServiceProvider',
+    24 => 'App\\Providers\\BalanceServiceProvider',
   ),
   'deferred' => 
   array (

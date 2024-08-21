@@ -285,7 +285,12 @@
                 </tr>`
 
             tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
-            tableBody.append($(html));
+            let existingRow = tableBody.find(`tr[rowId="${code}"]`);
+            if (existingRow.length > 0) {
+                existingRow.replaceWith(html);
+            } else {
+                tableBody.append($(html));
+            }
             material_total_price.val('');
             material_quantity.val('');
             material_price.val('');
