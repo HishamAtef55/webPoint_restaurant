@@ -110,4 +110,14 @@ class Purchases extends Model
     {
         return $this->hasMany(PurchasesDetails::class, 'purchases_id', 'id');
     }
+
+    /**
+     * details
+     *
+     * @return bool
+     */
+    public function hasDetails(): bool
+    {
+        return $this->details->count() > 1;
+    }
 }

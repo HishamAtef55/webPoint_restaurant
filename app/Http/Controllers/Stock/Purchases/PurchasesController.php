@@ -27,6 +27,7 @@ use App\Http\Requests\Stock\Material\UpdateMaterialRequest;
 use App\Http\Requests\Stock\Purchases\StorePurchasesRequest;
 use App\Http\Requests\Stock\Purchases\UpdatePurchasesRequest;
 use App\Invoices\Invoice;
+use App\Models\Stock\StoreBalance;
 
 class PurchasesController extends Controller
 {
@@ -51,9 +52,10 @@ class PurchasesController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * store
      *
      * @param  StorePurchasesRequest  $request
+     * @param  Invoice $invoice
      * @return JsonResponse
      */
     public function store(
@@ -66,10 +68,14 @@ class PurchasesController extends Controller
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
         }
+        return response()->json([
+            'message' => 'حدث خطأ',
+            'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+        ], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /**
-     * Display the specified resource.
+     * show
      *
      * @param  Purchases  $purchase
      * @return PurchasesResource
@@ -86,7 +92,7 @@ class PurchasesController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * update
      *
      * @param  UpdatePurchasesRequest  $request
      * @param  Purchases  $purchase
@@ -115,22 +121,19 @@ class PurchasesController extends Controller
      */
     public function destroy(
         Purchases  $purchase,
-        Request $request
+        Request $request,
+        Invoice $invoice
     ): PurchasesResource|JsonResponse {
-
-        if($purchase->details->count() > 1){
-            $purchase->details()->where('id', $request->details_id)->delete();
-                return PurchasesResource::make(
-                    $purchase
-                )->additional([
-                    'message' => "تم حذف الخامة",
-                    'status' => Response::HTTP_OK
-                ]);
-        }else{
+        if ($invoice->delete($purchase, $request->details_id)) {
+            return response()->json([
+                'message' => "تم حذف الخامة",
+                'status' => Response::HTTP_OK
+            ]);
+        } else {
             return response()->json([
                 'message' => 'لا يمكن حذف خامة على الاقل',
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY
-            ],Response::HTTP_UNPROCESSABLE_ENTITY);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }

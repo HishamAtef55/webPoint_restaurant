@@ -26,7 +26,7 @@ class StoreBalance extends Model
         'store_id',
         'material_id',
         'qty',
-        'price'
+        'avg_price'
     ];
 
     /**

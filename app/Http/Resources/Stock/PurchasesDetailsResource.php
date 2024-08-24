@@ -20,6 +20,7 @@ class PurchasesDetailsResource extends JsonResource
             'material_id' => $this->material_id,
             'expire_date' => $this->expire_date,
             'qty' => $this->qty,
+            // 'current_balance' => $this->
             'price' => $this->price / 100,
             'discount' => $this->discount / 100,
             'total' => $this->total / 100,

@@ -5,13 +5,13 @@ namespace App\Enums;
 enum PaymentType: string
 {
     case INSTALLMENT = 'installment';
-    case DEPT = 'dept';
+    case CASH = 'cash';
 
     public function toString(): string
     {
         return match ($this) {
             self::CASH => 'نقدى',
-            self::DEPT => 'اجل',
+            self::INSTALLMENT => 'اجل',
         };
     }
 
@@ -19,7 +19,7 @@ enum PaymentType: string
     {
         return [
             self::CASH,
-            self::DEPT,
+            self::INSTALLMENT,
         ];
     }
 

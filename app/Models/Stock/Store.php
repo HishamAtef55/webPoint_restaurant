@@ -2,9 +2,10 @@
 
 namespace App\Models\Stock;
 
-use App\Models\Stock\StorageCapacity;
 use App\Models\StockSection;
+use App\Models\Stock\StorageCapacity;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Store extends Model
@@ -79,5 +80,27 @@ class Store extends Model
     public function balance(): HasMany
     {
         return $this->hasMany(StoreBalance::class, 'store_id', 'id');
+    }
+
+    /**
+     * balance
+     *
+     * @return HasMany
+     */
+
+    public function move(): HasMany
+    {
+        return $this->hasMany(StoreMaterialMove::class, 'store_id', 'id');
+    }
+
+    /**
+     * getBalance
+     *
+     * @return Collection
+     */
+
+    public function getBalance(): Collection
+    {
+        return $this->move()->get()->groupBy('material_id');
     }
 }

@@ -3,14 +3,15 @@
 namespace App\Invoices\Invoice;
 
 use Illuminate\Http\Request;
+use App\Models\Stock\Purchases;
 
 
 interface InvoiceInterface
 {
 
     /**
-     * @param array $params
      * create
+     * @param array $params
      *
      * @return bool
      */
@@ -20,14 +21,26 @@ interface InvoiceInterface
 
 
     /**
+     * update
      * @param array $params
      * @param $purchase
-     * update
      *
      * @return bool
      */
     public function update(
         array $params,
         $purchase
+    ): bool;
+
+    /**
+     * delete
+     * @param Purchases $purchase
+     * @param   int $id
+     *
+     * @return bool
+     */
+    public function delete(
+        Purchases $purchase,
+        int $id
     ): bool;
 }

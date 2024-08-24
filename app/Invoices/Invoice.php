@@ -69,8 +69,6 @@ class Invoice implements InvoiceInterface
             // Check if decoding was successful
             if (json_last_error() === JSON_ERROR_NONE) {
                 foreach ($params['materialArray'] as $material) {
-                    $material['price'] = trim($material['price']);
-                    $material['qty'] = trim($material['qty']);
                     // Create the purchase details record
                     $purchases->details()->create([
                         'material_id' => $material['material_id'],
@@ -87,16 +85,18 @@ class Invoice implements InvoiceInterface
                 throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
             };
 
-            match ($purchases->purchases_method) {
-                PurchasesMethod::STORES->value => Balance::storeBalance()->validate($purchases)->create(),
-                PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->validate($purchases)->create(),
+
+            $result =  match ($purchases->purchases_method) {
+                PurchasesMethod::STORES->value => Balance::storeBalance()->validate($purchases->load('details'))->create($purchases->store),
+                PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->validate($purchases->load('details'))->create($purchases->section),
                 default => throw new \Exception("Un supported purchase method", 1),
             };
-
-            Log::info('Transaction successful.');
-
-            DB::commit();
-            return true;
+            if ($result) {
+                Log::info('Transaction successful.');
+                DB::commit();
+                return $result;
+            }
+            return $result;
         } catch (\Exception $e) {
             // Log the exception for debugging
             Log::error('Purchase creation failed: ' . $e->getMessage(), [
@@ -118,7 +118,6 @@ class Invoice implements InvoiceInterface
         array $params,
         $purchase,
     ): bool {
-
         try {
 
             $data = [
@@ -174,9 +173,17 @@ class Invoice implements InvoiceInterface
                 Log::error('Error decoding JSON: ' . json_last_error_msg());
             }
 
-            Log::info('Transaction updated successful.');
-            DB::commit();
-            return true;
+            $result =  match ($purchase->purchases_method) {
+                PurchasesMethod::STORES->value => Balance::storeBalance()->validate($purchase->load('details'))->update($purchase->store),
+                PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->validate($purchase->load('details'))->update($purchase->section),
+                default => throw new \Exception("Un supported purchase method", 1),
+            };
+            if ($result) {
+                Log::info('Transaction updated successful.');
+                DB::commit();
+                return $result;
+            }
+            return $result;
         } catch (\Exception $e) {
             // Log the exception for debugging
             Log::error('Purchase creation failed: ' . $e->getMessage(), [
@@ -184,6 +191,29 @@ class Invoice implements InvoiceInterface
                 'params' => $params,
             ]);
             DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * delete  
+     * @param  Purchases $purchase
+     * @param  int $id
+     * @return bool
+     */
+    public function delete(
+        Purchases $purchase,
+        int $id
+    ): bool {
+        if ($purchase->hasDetails()) {
+            $result =  match ($purchase->purchases_method) {
+                PurchasesMethod::STORES->value => Balance::storeBalance()->delete($purchase, $id),
+                PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->delete($purchase, $id),
+                default => throw new \Exception("Un supported purchase method", 1),
+            };
+            return $result;
+        } else {
             return false;
         }
     }
@@ -200,20 +230,5 @@ class Invoice implements InvoiceInterface
         $path = 'stock/images/purchases';
         $image->move(public_path($path), $fileName);
         return asset($path . '/' . $fileName);
-    }
-
-
-    private function increaseStoreBalance($purchases)
-    {
-        dd($purchases->store->balance);
-        $purchases->store()->balance()->updateOrCreate(
-            [
-                'material_id' => $purchases->details->material_id,
-            ],
-            [
-                'qty' => $purchases->store->balance + $purchases->details->qty,
-                'price' => $purchases->store->price + $purchases->details->price,
-            ]
-        );
     }
 }

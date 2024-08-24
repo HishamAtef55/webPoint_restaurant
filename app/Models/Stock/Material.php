@@ -82,7 +82,7 @@ class Material extends Model
 
 
     /**
-     * groups
+     * sections
      *
      * @return BelongsToMany
      */
@@ -102,7 +102,7 @@ class Material extends Model
     }
 
     /**
-     * groups
+     * branch
      *
      * @return BelongsTo
      */
@@ -113,7 +113,7 @@ class Material extends Model
 
 
     /**
-     * IsManufactured
+     * scopeIsManufactured
      *
      * @param  mixed $builder
      * @return void
@@ -175,7 +175,7 @@ class Material extends Model
     }
 
     /*
-     * items
+     * details
      * @return HasMany
     */
     public function details(): HasMany
@@ -196,7 +196,7 @@ class Material extends Model
     }
 
     /**
-     * storageCapacity
+     * hasRecipe
      *
      * @return bool
      */

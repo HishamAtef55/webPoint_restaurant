@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class SectionBalance extends Model
+class StoreMaterialMove extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,7 @@ class SectionBalance extends Model
      *
      * @var string
      */
-    protected $table = "stock_sections_balance";
+    protected $table = "stock_store_material_move";
 
     /**
      * The attributes that are mass assignable.
@@ -23,10 +23,12 @@ class SectionBalance extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'section_id',
+        'invoice_nr',
+        'store_id',
         'material_id',
         'qty',
-        'avg_price'
+        'price',
+        'type'
     ];
 
     /**
@@ -56,9 +58,9 @@ class SectionBalance extends Model
      *
      * @return BelongsTo
      */
-    public function section(): BelongsTo
+    public function store(): BelongsTo
     {
-        return $this->belongsTo(Section::class, 'section_id', 'id');
+        return $this->belongsTo(Store::class, 'store_id', 'id');
     }
 
     /**
