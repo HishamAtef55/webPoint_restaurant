@@ -99,8 +99,8 @@ class Store extends Model
      * @return Collection
      */
 
-    public function getBalance(): Collection
+    public function getMovement(): Collection
     {
-        return $this->move()->get()->groupBy('material_id');
+        return $this->move()->get();
     }
 }

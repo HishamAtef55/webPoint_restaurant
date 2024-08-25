@@ -16,16 +16,7 @@ interface BalanceInterface
      * @param mixed $model
      * @return bool
      */
-    public function create(
-        mixed $model
-    ): bool;
-
-    /**
-     * update
-     * @param Section|Store $model
-     * @return bool
-     */
-    public function update(
+    public function purchasesBalance(
         mixed $model
     ): bool;
 

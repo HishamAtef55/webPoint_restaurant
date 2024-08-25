@@ -177,6 +177,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\InvoiceServiceProvider::class,
         App\Providers\BalanceServiceProvider::class,
+        App\Providers\MovementServiceProvider::class,
 
     ],
 

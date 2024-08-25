@@ -553,6 +553,7 @@
         function displayInvoices(invoice) {
             $('#invoice_id').val(invoice.id)
             serial_number.val(invoice.serial_nr)
+            serial_number.attr('disabled', true);
             supplier.val(invoice.supplier.id).trigger('change')
             date.val(invoice.purchases_date)
             tax.val(invoice.tax)

@@ -41,6 +41,7 @@
     37 => 'App\\Providers\\RouteServiceProvider',
     38 => 'App\\Providers\\InvoiceServiceProvider',
     39 => 'App\\Providers\\BalanceServiceProvider',
+    40 => 'App\\Providers\\MovementServiceProvider',
   ),
   'eager' => 
   array (
@@ -69,6 +70,7 @@
     22 => 'App\\Providers\\RouteServiceProvider',
     23 => 'App\\Providers\\InvoiceServiceProvider',
     24 => 'App\\Providers\\BalanceServiceProvider',
+    25 => 'App\\Providers\\MovementServiceProvider',
   ),
   'deferred' => 
   array (

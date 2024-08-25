@@ -16,32 +16,21 @@ abstract class BalanceAbstract
     */
     protected $balance = [];
 
-    /*
-     * The attributes that hold material move.
-     *
-     * @var array<int, string>
-    */
-    protected $move = [];
-
     /**
-     * create
-     * @param Purchases $purchases
+     * validate
+     * @param array $data
      * @return self
      */
     public function validate(
-        Purchases $purchase
+        array $data
     ): self {
-        $purchase->details->map(function ($item) use ($purchase) {
-            return [
-                array_push($this->move, [
-                    'invoice_nr' => $purchase->serial_nr,
-                    'material_id' => $item->material_id,
-                    'qty' => $item->qty,
-                    'price' => $item->price,
-                    'type' => MaterialMove::PURCHASES->value
-                ])
-            ];
-        });
+        array_map(function ($balance) {
+            return array_push($this->balance, [
+                'material_id' => $balance['material_id'],
+                'qty' => $balance['qty'],
+                'price' => $balance['price'],
+            ]);
+        }, $data);
         return $this;
     }
 }

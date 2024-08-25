@@ -5,13 +5,11 @@ namespace App\Balances;
 
 use App\Models\Stock\Store;
 use App\Models\Stock\Purchases;
-use App\Models\Stock\StoreBalance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\Stock\SectionBalance;
 use App\Balances\Abstract\BalanceAbstract;
+use App\Movements\Facades\Movement;
 use App\Balances\Interface\BalanceInterface;
-use Illuminate\Database\Eloquent\Collection;
 
 class StockStoreBalance extends BalanceAbstract implements BalanceInterface
 {
@@ -23,109 +21,49 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
      * @param Store $store
      * @return bool
      */
-    public function create(
+    public function purchasesBalance(
         $store
     ): bool {
         try {
-            /*
-            * material move inside section
-            */
-            $store->move()->createMany($this->move);
 
+            if (!$this->balance) return false;
             /*
             * increase balance of section
             */
-            $collect = $store->getBalance();
-            $collect->map(function ($items) {
-                return $this->balance[] = [
-                    'qty' => $items->sum('qty'),
-                    'avg_price' => $items->avg('price'),
-                    'material_id' => $items->first()->material_id,
-                ];
-            });
-
             foreach ($this->balance as $balance) {
-                $store->balance()->updateOrCreate(
-                    [
-                        'store_id' => $store->id,
-                        'material_id' => $balance['material_id']
-                    ],
-                    [
-                        'qty' => $balance['qty'],
-                        'avg_price' => $balance['avg_price']
-                    ]
-                );
+                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
+                if ($oldBalance) {
+
+                    $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
+                    dd(
+                        ($oldBalance->avg_price + $balance['price']),
+                        ($oldBalance->qty  + $balance['qty']),
+                        $balance['price'],
+                        $balance['qty'],
+                        $price 
+                    );
+                    $qty = $oldBalance->qty += $balance['qty'];
+                    $oldBalance->update([
+                        'qty' => $qty,
+                        'avg_price' => $price,
+                    ]);
+                } else {
+                    $store->balance()->create(
+                        [
+                            'store_id' => $store->id,
+                            'material_id' => $balance['material_id'],
+                            'qty' =>  $balance['qty'],
+                            'avg_price' => $balance['price'],
+                        ]
+                    );
+                }
             }
 
 
             return true;
         } catch (\Throwable $e) {
-            Log::error('Purchase creation failed: ' . $e->getMessage(), [
+            Log::error('increase store balance creation failed: ' . $e->getMessage(), [
                 'balance' => $this->balance,
-                'move' => $this->move,
-                'params' => $store,
-            ]);
-            return false;
-        }
-    }
-
-    /**
-     * update
-     *
-     * @return bool
-     */
-    public function update(
-        $store
-    ): bool {
-        try {
-
-            /*
-            * material move inside store
-            */
-            foreach ($this->move as $move) {
-                $store->move()->updateOrCreate(
-                    [
-                        'material_id' => $move['material_id'],
-                        'invoice_nr' => $move['invoice_nr']
-                    ],
-                    [
-                        'qty' => $move['qty'],
-                        'price' => $move['price'],
-                        'type' => $move['type'],
-                    ]
-                );
-            }
-
-
-            /*
-            *  balance of store
-            */
-            $collect = $store->getBalance();
-            $collect->map(function ($items) {
-                return $this->balance[] = [
-                    'qty' => $items->sum('qty'),
-                    'avg_price' => $items->avg('price'),
-                    'material_id' => $items->first()->material_id,
-                ];
-            });
-
-            foreach ($this->balance as $balance) {
-                $store->balance()->updateOrCreate(
-                    [
-                        'material_id' => $balance['material_id']
-                    ],
-                    [
-                        'qty' => $balance['qty'],
-                        'avg_price' => $balance['avg_price']
-                    ]
-                );
-            }
-
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('Purchase creation failed: ' . $e->getMessage(), [
-                'balance' => $this->balance,
-                'move' => $this->move,
                 'params' => $store,
             ]);
             return false;

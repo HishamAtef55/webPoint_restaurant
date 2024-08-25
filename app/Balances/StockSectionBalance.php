@@ -19,113 +19,41 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
 
     /**
      * create
-     * @param Section $section
+     * @param Store $store
      * @return bool
      */
-    public function create(
+    public function purchasesBalance(
         $section
     ): bool {
         try {
 
-            /*
-            * material move inside section
-            */
-            $section->move()->createMany($this->move);
-
+            if (!$this->balance) return false;
             /*
             * increase balance of section
             */
-            $collect = $section->getBalance();
-            $collect->map(function ($items) {
-                return $this->balance[] = [
-                    'qty' => $items->sum('qty'),
-                    'avg_price' => $items->avg('price'),
-                    'material_id' => $items->first()->material_id,
-                ];
-            });
-
             foreach ($this->balance as $balance) {
-                $section->balance()->updateOrCreate(
-                    [
-                        'section_id' => $section->id,
-                        'material_id' => $balance['material_id']
-                    ],
-                    [
-                        'qty' => $balance['qty'],
-                        'avg_price' => $balance['avg_price']
-                    ]
-                );
+                $updateOldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
+                if ($updateOldBalance) {
+                    $price = ($updateOldBalance->avg_price + $balance['price']) /  ($updateOldBalance->qty  + $balance['qty']);
+                    $updateOldBalance->update([
+                        'qty' => $updateOldBalance->qty += $balance['qty'],
+                        'avg_price' => $price,
+                    ]);
+                } else {
+                    $section->balance()->create(
+                        [
+                            'section_id' => $section->id,
+                            'material_id' => $balance['material_id'],
+                            'qty' =>  $balance['qty'],
+                            'avg_price' => $balance['price'],
+                        ]
+                    );
+                }
             }
-
-
             return true;
         } catch (\Throwable $e) {
-            Log::error('Purchase creation failed: ' . $e->getMessage(), [
+            Log::error('increase section balance creation failed: ' . $e->getMessage(), [
                 'balance' => $this->balance,
-                'move' => $this->move,
-                'params' => $section,
-            ]);
-            return false;
-        }
-    }
-
-    /**
-     * update
-     *
-     * @return bool
-     */
-    public function update(
-        $section
-    ): bool {
-        try {
-            /*
-            * material move inside section
-            */
-            foreach ($this->move as $move) {
-                $section->move()->updateOrCreate(
-                    [
-                        'material_id' => $move['material_id'],
-                        'invoice_nr' => $move['invoice_nr']
-                    ],
-                    [
-                        'qty' => $move['qty'],
-                        'price' => $move['price'],
-                        'type' => $move['type'],
-                    ]
-                );
-            }
-
-
-            /*
-            *  balance of store
-            */
-            $collect = $section->getBalance();
-            $collect->map(function ($items) {
-                return $this->balance[] = [
-                    'qty' => $items->sum('qty'),
-                    'avg_price' => $items->avg('price'),
-                    'material_id' => $items->first()->material_id,
-                ];
-            });
-
-            foreach ($this->balance as $balance) {
-                $section->balance()->updateOrCreate(
-                    [
-                        'store_id' => $section->id,
-                        'material_id' => $balance['material_id']
-                    ],
-                    [
-                        'qty' => $balance['qty'],
-                        'avg_price' => $balance['avg_price']
-                    ]
-                );
-            }
-
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('Purchase creation failed: ' . $e->getMessage(), [
-                'balance' => $this->balance,
-                'move' => $this->move,
                 'params' => $section,
             ]);
             return false;
