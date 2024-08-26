@@ -4,11 +4,12 @@ namespace App\Balances;
 
 
 use App\Models\Stock\Store;
+use App\Models\Stock\Material;
 use App\Models\Stock\Purchases;
 use Illuminate\Support\Facades\DB;
+use App\Movements\Facades\Movement;
 use Illuminate\Support\Facades\Log;
 use App\Balances\Abstract\BalanceAbstract;
-use App\Movements\Facades\Movement;
 use App\Balances\Interface\BalanceInterface;
 
 class StockStoreBalance extends BalanceAbstract implements BalanceInterface
@@ -33,15 +34,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
             foreach ($this->balance as $balance) {
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
                 if ($oldBalance) {
-
                     $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
-                    dd(
-                        ($oldBalance->avg_price + $balance['price']),
-                        ($oldBalance->qty  + $balance['qty']),
-                        $balance['price'],
-                        $balance['qty'],
-                        $price 
-                    );
                     $qty = $oldBalance->qty += $balance['qty'];
                     $oldBalance->update([
                         'qty' => $qty,
@@ -71,59 +64,17 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
-     * delete
-     * @param Purchases $purchases
+     * currentBalance
+     * @param Material $material
      * @param int $id
-     * @return bool
+     * @return int
      */
-    public function delete(
-        Purchases $purchases,
+    public function currentBalance(
+        Material $material,
         int $id
-    ): bool {
-
-        try {
-
-            DB::beginTransaction();
-            /*
-            *  find purchase item
-            */
-            $details = $purchases->details()->find($id);
-            if (!$details) return false;
-
-            $this->model = $purchases->store;
-
-            /*
-            *  store delete move
-            */
-            $this->model->move()->where([
-                'material_id' => $details->material_id,
-                'invoice_nr' => $purchases->serial_nr
-            ])->delete();
-
-            /*
-            *  update store balance
-            */
-            $this->model->balance()->where([
-                'material_id' => $details->material_id
-            ])->update([
-                'qty' => DB::raw('qty - ' . $details->qty),
-                'avg_price' => DB::raw('avg_price - ' . $details->price)
-            ]);
-
-            /*
-            *  delete purchase item
-            */
-            $details->delete();
-
-            DB::commit();
-
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('Purchase details deleted failed: ' . $e->getMessage(), [
-                'purchases' => $purchases,
-                'id' => $id,
-            ]);
-            return false;
-        }
+    ): int {
+        $store = Store::findOrFail($id);
+        $balance = $store->balance()->whereBelongsTo($material)->first()->qty ?? 0;
+        return $balance;
     }
 }

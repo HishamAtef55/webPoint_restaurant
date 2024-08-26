@@ -15,6 +15,7 @@
     let material_discount = $('#material_purchases').find('input[name="discount"]')
     let material_total_price = $('#material_purchases').find('input[name="total_price"]')
     let material_last_price = $('#material_purchases').find('input[name="last_price"]')
+    let material_current_Balance = $('#material_purchases').find('input[name="current_balance"]')
     let notes = $('#notes');
     let tableBody = $('.table-purchases tbody');
     let tableFoot = $('.table-purchases tfoot');
@@ -162,17 +163,65 @@
 
         materials.on('change', function(params) {
             let material = $(this).find("option:selected");
-            material_unit.val(material.attr('data-unit'))
             const lastPriceAttr = material.attr('data-last-price');
             const lastPrice = parseFloat(lastPriceAttr) / 100;
 
             // Check if lastPrice is a valid number, otherwise default to 0
             const formattedLastPrice = isNaN(lastPrice) ? '0.00' : lastPrice.toFixed(2);
-            material_last_price.val(formattedLastPrice)
-            checkForm()
-            setTimeout(() => {
-                material_price.focus();
-            }, 100);
+
+            let method = document.querySelector(
+                'input[name="purchases_method"]:checked'
+            )?.value;
+            let initialParams = {};
+            if (method === "sections") {
+                if (!sections.val()) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'يجب اختبار قسم'
+                    });
+                    return false
+                }
+                initialParams = {
+                    "section_id": sections.val(),
+                    "type": "sections"
+                };
+            } else if (method === "stores") {
+                if (!stores.val()) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'يجب اختبار مخزن'
+                    });
+                    return false
+                }
+                initialParams = {
+                    "store_id": stores.val(),
+                    "type": "stores"
+                };
+            }
+
+            let url = '{{ url('stock/purchases') }}/' + material.val() + '/filter';
+            let queryString = $.param(initialParams);
+
+
+            $.ajax({
+                type: "GET",
+                url: `${url}?${queryString}`,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        material_unit.val(material.attr('data-unit'))
+                        material_current_Balance.val(response.qty)
+                        material_last_price.val(formattedLastPrice)
+                        checkForm()
+                        setTimeout(() => {
+                            material_price.focus();
+                        }, 100);
+                    }
+
+                },
+                error: handleAjaxError,
+            })
+
         })
 
 

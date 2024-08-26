@@ -8,12 +8,12 @@ use App\Http\Controllers\Stock\MaterialTransfer;
 use App\Http\Controllers\Stock\OrdersControllers;
 use App\Http\Controllers\Stock\ExchangeController;
 use App\Http\Controllers\Stock\MaterialOperations;
-use App\Http\Controllers\Stock\Purchases\PurchasesController;
 use App\Http\Controllers\Stock\materialManufacturing;
 use App\Http\Controllers\Stock\OpenBalanceController;
 use App\Http\Controllers\Stock\InDirectCostController;
 use App\Http\Controllers\Stock\Stores\StoreController;
 use App\Http\Controllers\Stock\BackToStoresControllers;
+use App\Http\Controllers\Stock\Purchases\FilterBalance;
 use App\Http\Controllers\Stock\ComponentItemsController;
 use App\Http\Controllers\Stock\Purchases\FilterSections;
 use App\Http\Controllers\Stock\Groups\SubGroupController;
@@ -24,6 +24,7 @@ use App\Http\Controllers\Stock\OpenBalanceDailyController;
 use App\Http\Controllers\Stock\Sections\SectionController;
 use App\Http\Controllers\Stock\Material\MaterialController;
 use App\Http\Controllers\StockReports\HalkReportsController;
+use App\Http\Controllers\Stock\Purchases\PurchasesController;
 use App\Http\Controllers\Stock\Suppliers\SuppliersController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 use App\Http\Controllers\StockReports\StockReportsController;
@@ -174,6 +175,7 @@ Route::group(
                 Route::post('/{purchase}', [PurchasesController::class, 'update'])->name('update');
                 Route::delete('/{purchase}', [PurchasesController::class, 'destroy'])->name('destroy');
                 Route::get('/sections/filter/{branch}', FilterSections::class)->name('sections.filter');
+                Route::get('/{material}/filter', FilterBalance::class)->name('materials.filter');
             }
         );
     }
@@ -213,7 +215,7 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
 // Route::group(['prefix' => 'stock', 'controller' => PurchasesController::class], function () {
 //     Route::get('purchases', 'index')->name('purchases');
 //     Route::post('changePurchasesType', 'changeType')->name('changePurchasesType');
-    // Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
+// Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
 //     Route::post('changePurchasesSection', 'changeSection')->name('changePurchasesSection');
 //     Route::post('changePurchasesStore', 'changeStore')->name('changePurchasesStore');
 //     Route::post('changePurchasesUnit', 'getUnit')->name('changePurchasesUnit');

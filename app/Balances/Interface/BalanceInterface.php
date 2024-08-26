@@ -4,16 +4,15 @@ namespace App\Balances\Interface;
 
 use App\Models\Stock\Store;
 use App\Models\Stock\Section;
-use App\Models\Stock\Purchases;
-use App\Models\Stock\StoreBalance;
-use  Illuminate\Database\Eloquent\Collection;
+use App\Models\Stock\Material;
+
 
 interface BalanceInterface
 {
 
     /**
      * create
-     * @param mixed $model
+     * @param Store|Section $model
      * @return bool
      */
     public function purchasesBalance(
@@ -21,13 +20,13 @@ interface BalanceInterface
     ): bool;
 
     /**
-     * delete
-     * @param Purchases $purchases
+     * create
+     * @param Material $material
      * @param int $id
-     * @return bool
+     * @return int
      */
-    public function delete(
-        Purchases $purchases,
+    public function currentBalance(
+        Material $material,
         int $id
-    ): bool;
+    ): int;
 }

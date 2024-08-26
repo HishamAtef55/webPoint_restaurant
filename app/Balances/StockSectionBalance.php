@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Stock\SectionBalance;
 use App\Balances\Abstract\BalanceAbstract;
 use App\Balances\Interface\BalanceInterface;
+use App\Models\Stock\Material;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Stock\Section;
 
@@ -19,7 +20,7 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
 
     /**
      * create
-     * @param Store $store
+     * @param Section $section
      * @return bool
      */
     public function purchasesBalance(
@@ -32,17 +33,18 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
             * increase balance of section
             */
             foreach ($this->balance as $balance) {
-                $updateOldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
-                if ($updateOldBalance) {
-                    $price = ($updateOldBalance->avg_price + $balance['price']) /  ($updateOldBalance->qty  + $balance['qty']);
-                    $updateOldBalance->update([
-                        'qty' => $updateOldBalance->qty += $balance['qty'],
+                $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
+                if ($oldBalance) {
+                    $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
+                    $qty = $oldBalance->qty += $balance['qty'];
+                    $oldBalance->update([
+                        'qty' => $qty,
                         'avg_price' => $price,
                     ]);
                 } else {
                     $section->balance()->create(
                         [
-                            'section_id' => $section->id,
+                            'store_id' => $section->id,
                             'material_id' => $balance['material_id'],
                             'qty' =>  $balance['qty'],
                             'avg_price' => $balance['price'],
@@ -50,9 +52,11 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
                     );
                 }
             }
+
+
             return true;
         } catch (\Throwable $e) {
-            Log::error('increase section balance creation failed: ' . $e->getMessage(), [
+            Log::error('increase store balance creation failed: ' . $e->getMessage(), [
                 'balance' => $this->balance,
                 'params' => $section,
             ]);
@@ -61,58 +65,17 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
-     * delete
-     * @param Purchases $purchases
+     * create
+     * @param Material $material
      * @param int $id
-     * @return bool
+     * @return int
      */
-    public function delete(
-        Purchases $purchases,
+    public function currentBalance(
+        Material $material,
         int $id
-    ): bool {
-
-        try {
-
-            DB::beginTransaction();
-            /*
-            *  find purchase item
-            */
-            $details = $purchases->details()->find($id);
-
-            $this->model = $purchases->store;
-
-            /*
-            *  store delete move
-            */
-            $this->model->move()->where([
-                'invoice_nr' => $purchases->serial_nr,
-                'material_id' => $details->material_id
-            ])->delete();
-
-            /*
-            *  update store balance
-            */
-            $this->model->balance()->where([
-                'material_id' => $details->material_id
-            ])->update([
-                'qty' => DB::raw('qty - ' . $details->qty),
-                'avg_price' => DB::raw('avg_price - ' . $details->price)
-            ]);
-
-            /*
-            *  delete purchase item
-            */
-            $details->delete();
-
-            DB::commit();
-
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('Purchase details deleted failed: ' . $e->getMessage(), [
-                'purchases' => $purchases,
-                'id' => $id,
-            ]);
-            return false;
-        }
+    ): int {
+        $section = Section::findOrFail($id);
+        $balance = $section->balance()->whereBelongsTo($material)->first()->qty ?? 0;
+        return $balance;
     }
 }

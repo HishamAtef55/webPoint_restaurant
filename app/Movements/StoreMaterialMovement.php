@@ -4,7 +4,9 @@ namespace App\Movements;
 
 use App\Enums\MaterialMove;
 use App\Models\Stock\Store;
+use App\Models\Stock\Purchases;
 use App\Balances\Facades\Balance;
+use App\Models\Stock\PurchasesDetails;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Stock\StoreMaterialMove;
@@ -26,10 +28,10 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         $store,
     ): bool {
         try {
-            DB::beginTransaction();
 
             if (!$this->movement) return false;
 
+            DB::beginTransaction();
 
             // Handle different types of movements
             $this->handleMovementType($store);
@@ -50,6 +52,68 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         }
     }
 
+
+    /**
+     * delete
+     * @param Purchases $purchases
+     * @return bool
+     */
+    public function deletePurchaseMovement(
+        Purchases $purchases,
+        int $id,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $store = $purchases->store;
+
+            $details = $purchases->details()->find($id);
+
+            if (!$details) return false;
+
+            /*
+            *  store delete move
+            */
+            $store->move()->where([
+                'material_id' => $details->material_id,
+                'invoice_nr' => $purchases->serial_nr
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty -= $details->qty;
+            
+            if ($qty == 0) {
+                $oldBalance->delete();
+            } else {
+                $price = ($oldBalance->avg_price - $details->price) /  ($qty);
+                $oldBalance->update([
+                    'qty' => $qty,
+                    'avg_price' => $price,
+                ]);
+            }
+            /*
+            *  delete purchase item
+            */
+            $details->delete();
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('Purchase details deleted failed: ' . $e->getMessage(), [
+                'purchases' => $purchases,
+                'id' => $id,
+            ]);
+            return false;
+        }
+    }
+
     /**
      * handleMovementType
      * @param Store $store
@@ -59,7 +123,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         Store $store
     ): void {
         match ($this->type) {
-            MaterialMove::PURCHASES->value => $this->purchasesMovement($store),
+            MaterialMove::PURCHASES->value => $this->createPurchasesMovement($store),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -69,7 +133,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
      * @param Store $store
      * @return void
      */
-    private function purchasesMovement(
+    private function createPurchasesMovement(
         Store $store
     ): void {
         /*
@@ -96,7 +160,6 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
                 $move['qty'] = $move['qty'] - $existingMovement->qty;
                 $move['price'] = $move['price'] - $existingMovement->price;
             }
-
         }
     }
 

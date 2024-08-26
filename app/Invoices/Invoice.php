@@ -58,10 +58,10 @@ class Invoice implements InvoiceInterface
             */
             $purchases = Purchases::create($data);
 
-            // $params['materialArray'] = json_decode($params['materialArray'], true);
+            $params['materialArray'] = json_decode($params['materialArray'], true);
 
             // // Check if decoding was successful
-            // if (json_last_error() === JSON_ERROR_NONE) {
+            if (json_last_error() === JSON_ERROR_NONE) {
                 foreach ($params['materialArray'] as $material) {
                     // Create the purchase details record
                     $purchases->details()->create([
@@ -73,11 +73,11 @@ class Invoice implements InvoiceInterface
                         'total' => $material['total'] * 100,
                     ]);
                 }
-            // } else {
-            //     // Handle JSON decoding error
-            //     Log::error('Error decoding JSON: ' . json_last_error_msg());
-            //     throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
-            // };
+            } else {
+                // Handle JSON decoding error
+                Log::error('Error decoding JSON: ' . json_last_error_msg());
+                throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
+            };
 
             $this->collectMaterialMovement($purchases->load('details'));
             $result =  match ($purchases->purchases_method) {
@@ -131,31 +131,31 @@ class Invoice implements InvoiceInterface
             */
             $purchase->update($data);
 
-            // $params['materialArray'] = json_decode($params['materialArray'], true);
+            $params['materialArray'] = json_decode($params['materialArray'], true);
 
             // Check if decoding was successful
-            // if (json_last_error() === JSON_ERROR_NONE) {
-            foreach ($params['materialArray'] as $material) {
-                $material['price'] = trim($material['price']);
-                $material['qty'] = trim($material['qty']);
-                // Create the purchase details record
-                $purchase->details()->updateOrCreate(
-                    [
-                        'material_id' => $material['material_id'],
-                    ],
-                    [
-                        'expire_date' => $material['expire_date'],
-                        'qty' => $material['qty'],
-                        'price' => $material['price'] * 100,
-                        'discount' => $material['discount'] * 100,
-                        'total' => $material['total'] * 100,
-                    ]
-                );
+            if (json_last_error() === JSON_ERROR_NONE) {
+                foreach ($params['materialArray'] as $material) {
+                    $material['price'] = trim($material['price']);
+                    $material['qty'] = trim($material['qty']);
+                    // Create the purchase details record
+                    $purchase->details()->updateOrCreate(
+                        [
+                            'material_id' => $material['material_id'],
+                        ],
+                        [
+                            'expire_date' => $material['expire_date'],
+                            'qty' => $material['qty'],
+                            'price' => $material['price'] * 100,
+                            'discount' => $material['discount'] * 100,
+                            'total' => $material['total'] * 100,
+                        ]
+                    );
+                }
+            } else {
+                // Handle JSON decoding error
+                Log::error('Error decoding JSON: ' . json_last_error_msg());
             }
-            // } else {
-            //     // Handle JSON decoding error
-            //     Log::error('Error decoding JSON: ' . json_last_error_msg());
-            // }
 
             $this->collectMaterialMovement($purchase->load('details'));
             $result =  match ($purchase->purchases_method) {
@@ -182,18 +182,18 @@ class Invoice implements InvoiceInterface
 
     /**
      * delete  
-     * @param  Purchases $purchase
+     * @param  Purchases $purchases
      * @param  int $id
      * @return bool
      */
     public function delete(
-        Purchases $purchase,
+        Purchases $purchases,
         int $id
     ): bool {
-        if ($purchase->hasDetails()) {
-            $result =  match ($purchase->purchases_method) {
-                PurchasesMethod::STORES->value => Balance::storeBalance()->delete($purchase, $id),
-                PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->delete($purchase, $id),
+        if ($purchases->hasDetails()) {
+            $result =  match ($purchases->purchases_method) {
+                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->deletePurchaseMovement($purchases, $id),
+                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->deletePurchaseMovement($purchases, $id),
                 default => throw new \Exception("Un supported purchase method", 1),
             };
             return $result;
