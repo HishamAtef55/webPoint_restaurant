@@ -159,8 +159,6 @@
             // container.select2("open");
         }
 
-        // apply material unit
-
         materials.on('change', function(params) {
             let material = $(this).find("option:selected");
             const lastPriceAttr = material.attr('data-last-price');

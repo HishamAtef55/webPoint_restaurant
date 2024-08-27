@@ -115,7 +115,6 @@
                 url: '{{ url('stock/material/recipe/filter') }}/' + selectedValue,
                 dataType: 'json',
                 success: function(response) {
-                    console.log(response)
                     if (response.status === 200) {
                         productQty.focus().select();
                         let html = '';
@@ -751,7 +750,6 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 200) {
-                        console.log(response)
                         let html = '<option value="" disabled selected></option>';
 
                         fromMaterial.html('');
@@ -837,7 +835,6 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 200) {
-                        console.log(response)
                         let html = '<option value="" disabled selected></option>';
 
                         toMaterial.html('');

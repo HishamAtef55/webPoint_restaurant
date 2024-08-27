@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Purchases extends Model
+class Exchange extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class Purchases extends Model
      *
      * @var string
      */
-    protected $table = "stock_purchases";
+    protected $table = "stock_exchange";
 
     /**
      * The attributes that are mass assignable.
@@ -72,16 +72,6 @@ class Purchases extends Model
     }
 
     /**
-     * supplier
-     *
-     * @return BelongsTo
-     */
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
-    }
-
-    /**
      * section
      *
      * @return BelongsTo
@@ -90,7 +80,7 @@ class Purchases extends Model
     {
         return $this->belongsTo(Section::class, 'section_id', 'id');
     }
-    
+
     /**
      * details
      *
@@ -98,7 +88,7 @@ class Purchases extends Model
      */
     public function details(): HasMany
     {
-        return $this->hasMany(PurchasesDetails::class, 'purchases_id', 'id');
+        return $this->hasMany(ExchangeDetails::class, 'exchange_id', 'id');
     }
 
     /**

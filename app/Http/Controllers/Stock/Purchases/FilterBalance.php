@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers\Stock\Purchases;
 
-use App\Models\Branch;
-use Illuminate\Http\Request;
-use App\Models\Stock\Section;
 use App\Enums\PurchasesMethod;
 use App\Models\Stock\Material;
 use App\Balances\Facades\Balance;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Stock\SectionResource;
-use App\Http\Resources\Stock\MaterialResource;
+
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class FilterBalance extends Controller
 {
@@ -20,14 +16,14 @@ class FilterBalance extends Controller
      * __invoke
      *
      * @param Material $material
-     * @return AnonymousResourceCollection
+     * @return JsonResponse
      */
     public function __invoke(
         Material $material
-    ) {
+    ): JsonResponse {
         $balance = match ($_REQUEST['type']) {
-            PurchasesMethod::STORES->value => Balance::storeBalance()->currentBalance($material, $_REQUEST['store_id']),
-            PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->currentBalance($material, $_REQUEST['section_id']),
+            PurchasesMethod::STORES->value => Balance::storeBalance()->currentBalanceByMaterial($material, $_REQUEST['store_id']),
+            PurchasesMethod::SECTIONS->value => Balance::sectionBalance()->currentBalanceByMaterial($material, $_REQUEST['section_id']),
             default => 0
         };
         return response()->json([

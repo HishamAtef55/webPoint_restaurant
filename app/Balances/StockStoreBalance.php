@@ -64,17 +64,17 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
-     * currentBalance
+     * currentBalanceByMaterial
      * @param Material $material
      * @param int $id
      * @return int
      */
-    public function currentBalance(
+    public function currentBalanceByMaterial(
         Material $material,
         int $id
     ): int {
-        $store = Store::findOrFail($id);
-        $balance = $store->balance()->whereBelongsTo($material)->first()->qty ?? 0;
+        $this->model = Store::findOrFail($id);
+        $balance =  $this->model->balance()->whereBelongsTo($material)->first()->qty ?? 0;
         return $balance;
     }
 }

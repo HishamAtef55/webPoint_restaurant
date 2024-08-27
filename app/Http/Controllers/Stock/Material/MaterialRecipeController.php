@@ -147,7 +147,7 @@ class MaterialRecipeController extends Controller
         return MaterialRecipeResource::collection(
             MaterialRecipe::byMaterialId($materialId)->get()
         )->additional([
-            'material_component' => MaterialComponentResource::make($MaterialComponent),
+            'material_component' => $MaterialComponent ? MaterialComponentResource::make($MaterialComponent) : [],
             'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
     }

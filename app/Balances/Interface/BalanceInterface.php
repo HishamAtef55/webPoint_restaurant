@@ -25,7 +25,7 @@ interface BalanceInterface
      * @param int $id
      * @return int
      */
-    public function currentBalance(
+    public function currentBalanceByMaterial(
         Material $material,
         int $id
     ): int;

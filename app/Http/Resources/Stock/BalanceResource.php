@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources\Stock;
 
+use App\Enums\Unit;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class StoreResource extends JsonResource
+class BalanceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,11 +17,13 @@ class StoreResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'address' => $this->address,
-            'phone' => $this->phone,
-            'storage_methods' => StorageMethodResource::collection($this->storageCapacity),
-            'balance' => BalanceResource::collection($this->balance)
+            'material' => [
+                'id' => $this->material->id,
+                'name' => $this->material->name,
+                'unit' => Unit::view($this->material->unit),
+            ],
+            'qty' => $this->qty,
+            'avg_price' => $this->avg_price / 100
         ];
     }
 }

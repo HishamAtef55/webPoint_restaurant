@@ -70,12 +70,12 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
      * @param int $id
      * @return int
      */
-    public function currentBalance(
+    public function currentBalanceByMaterial(
         Material $material,
         int $id
     ): int {
-        $section = Section::findOrFail($id);
-        $balance = $section->balance()->whereBelongsTo($material)->first()->qty ?? 0;
+        $this->model = Section::findOrFail($id);
+        $balance = $this->model->balance()->whereBelongsTo($material)->first()->qty ?? 0;
         return $balance;
     }
 }

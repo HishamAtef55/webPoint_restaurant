@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Stock\MaterialHalk;
 use App\Http\Controllers\Stock\MaterialTransfer;
 use App\Http\Controllers\Stock\OrdersControllers;
-use App\Http\Controllers\Stock\ExchangeController;
 use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Stock\materialManufacturing;
 use App\Http\Controllers\Stock\OpenBalanceController;
@@ -22,6 +21,7 @@ use App\Http\Controllers\Stock\Groups\MainGroupController;
 use App\Http\Controllers\Stock\Items\FilterItemController;
 use App\Http\Controllers\Stock\OpenBalanceDailyController;
 use App\Http\Controllers\Stock\Sections\SectionController;
+use App\Http\Controllers\Stock\Exchange\ExchangeController;
 use App\Http\Controllers\Stock\Material\MaterialController;
 use App\Http\Controllers\StockReports\HalkReportsController;
 use App\Http\Controllers\Stock\Purchases\PurchasesController;
@@ -40,6 +40,7 @@ use App\Http\Controllers\Stock\Material\FilterMaterialController;
 use App\Http\Controllers\Stock\Material\FilterSubGroupController;
 use App\Http\Controllers\Stock\Material\MaterialRecipeController;
 use App\Http\Controllers\StockReports\SuppliersReportsController;
+use App\Http\Controllers\Stock\Exchange\MaterialBalanceController;
 use App\Http\Controllers\StockReports\BackStoresReportsController;
 use App\Http\Controllers\StockReports\OperationsReportsController;
 use App\Http\Controllers\Stock\Items\FilterItemComponentController;
@@ -178,6 +179,20 @@ Route::group(
                 Route::get('/{material}/filter', FilterBalance::class)->name('materials.filter');
             }
         );
+
+        /*
+        * @routes('/exchange)
+        */
+        Route::group(
+            [
+                'prefix' => 'exchange',
+                'as' => 'exchange.',
+            ],
+            function () {
+                Route::get('/', [ExchangeController::class, 'index'])->name('index');
+                Route::get('/materials/filter/{store}', MaterialBalanceController::class)->name('material.store.filter');
+            }
+        );
     }
 );
 
@@ -212,34 +227,20 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
 });
 
 ######################################## Purchases #############################################
-// Route::group(['prefix' => 'stock', 'controller' => PurchasesController::class], function () {
-//     Route::get('purchases', 'index')->name('purchases');
-//     Route::post('changePurchasesType', 'changeType')->name('changePurchasesType');
-// Route::post('changePurchasesBranch', 'changeBranch')->name('changePurchasesBranch');
-//     Route::post('changePurchasesSection', 'changeSection')->name('changePurchasesSection');
-//     Route::post('changePurchasesStore', 'changeStore')->name('changePurchasesStore');
-//     Route::post('changePurchasesUnit', 'getUnit')->name('changePurchasesUnit');
-//     Route::post('savePurchase', 'save')->name('savePurchase');
-//     Route::post('getPurchase', 'getPurchase')->name('getPurchase');
-//     Route::post('getPurchaseViaSerial', 'getPurchaseViaSerial')->name('getPurchaseViaSerial');
-//     Route::post('deletePurchase', 'deletePurchase')->name('deletePurchase');
-//     Route::post('deleteItemPurchase', 'deleteItemPurchase')->name('deleteItemPurchase');
-//     Route::post('updatePurchase', 'updatePurchase')->name('updatePurchase');
-//     Route::post('updateItemPurchase', 'updateItemPurchase')->name('updateItemPurchase');
+
+
+// Route::group(['prefix' => 'stock', 'controller' => ExchangeController::class], function () {
+//     Route::get('exchange', 'index')->name('exchange');
+//     Route::post('saveExchange', 'save')->name('saveExchange');
+//     Route::post('getExchange', 'getExchange')->name('getExchange');
+//     Route::post('getExchangeViaSerial', 'getExchangeViaSerial')->name('getExchangeViaSerial');
+//     Route::post('getExchangeViaOrder', 'getExchangeViaOrder')->name('getExchangeViaOrder');
+
+//     Route::post('deleteExchange', 'deleteExchange')->name('deleteExchange');
+//     Route::post('deleteItemExchange', 'deleteItemExchange')->name('deleteItemExchange');
+//     Route::post('updateExchange', 'updateExchange')->name('updateExchange');
+//     Route::post('updateItemExchange', 'updateItemExchange')->name('updateItemExchange');
 // });
-
-Route::group(['prefix' => 'stock', 'controller' => ExchangeController::class], function () {
-    Route::get('exchange', 'index')->name('exchange');
-    Route::post('saveExchange', 'save')->name('saveExchange');
-    Route::post('getExchange', 'getExchange')->name('getExchange');
-    Route::post('getExchangeViaSerial', 'getExchangeViaSerial')->name('getExchangeViaSerial');
-    Route::post('getExchangeViaOrder', 'getExchangeViaOrder')->name('getExchangeViaOrder');
-
-    Route::post('deleteExchange', 'deleteExchange')->name('deleteExchange');
-    Route::post('deleteItemExchange', 'deleteItemExchange')->name('deleteItemExchange');
-    Route::post('updateExchange', 'updateExchange')->name('updateExchange');
-    Route::post('updateItemExchange', 'updateItemExchange')->name('updateItemExchange');
-});
 
 Route::group(['prefix' => 'stock', 'controller' => MaterialTransfer::class], function () {
     Route::get('transfers', 'index')->name('transfers');
