@@ -1,7 +1,8 @@
 @php $title='إذن صرف';@endphp
 @extends('layouts.stock.app')
 @section('content')
-    <section class="exchange">
+    <section>
+        <h2 class="page-title">{{ $title }}</h2>
         <div class="container">
             <div class="row">
                 <div class="col-md-12 d-flex align-items-center mb-2">
@@ -13,9 +14,9 @@
                     <div class="col-md-3">
 
                         <select class="form-select" name="purchases_id" id="purchases_id">
-                            <option selected disabled>اختر رقم الطلبية</option>
+                            <option selected disabled>اختر رقم الاذن</option>
                             @forelse ($orders as $order)
-                                <option value="{{ $order->id }}">{{ $order->order_nr }}</option>
+                                <option value="{{ $order->id }}">{{ $order->id }}</option>
                             @empty
                                 <option value="">لاتوجد طلبيات متاحة</option>
                             @endforelse
@@ -39,8 +40,8 @@
                     </div>
                     <div class="col-md-2">
                         <div class="custom-form invalid">
-                            <input type="date" name="purchases_date" id="purchases_date" value="<?php echo date('Y-m-d'); ?>">
-                            <label for="purchases_date">التاريخ</label>
+                            <input type="date" name="exchange_date" id="exchange_date" value="<?php echo date('Y-m-d'); ?>">
+                            <label for="exchange_date">التاريخ</label>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -86,7 +87,7 @@
                     </div>
                 </div>
                 <hr />
-                <div class="row align-items-end" style="margin-top: -1rem;">
+                <div class="row align-items-end" style="margin-top: -1rem;" id="exchange_materials">
                     <div class="col-md-3">
                         <label for="material_id" class="select-label"> الخامات</label>
                         <select class="form-select" name="material_id" id="material_id">
@@ -127,7 +128,7 @@
                 </div>
             </div>
             <div class="table-responsive materials-responsive rounded">
-                <table class="table table-light table-striped text-center table-exchange">
+                <table class="table table-light table-striped text-center table-purchases">
                     <thead>
                         <tr>
                             <th> كود الصنف </th>
@@ -136,7 +137,7 @@
                             <th> السعر </th>
                             <th> الكمية </th>
                             <th> الاجمالى </th>
-                            <th></th>
+                            <th>تحكم</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -152,8 +153,8 @@
                 </table>
             </div>
             <div class="d-grid gap-2 col-md-6 mx-auto mt-4 mb-2">
-                <button class='btn btn-success fs-6' id="save_purchases">حفظ</button>
-                <button class='btn btn-primary fs-6 d-none' id="update_purchases">تعديل</button>
+                <button class='btn btn-success fs-6' id="save_exchange">حفظ</button>
+                <button class='btn btn-primary fs-6 d-none' id="update_exchange">تعديل</button>
             </div>
         </div>
     </section>

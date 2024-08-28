@@ -27,7 +27,15 @@ class Exchange extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'order_nr',
+        'exchange_date',
+        'image',
+        'notes',
+        'user_id',
+        'store_id',
+        'section_id'
+    ];
 
     /**
      * The attributes that should be hidden for serialization.

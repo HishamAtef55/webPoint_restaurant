@@ -431,6 +431,13 @@
                     return new Promise((resolve) => {
                         if (rowParent.hasClass('new')) {
                             rowParent.remove();
+                            if (tableBody.find('tr').length === 0) {
+                                tableBody.append(
+                                    `<tr class="not-found">
+                                        <td colspan="7">لا يوجد بيانات</td>
+                                    </tr>`
+                                );
+                            }
                             calcTotal();
                             resolve();
                         } else {
@@ -449,6 +456,14 @@
                                             response.message,
                                             'تم الحذف', 'success')
                                         rowParent.remove();
+                                        if (tableBody.find('tr')
+                                            .length === 0) {
+                                            tableBody.append(
+                                                `<tr class="not-found">
+                                        <td colspan="7">لا يوجد بيانات</td>
+                                    </tr>`
+                                            );
+                                        }
                                         calcTotal();
                                         resolve();
                                     }
@@ -465,14 +480,6 @@
                 }
 
             });
-
-            if (tableBody.find('tr').length === 0) {
-                tableBody.append(
-                    `<tr class="not-found">
-                            <td colspan="10">لا يوجد بيانات</td>
-                        </tr>`
-                );
-            }
         });
 
 

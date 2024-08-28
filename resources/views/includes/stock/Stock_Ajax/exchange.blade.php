@@ -1,29 +1,25 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let serial_number = $('#serial_number');
+    let order_nr = $('#order_nr');
     let supplier = $('#supplier_id');
     let tax = $('#tax');
-    let date = $('#purchases_date');
+    let date = $('#exchange_date');
     let branchs = $('#branch_id');
     let sections = $('#section_id')
     let stores = $('#store_id');
-    let materials = $('#material_purchases').find('select[name="material_id"]')
-    let material_expire_date = $('#material_purchases').find('input[name="expire_date"]')
-    let material_quantity = $('#material_purchases').find('input[name="quantity"]')
-    let material_unit = $('#material_purchases').find('input[name="unit"]')
-    let material_price = $('#material_purchases').find('input[name="price"]')
-    let material_total_price = $('#material_purchases').find('input[name="total_price"]')
-    let material_last_price = $('#material_purchases').find('input[name="last_price"]')
-    let material_current_Balance = $('#material_purchases').find('input[name="current_balance"]')
+    let materials = $('#exchange_materials').find('select[name="material_id"]')
+    let material_quantity = $('#exchange_materials').find('input[name="quantity"]')
+    let material_unit = $('#exchange_materials').find('input[name="unit"]')
+    let material_price = $('#exchange_materials').find('input[name="price"]')
+    let material_total_price = $('#exchange_materials').find('input[name="total_price"]')
+    let material_current_Balance = $('#exchange_materials').find('input[name="current_balance"]')
     let notes = $('#notes');
     let tableBody = $('.table-purchases tbody');
     let tableFoot = $('.table-purchases tfoot');
-    let permissionId = $('#permissionId');
-    let updateBtn = $('#update_purchases');
-    let saveBtn = $('#save_purchases');
+    let updateBtn = $('#update_exchange');
+    let saveBtn = $('#save_exchange');
     let deleteBtn = $('#delete_purchases');
-    let addToTableBtn = $('#material_purchases').find('button[id="arrow-down"]')
-    let purchases_image;
+    let exchange_image;
     let now = new Date();
     let spinner = $(
         '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
@@ -71,14 +67,13 @@
         }
 
         $('#image').on('change', function(e) {
-            purchases_image = e.target.files[0]
+            exchange_image = e.target.files[0]
         })
 
         stores.on("change", getMaterials)
 
         branchs.on("change", getSections);
 
-        addToTableBtn.on("click", addDataToTable)
 
         /*
          * getSections
@@ -154,13 +149,11 @@
                                   </option>`;
                 });
             }
-            console.log(html);
             container.html(html);
         }
         // apply material unit
 
         materials.on('change', function(params) {
-            console.log($(this));
             let material = $(this).find("option:selected");
 
             material_unit.val(material.attr('data-unit'))
@@ -168,7 +161,7 @@
             material_price.val(material.attr('data-price'))
             checkForm()
             setTimeout(() => {
-                material_price.focus();
+                material_quantity.focus();
             }, 100);
 
 
@@ -240,28 +233,23 @@
                 });
                 return false
             }
-            if (!tax.val()) {
+            console.log("material_qty", material_quantity.val())
+            console.log("material_current_Balance", material_current_Balance.val())
+            console.log(material_quantity.val() > material_current_Balance.val())
+            if (+material_quantity.val() > +material_current_Balance.val()) {
                 Toast.fire({
                     icon: 'error',
-                    title: 'يجب ادخال الضريبة'
+                    title: 'يجب ادخال كمية اقل او تساوى من الرصيد الحالى'
                 });
                 return false
             }
 
-            if (!material_discount.val()) {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'يجب ادخال الخصم'
-                });
-                return false
-            }
-            let finalTotal = material_total_price.val() - material_discount.val();
+            let finalTotal = material_total_price.val();
 
             let html = `<tr rowId="${code}" class="new">
 
                 <td>${code}</td>
                 <td>${name}</td>
-                <td>${material_expire_date.val() || '-'}</td>
                 <td>${unit}</td>
                 <td>
                     <input type="number" value="${material_price.val()}" class="material_price"/>
@@ -271,8 +259,6 @@
                     <input type="number" class="material_quantity" value="${material_quantity.val()}"/>
                     <span>${material_quantity.val()}</span>
                 </td>
-                <td class="totalPrice">${material_total_price.val()}</td>
-                <td class="material_discount">${parseFloat(material_discount.val()).toFixed(2)}</td>
                 
                 <td class="finalTotal">${parseFloat(finalTotal).toFixed(2)}</td>
                 <td>
@@ -295,18 +281,13 @@
             material_quantity.val('');
             material_price.val('');
             material_unit.val('');
-            material_discount.val('');
+            material_current_Balance.val('');
 
             materials.select2('open');
             calcTotal();
             checkForm();
         }
 
-        material_discount.on('keyup', function(e) {
-            if (e.keyCode === 13) {
-                addDataToTable()
-            }
-        });
 
         material_quantity.on('keyup', function(e) {
             if (e.keyCode === 13) {
@@ -314,30 +295,22 @@
             }
         });
 
-        material_price.on('keyup', function(e) {
-            if (e.keyCode === 13) {
-                material_quantity.focus();
-            }
-        });
+        // material_price.on('keyup', function(e) {
+        //     if (e.keyCode === 13) {
+        //         material_quantity.focus();
+        //     }
+        // });
 
         material_total_price.on('keyup', function(e) {
             if (e.keyCode === 13) {
-                material_discount.focus();
-            }
-        });
-
-        material_discount.on('keyup', function(e) {
-            if (e.keyCode === 13) {
                 addDataToTable();
             }
-        })
+        });
 
 
         function calcTotal() {
             let totalPrice = 0;
-            let totalDiscount = 0;
             let finalTotal = 0;
-            let taxValue = 0;
 
             // Sum totalPrice from elements with class 'totalPrice'
             $('.totalPrice').each(function() {
@@ -345,11 +318,6 @@
                 totalPrice += value;
             });
 
-            // Sum totalDiscount from elements with class 'material_discount'
-            $('.material_discount').each(function() {
-                let value = parseFloat($(this).text()) || 0;
-                totalDiscount += value;
-            });
 
             // Sum finalTotal from elements with class 'finalTotal'
             $('.finalTotal').each(function() {
@@ -358,11 +326,8 @@
             });
 
             $('.sumTotal').text(totalPrice.toFixed(2));
-            $('.sumDiscount').text(totalDiscount.toFixed(2));
             $('.sumFinal').text(finalTotal.toFixed(2));
-            taxValue = finalTotal.toFixed(2) * tax.val() / 100
-            $('.sumTax').text(taxValue.toFixed(2))
-            $('.netTotalPrice').text((finalTotal + taxValue).toFixed(2))
+            // $('.netTotalPrice').text((finalTotal + taxValue).toFixed(2))
         }
 
 
@@ -384,6 +349,13 @@
                     return new Promise((resolve) => {
                         if (rowParent.hasClass('new')) {
                             rowParent.remove();
+                            if (tableBody.find('tr').length === 0) {
+                                tableBody.append(
+                                    `<tr class="not-found">
+                                        <td colspan="7">لا يوجد بيانات</td>
+                                    </tr>`
+                                );
+                            }
                             calcTotal();
                             resolve();
                         } else {
@@ -402,6 +374,14 @@
                                             response.message,
                                             'تم الحذف', 'success')
                                         rowParent.remove();
+                                        if (tableBody.find('tr')
+                                            .length === 0) {
+                                            tableBody.append(
+                                                `<tr class="not-found">
+                                                    <td colspan="7">لا يوجد بيانات</td>
+                                                </tr>`
+                                            );
+                                        }
                                         calcTotal();
                                         resolve();
                                     }
@@ -419,13 +399,8 @@
 
             });
 
-            if (tableBody.find('tr').length === 0) {
-                tableBody.append(
-                    `<tr class="not-found">
-                            <td colspan="10">لا يوجد بيانات</td>
-                        </tr>`
-                );
-            }
+
+
         });
 
 
@@ -448,10 +423,9 @@
             let finalTotal = (total - discount);
 
             // Update the table cells
-            rowParent.find('td').eq(4).find('span').text(price.toFixed(2)); // Update price
-            rowParent.find('td').eq(5).find('span').text(qty); // Update quantity
-            rowParent.find('td').eq(6).text(total.toFixed(2)); // Update total price
-            rowParent.find('td').eq(8).text(finalTotal.toFixed(2)); // Update final total
+            rowParent.find('td').eq(3).find('span').text(price.toFixed(2)); // Update price
+            rowParent.find('td').eq(4).find('span').text(qty); // Update quantity
+            rowParent.find('td').eq(5).text(total.toFixed(2)); // Update total price
 
             // Remove 'edit' class to return to base state
             rowParent.removeClass('edit');
@@ -462,55 +436,41 @@
 
         function setData(method = null) {
             let materialArray = [];
-            let purchases_method = $('input[name="purchases_method"]:checked').val();
-            let payType = $('input[name="pay_method"]:checked').val();
             tableBody.find('tr').each(function() {
                 materialArray.push({
                     material_id: $(this).find('td').eq(0).text(),
-                    expire_date: $(this).find('td').eq(2).text(),
-                    price: $(this).find('td').eq(4).text(),
-                    qty: $(this).find('td').eq(5).text(),
-                    discount: $(this).find('td').eq(7).text(),
-                    total: $(this).find('td').eq(8).text(),
+                    price: $(this).find('td').eq(3).text(),
+                    qty: $(this).find('td').eq(4).text(),
+                    total: $(this).find('td').eq(5).text(),
                 });
             });
-            console.log(materialArray)
 
             let formData = new FormData();
             if (method) {
                 formData.append('_method', method);
 
             }
-            formData.append("purchases_method", purchases_method);
-            formData.append("serial_nr", serial_number.val());
-            formData.append("supplier_id", supplier.val());
+            formData.append("order_nr", order_nr.val());
             formData.append("section_id", sections.val());
             formData.append("store_id", stores.val());
 
             // formData.append("tax", tax.val());
-            formData.append("purchases_date", date.val());
+            formData.append("exchange_date", date.val());
 
             formData.append("materialArray", JSON.stringify(materialArray));
 
-            formData.append("sumTotal", $('.netTotalPrice').text());
-
-            formData.append("tax", tax.val());
-
-
-            formData.append("payment_type", payType);
             formData.append("notes", notes.val());
-            formData.append("purchases_image", purchases_image);
-            console.log(formData)
+            formData.append("image", exchange_image);
             return formData;
         }
 
-        $(document).on('click', '#save_purchases', function() {
+        $(document).on('click', '#save_exchange', function() {
             let button = $(this);
             let originalHtml = button.html();
             button.html(spinner).prop('disabled', true);
             $.ajax({
                 type: 'POST',
-                url: "{{ route('stock.purchases.store') }}",
+                url: "{{ route('stock.exchange.store') }}",
                 dataType: 'json',
                 enctype: "multipart/form-data",
                 processData: false,
@@ -518,18 +478,20 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
-                    if (response.status == 201) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: response.message
-                        });
+                    console.log(response)
+                    button.html(originalHtml).prop('disabled', false);
+                    // if (response.status == 201) {
+                    //     Toast.fire({
+                    //         icon: 'success',
+                    //         title: response.message
+                    //     });
 
-                        button.html(originalHtml).prop('disabled', false);
+                    //     button.html(originalHtml).prop('disabled', false);
 
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 300)
-                    }
+                    //     setTimeout(() => {
+                    //         window.location.reload();
+                    //     }, 300)
+                    // }
 
                 },
                 error: handleAjaxError,

@@ -65,6 +65,50 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
+     * exchangePurchase
+     * @param Section $section
+     * @return bool
+     */
+    public function exchangeBalance(
+        $section
+    ): bool {
+        try {
+
+            if (!$this->balance) return false;
+            /*
+            * increase balance of section
+            */
+            foreach ($this->balance as $balance) {
+                $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
+                if ($oldBalance) {
+                    $qty = $oldBalance->qty += $balance['qty'];
+                    $oldBalance->update([
+                        'qty' => $qty,
+                    ]);
+                } else {
+                    $section->balance()->create(
+                        [
+                            'store_id' => $section->id,
+                            'material_id' => $balance['material_id'],
+                            'qty' =>  $balance['qty'],
+                            'avg_price' => $balance['price'],
+                        ]
+                    );
+                }
+            }
+
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('increase section balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $section,
+            ]);
+            return false;
+        }
+    }
+
+    /**
      * create
      * @param Material $material
      * @param int $id

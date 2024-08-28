@@ -30,7 +30,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         try {
 
             if (!$this->movement) return false;
-
+            
             DB::beginTransaction();
 
             // Handle different types of movements
@@ -123,6 +123,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
     ): void {
         match ($this->type) {
             MaterialMove::PURCHASES->value => $this->createPurchasesMovement($section),
+            MaterialMove::EXCHANGE->value => $this->createExchangeMovement($section),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -163,6 +164,42 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
     }
 
     /**
+     * createExchangeMovement
+     * @param Section $section
+     * @return void
+     */
+    private function createExchangeMovement(
+        Section $section
+    ): void {
+
+        /*
+            * material move inside section
+        */
+        foreach ($this->movement as &$move) {
+
+            $existingMovement = $section->move()->where([
+                'material_id' => $move['material_id'],
+                'order_nr' => $move['order_nr']
+            ])->first();
+            $section->move()->updateOrCreate(
+                [
+                    'material_id' => $move['material_id'],
+                    'order_nr' => $move['order_nr']
+                ],
+                [
+                    'qty' => $move['qty'],
+                    'price' => $move['price'],
+                    'type' => $move['type'],
+                ]
+            );
+            if ($existingMovement) {
+                $move['qty'] = $move['qty'] - $existingMovement->qty;
+                $move['price'] = $move['price'] - $existingMovement->price;
+            }
+        }
+    }
+
+    /**
      * updateBalance
      * @param Section $store
      * @return bool
@@ -171,7 +208,8 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         Section $section
     ): bool {
         return match ($this->type) {
-            MaterialMove::PURCHASES->value => Balance::storeBalance()->validate($this->movement)->purchasesBalance($section),
+            MaterialMove::PURCHASES->value => Balance::sectionBalance()->validate($this->movement)->purchasesBalance($section),
+            MaterialMove::EXCHANGE->value => Balance::sectionBalance()->validate($this->movement)->exchangeBalance($section),
             default => false,
         };
     }

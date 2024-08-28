@@ -18,7 +18,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
     protected Store $model;
 
     /**
-     * create
+     * purchasesBalance
      * @param Store $store
      * @return bool
      */
@@ -52,6 +52,49 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
                 }
             }
 
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('increase store balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $store,
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * exchangePurchase
+     * @param Store $store
+     * @return bool
+     */
+    public function exchangeBalance(
+        $store
+    ): bool {
+
+        try {
+
+            if (!$this->balance) return false;
+
+            /*
+            * increase balance of section
+            */
+            foreach ($this->balance as $balance) {
+                $store_balance = $store->balance()->where('material_id', $balance['material_id'])->first();
+                if ($balance < 0) {
+                    $qty = $store_balance->qty += $balance['qty'];
+                } else {
+                    $qty = $store_balance->qty -= $balance['qty'];
+                }
+
+                if ($qty == 0) {
+                    $store_balance->delete();
+                } else {
+                    $store_balance->update([
+                        'qty' => $qty,
+                    ]);
+                }
+            }
 
             return true;
         } catch (\Throwable $e) {

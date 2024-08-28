@@ -87,7 +87,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
 
             $qty = $oldBalance->qty -= $details->qty;
-            
+
             if ($qty == 0) {
                 $oldBalance->delete();
             } else {
@@ -124,6 +124,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
     ): void {
         match ($this->type) {
             MaterialMove::PURCHASES->value => $this->createPurchasesMovement($store),
+            MaterialMove::EXCHANGE->value => $this->createExchangeMovement($store),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -163,6 +164,42 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         }
     }
 
+
+    /**
+     * purchasesMovement
+     * @param Store $store
+     * @return void
+     */
+    private function createExchangeMovement(
+        Store $store
+    ): void {
+        /*
+            * material move inside store
+        */
+        foreach ($this->movement as &$move) {
+
+            $existingMovement = $store->move()->where([
+                'material_id' => $move['material_id'],
+                'order_nr' => $move['order_nr']
+            ])->first();
+            $store->move()->updateOrCreate(
+                [
+                    'material_id' => $move['material_id'],
+                    'order_nr' => $move['order_nr']
+                ],
+                [
+                    'qty' => $move['qty'],
+                    'price' => $move['price'],
+                    'type' => $move['type'],
+                ]
+            );
+            if ($existingMovement) {
+                 $move['qty'] -=$existingMovement->qty;
+            }
+        }
+    }
+
+
     /**
      * updateBalance
      * @param Store $store
@@ -173,6 +210,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
     ): bool {
         return match ($this->type) {
             MaterialMove::PURCHASES->value => Balance::storeBalance()->validate($this->movement)->purchasesBalance($store),
+            MaterialMove::EXCHANGE->value => Balance::storeBalance()->validate($this->movement)->exchangeBalance($store),
             default => false,
         };
     }

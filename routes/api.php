@@ -3,7 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Stock\Purchases\FilterSections;
+use App\Http\Controllers\Stock\Exchange\ExchangeController;
 use App\Http\Controllers\Stock\Purchases\PurchasesController;
+use App\Http\Controllers\Stock\Exchange\MaterialBalanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,5 +38,20 @@ Route::group(
         Route::post('/{purchase}', [PurchasesController::class, 'update'])->name('update');
         Route::delete('/{purchase}', [PurchasesController::class, 'destroy'])->name('destroy');
         Route::get('/sections/filter/{branch}', FilterSections::class)->name('sections.filter');
+    }
+);
+
+/*
+        * @routes('/exchange)
+        */
+Route::group(
+    [
+        'prefix' => 'exchange',
+        'as' => 'exchange.',
+    ],
+    function () {
+        Route::get('/', [ExchangeController::class, 'index'])->name('index');
+        Route::post('/', [ExchangeController::class, 'store'])->name('store');
+        Route::get('/materials/filter/{store}', MaterialBalanceController::class)->name('material.store.filter');
     }
 );

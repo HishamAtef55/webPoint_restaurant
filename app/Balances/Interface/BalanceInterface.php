@@ -20,6 +20,15 @@ interface BalanceInterface
     ): bool;
 
     /**
+     * exchangeBalance
+     * @param Store $store
+     * @return bool
+     */
+    public function exchangeBalance(
+        $store
+    ): bool;
+
+    /**
      * create
      * @param Material $material
      * @param int $id

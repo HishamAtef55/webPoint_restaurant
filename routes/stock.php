@@ -190,6 +190,7 @@ Route::group(
             ],
             function () {
                 Route::get('/', [ExchangeController::class, 'index'])->name('index');
+                Route::post('/', [ExchangeController::class, 'store'])->name('store');
                 Route::get('/materials/filter/{store}', MaterialBalanceController::class)->name('material.store.filter');
             }
         );

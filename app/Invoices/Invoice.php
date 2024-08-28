@@ -228,7 +228,7 @@ class Invoice implements InvoiceInterface
             'serial_nr' => $params['serial_nr'],
             'purchases_method' => $params['purchases_method'],
             'supplier_id' => $params['supplier_id'],
-            'user_id' => 10,
+            'user_id' => Auth::id(),
             'purchases_date' => $params['purchases_date'],
             'payment_type' => $params['payment_type'],
             'tax' => $params['tax'],
