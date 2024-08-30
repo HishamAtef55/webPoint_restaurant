@@ -36,6 +36,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
                 if ($oldBalance) {
                     $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
                     $qty = $oldBalance->qty += $balance['qty'];
+                    if ($qty < 0) return false;
                     $oldBalance->update([
                         'qty' => $qty,
                         'avg_price' => $price,
@@ -59,6 +60,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
                 'balance' => $this->balance,
                 'params' => $store,
             ]);
+            DB::rollBack();
             return false;
         }
     }
@@ -79,29 +81,25 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
             /*
             * increase balance of section
             */
+
             foreach ($this->balance as $balance) {
-                $store_balance = $store->balance()->where('material_id', $balance['material_id'])->first();
-                if ($balance < 0) {
-                    $qty = $store_balance->qty += $balance['qty'];
-                } else {
-                    $qty = $store_balance->qty -= $balance['qty'];
-                }
+                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
 
-                if ($qty == 0) {
-                    $store_balance->delete();
-                } else {
-                    $store_balance->update([
-                        'qty' => $qty,
-                    ]);
-                }
+                $qty = $oldBalance->qty -= $balance['qty'];
+
+                if ($qty < 0) return false;
+
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
             }
-
             return true;
         } catch (\Throwable $e) {
             Log::error('increase store balance creation failed: ' . $e->getMessage(), [
                 'balance' => $this->balance,
                 'params' => $store,
             ]);
+            DB::rollBack();
             return false;
         }
     }

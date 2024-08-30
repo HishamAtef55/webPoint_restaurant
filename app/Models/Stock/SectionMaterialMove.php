@@ -24,6 +24,7 @@ class SectionMaterialMove extends Model
      */
     protected $fillable = [
         'invoice_nr',
+        'order_nr',
         'store_id',
         'material_id',
         'qty',

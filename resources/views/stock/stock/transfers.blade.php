@@ -174,5 +174,5 @@
         </div>
     </div>
 </section>
-@include('includes.stock.Stock_Ajax.transfers')
+{{-- @include('includes.stock.Stock_Ajax.transfers') --}}
 @endsection

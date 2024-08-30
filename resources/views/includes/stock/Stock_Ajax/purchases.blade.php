@@ -605,7 +605,7 @@
         })
 
         function displayInvoices(invoice) {
-            $('#invoice_id').val(invoice.id)
+            $('#invoice_id').val(invoice.id).attr('disabled', true)
             serial_number.val(invoice.serial_nr)
             serial_number.attr('disabled', true);
             supplier.val(invoice.supplier.id).trigger('change')
@@ -636,10 +636,10 @@
                 document
                     .querySelectorAll(".branch-sec")
                     .forEach((el) => el.classList.remove("d-none"));
-                branchs.val(invoice.section.branch.id).trigger('change')
+                branchs.val(invoice.section.branch.id).trigger('change').attr("disabled", true)
                 sections.append(
                     `<option  value="${invoice.section.id}" selected>${invoice.section.name}</option>`
-                )
+                ).attr("disabled", true)
                 // sections.val(invoice.section.id).trigger('change')
 
             } else if (method === "stores") {
@@ -649,7 +649,7 @@
                 document
                     .querySelectorAll(".stores")
                     .forEach((el) => el.classList.remove("d-none"));
-                stores.val(invoice.store.id).trigger('change')
+                stores.val(invoice.store.id).trigger('change').attr("disabled", true)
 
             }
             preventChangeEvent = false;

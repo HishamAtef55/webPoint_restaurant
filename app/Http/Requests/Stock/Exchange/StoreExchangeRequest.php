@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Stock\Exchange;
 
 
+use App\Rules\BalanceQtyRule;
 use App\Enums\PurchasesMethod;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,7 +28,7 @@ class StoreExchangeRequest extends FormRequest
     {
         return [
 
-            'order_nr' => ['nullable', 'string','unique:stock_exchange,order_nr'],
+            'order_nr' => ['nullable', 'string', 'unique:stock_exchange,order_nr'],
 
             'notes' => 'nullable|string',
 
@@ -46,15 +47,29 @@ class StoreExchangeRequest extends FormRequest
             ],
 
             'materialArray' => 'required',
-            
+
             'materialArray.*.material_id' => [
                 'required',
                 'integer',
-                'exists:stock_materials,id'
+                'exists:stock_stores_balance,material_id'
             ],
             'materialArray.*.qty' => [
                 'required',
-                'integer'
+                'integer',
+                function ($attribute, $value, $fail) {
+                    // Extract the index from the attribute
+                    preg_match('/materialArray\.(\d+)\.qty/', $attribute, $matches);
+                    $index = $matches[1];
+
+                    // Get the corresponding material_id
+                    $materialId = $this->input("materialArray.$index.material_id");
+
+                    // Pass the material_id to the custom rule
+                    $rule = new BalanceQtyRule($materialId);
+                    if (!$rule->passes($attribute, $value)) {
+                        $fail($rule->message());
+                    }
+                },
             ],
             'materialArray.*.price' => [
                 'required',

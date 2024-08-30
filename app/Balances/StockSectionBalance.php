@@ -19,7 +19,7 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
     protected Section $model;
 
     /**
-     * create
+     * purchasesBalance
      * @param Section $section
      * @return bool
      */
@@ -60,12 +60,13 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
                 'balance' => $this->balance,
                 'params' => $section,
             ]);
+            DB::rollBack();
             return false;
         }
     }
 
     /**
-     * exchangePurchase
+     * exchangeBalance
      * @param Section $section
      * @return bool
      */
@@ -104,12 +105,13 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
                 'balance' => $this->balance,
                 'params' => $section,
             ]);
+            DB::rollBack();
             return false;
         }
     }
 
     /**
-     * create
+     * currentBalanceByMaterial
      * @param Material $material
      * @param int $id
      * @return int

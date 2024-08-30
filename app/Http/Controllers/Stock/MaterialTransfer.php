@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
 use App\Models\Branch;
+use App\Models\Stores;
+use App\Models\storeCost;
+use App\Models\Suppliers;
+use App\Models\stock_unit;
 use App\Models\materialLog;
 use App\Models\sectionCost;
-use App\Models\stock_unit;
-use App\Models\storeCost;
-use App\Models\Stores;
-use App\Models\Suppliers;
-use App\Models\transfersDetails;
-use App\Models\transfersMain;
+use App\Models\Stock\Store;
 use App\Traits\MainFunction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\transfersMain;
+use App\Models\Stock\Supplier;
+use App\Models\transfersDetails;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class MaterialTransfer extends Controller
 {
@@ -32,9 +34,9 @@ class MaterialTransfer extends Controller
     }
     public function index(){
         $serial = $this->getSerial();
-        $stores    = Stores::get()->all();
+        $stores    = Store::get()->all();
         $branches = Branch::get()->all();
-        $suppliers = Suppliers::get()->all();
+        $suppliers = Supplier::get()->all();
         return view('stock.stock.transfers',compact(['serial','stores','branches','suppliers']));
     }
     public function changeType(Request $request){

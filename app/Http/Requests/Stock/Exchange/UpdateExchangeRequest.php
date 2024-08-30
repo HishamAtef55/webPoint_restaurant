@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Stock\Exchange;
 
+use App\Rules\BalanceQtyRule;
 use App\Enums\PurchasesMethod;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,62 +26,42 @@ class UpdateExchangeRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
 
-            'payment_type' => ['required', 'string'],
-
-            'purchases_method' => ['required', 'string'],
-
-            'serial_nr' => [
-                'required',
-                 'string',
-                 Rule::unique('stock_purchases')->ignore($this->route('purchase')),
-                ],
-
+            'order_nr' => [
+                'nullable',
+                'string',
+                Rule::unique('stock_exchange')->ignore($this->route('exchange')),
+            ],
             'notes' => 'nullable|string',
 
-
-            'tax' => 'required|integer',
-
-            'sumTotal' => 'required',
-
-
-            'purchases_date' => 'required|date',
-
-
-            'supplier_id' => [
-                'required',
-                'exists:stock_suppliers,id'
-            ],
+            'exchange_date' => 'required|date',
 
             'store_id' => [
-                'required_if:purchases_method,' . PurchasesMethod::STORES->value,
+                'required',
+                'integer',
+                'exists:stock_stores,id'
             ],
 
             'section_id' => [
-                'required_if:purchases_method,' . PurchasesMethod::SECTIONS->value,
+                'required',
+                'integer',
+                'exists:stock_sections,id'
             ],
 
-
             'materialArray' => 'required',
+
             'materialArray.*.material_id' => [
                 'required',
                 'integer',
-                'exists:stock_materials,id'
-            ],
-            'materialArray.*.expire_date' => [
-                'required',
-                'date'
+                'exists:stock_stores_balance,material_id'
             ],
             'materialArray.*.qty' => [
                 'required',
-                'integer'
+                'integer',
             ],
             'materialArray.*.price' => [
-                'required',
-                'integer'
-            ],
-            'materialArray.*.discount' => [
                 'required',
                 'integer'
             ],
@@ -89,7 +70,7 @@ class UpdateExchangeRequest extends FormRequest
                 'integer'
             ],
 
-            'purchases_image' => 'nullable'
+            'image' => 'nullable'
         ];
     }
 }

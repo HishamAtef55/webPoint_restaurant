@@ -32,7 +32,7 @@ class UpdatePurchasesRequest extends FormRequest
             'purchases_method' => ['required', 'string'],
 
             'serial_nr' => [
-                'required',
+                'nullable',
                  'string',
                  Rule::unique('stock_purchases')->ignore($this->route('purchase')),
                 ],

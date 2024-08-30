@@ -32,7 +32,7 @@ class StorePurchasesRequest extends FormRequest
 
             'purchases_method' => ['required', 'string'],
 
-            'serial_nr' => ['required', 'string', 'unique:stock_purchases,serial_nr'],
+            'serial_nr' => ['nullable', 'string', 'unique:stock_purchases,serial_nr'],
 
             'notes' => 'nullable|string',
 

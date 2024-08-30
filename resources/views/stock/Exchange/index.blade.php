@@ -13,7 +13,7 @@
                     </div>
                     <div class="col-md-3">
 
-                        <select class="form-select" name="purchases_id" id="purchases_id">
+                        <select class="form-select" name="exchange_id" id="exchange_id">
                             <option selected disabled>اختر رقم الاذن</option>
                             @forelse ($orders as $order)
                                 <option value="{{ $order->id }}">{{ $order->id }}</option>

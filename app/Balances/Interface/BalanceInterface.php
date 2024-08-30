@@ -11,7 +11,7 @@ interface BalanceInterface
 {
 
     /**
-     * create
+     * purchasesBalance
      * @param Store|Section $model
      * @return bool
      */

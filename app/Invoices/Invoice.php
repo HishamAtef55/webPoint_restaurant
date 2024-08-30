@@ -136,8 +136,6 @@ class Invoice implements InvoiceInterface
             // Check if decoding was successful
             if (json_last_error() === JSON_ERROR_NONE) {
                 foreach ($params['materialArray'] as $material) {
-                    $material['price'] = trim($material['price']);
-                    $material['qty'] = trim($material['qty']);
                     // Create the purchase details record
                     $purchase->details()->updateOrCreate(
                         [
@@ -190,14 +188,22 @@ class Invoice implements InvoiceInterface
         Purchases $purchases,
         int $id
     ): bool {
-        if ($purchases->hasDetails()) {
+        try {
+            DB::beginTransaction();
+            if (!$purchases->hasDetails()) return false;
             $result =  match ($purchases->purchases_method) {
                 PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->deletePurchaseMovement($purchases, $id),
                 PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->deletePurchaseMovement($purchases, $id),
                 default => throw new \Exception("Un supported purchase method", 1),
             };
+            DB::commit();
             return $result;
-        } else {
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('Purchase details deleting failed: ' . $e->getMessage(), [
+                'purchases' => $purchases,
+            ]);
+            DB::rollBack();
             return false;
         }
     }
@@ -250,7 +256,7 @@ class Invoice implements InvoiceInterface
         $purchases->details->map(function ($item) use ($purchases) {
             return [
                 array_push($this->movement, [
-                    'invoice_nr' => $purchases->serial_nr,
+                    'invoice_nr' => $purchases->id,
                     'material_id' => $item->material_id,
                     'qty' => $item->qty,
                     'price' => $item->price,

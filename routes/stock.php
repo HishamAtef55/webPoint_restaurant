@@ -189,8 +189,13 @@ Route::group(
                 'as' => 'exchange.',
             ],
             function () {
-                Route::get('/', [ExchangeController::class, 'index'])->name('index');
-                Route::post('/', [ExchangeController::class, 'store'])->name('store');
+                Route::controller(ExchangeController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::post('/', 'store')->name('store');
+                    Route::get('/{exchange}', 'show')->name('show');
+                    Route::post('/{exchange}', 'update')->name('update');
+                    Route::delete('/{exchange}', 'destroy')->name('destroy');
+                });
                 Route::get('/materials/filter/{store}', MaterialBalanceController::class)->name('material.store.filter');
             }
         );
@@ -226,22 +231,6 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     // Route::post('DetailsWithoutMaterials', 'DetailsWithoutMaterials')->name('DetailsWithoutMaterials');
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
-
-######################################## Purchases #############################################
-
-
-// Route::group(['prefix' => 'stock', 'controller' => ExchangeController::class], function () {
-//     Route::get('exchange', 'index')->name('exchange');
-//     Route::post('saveExchange', 'save')->name('saveExchange');
-//     Route::post('getExchange', 'getExchange')->name('getExchange');
-//     Route::post('getExchangeViaSerial', 'getExchangeViaSerial')->name('getExchangeViaSerial');
-//     Route::post('getExchangeViaOrder', 'getExchangeViaOrder')->name('getExchangeViaOrder');
-
-//     Route::post('deleteExchange', 'deleteExchange')->name('deleteExchange');
-//     Route::post('deleteItemExchange', 'deleteItemExchange')->name('deleteItemExchange');
-//     Route::post('updateExchange', 'updateExchange')->name('updateExchange');
-//     Route::post('updateItemExchange', 'updateItemExchange')->name('updateItemExchange');
-// });
 
 Route::group(['prefix' => 'stock', 'controller' => MaterialTransfer::class], function () {
     Route::get('transfers', 'index')->name('transfers');

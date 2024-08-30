@@ -50,8 +50,14 @@ Route::group(
         'as' => 'exchange.',
     ],
     function () {
-        Route::get('/', [ExchangeController::class, 'index'])->name('index');
-        Route::post('/', [ExchangeController::class, 'store'])->name('store');
+
+        Route::controller(ExchangeController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{exchange}', 'show')->name('show');
+            Route::post('/{exchange}', 'update')->name('update');
+            Route::delete('/{exchange}', 'destroy')->name('destroy');
+        });
         Route::get('/materials/filter/{store}', MaterialBalanceController::class)->name('material.store.filter');
     }
 );

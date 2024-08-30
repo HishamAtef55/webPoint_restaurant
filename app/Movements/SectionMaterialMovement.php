@@ -4,6 +4,7 @@ namespace App\Movements;
 
 use App\Enums\MaterialMove;
 use App\Models\Stock\Section;
+use App\Models\Stock\Exchange;
 use App\Models\Stock\Purchases;
 use App\Balances\Facades\Balance;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         try {
 
             if (!$this->movement) return false;
-            
+
             DB::beginTransaction();
 
             // Handle different types of movements
@@ -48,6 +49,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
                 'movement' => $this->movement,
                 'section' => $section,
             ]);
+            DB::rollBack();
             return false;
         }
     }
@@ -109,6 +111,67 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
                 'purchases' => $purchases,
                 'id' => $id,
             ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * deleteExchangeMovement
+     * @param Exchange $exchange
+     * @param int $id
+     * @return bool
+     */
+    public function deleteExchangeMovement(
+        Exchange $exchange,
+        int $id,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $section = $exchange->section;
+
+            $details = $exchange->details()->find($id);
+
+            if (!$details) return false;
+
+            /*
+            *  store delete move
+            */
+            $section->move()->where([
+                'material_id' => $details->material_id,
+                'order_nr' => $exchange->order_nr
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            $oldBalance = $section->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty -= $details->qty;
+
+            if ($qty < 0) return false;
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+            /*
+            *  delete exchange item
+            */
+            $details->delete();
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('exchange details deleted failed: ' . $e->getMessage(), [
+                'exchange' => $exchange,
+                'id' => $id,
+            ]);
+            DB::rollBack();
             return false;
         }
     }
@@ -157,8 +220,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
                 ]
             );
             if ($existingMovement) {
-                $move['qty'] = $move['qty'] - $existingMovement->qty;
-                $move['price'] = $move['price'] - $existingMovement->price;
+                $move['qty'] -= $existingMovement->qty;
             }
         }
     }
@@ -176,7 +238,6 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             * material move inside section
         */
         foreach ($this->movement as &$move) {
-
             $existingMovement = $section->move()->where([
                 'material_id' => $move['material_id'],
                 'order_nr' => $move['order_nr']
@@ -193,8 +254,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
                 ]
             );
             if ($existingMovement) {
-                $move['qty'] = $move['qty'] - $existingMovement->qty;
-                $move['price'] = $move['price'] - $existingMovement->price;
+                $move['qty'] -= $existingMovement->qty;
             }
         }
     }
