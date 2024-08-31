@@ -9,6 +9,7 @@ use App\Models\Stock\Purchases;
 use App\Balances\Facades\Balance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\PurchasesDetails;
 use App\Models\Stock\SectionMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
@@ -79,7 +80,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             */
             $section->move()->where([
                 'material_id' => $details->material_id,
-                'invoice_nr' => $purchases->serial_nr
+                'invoice_nr' => $purchases->id
             ])->delete();
 
             /*
@@ -119,13 +120,14 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
 
     /**
      * deleteExchangeMovement
+     * 
      * @param Exchange $exchange
-     * @param int $id
+     * @param ExchangeDetails $details
      * @return bool
      */
     public function deleteExchangeMovement(
         Exchange $exchange,
-        int $id,
+        ExchangeDetails $details,
     ): bool {
 
         try {
@@ -134,16 +136,12 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
 
             $section = $exchange->section;
 
-            $details = $exchange->details()->find($id);
-
-            if (!$details) return false;
-
             /*
             *  store delete move
             */
             $section->move()->where([
                 'material_id' => $details->material_id,
-                'order_nr' => $exchange->order_nr
+                'order_nr' => $exchange->id
             ])->delete();
 
             /*
@@ -154,14 +152,11 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             $qty = $oldBalance->qty -= $details->qty;
 
             if ($qty < 0) return false;
+
             $oldBalance->update([
                 'qty' => $qty,
             ]);
 
-            /*
-            *  delete exchange item
-            */
-            $details->delete();
 
             DB::commit();
 
@@ -169,7 +164,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         } catch (\Throwable $e) {
             Log::error('exchange details deleted failed: ' . $e->getMessage(), [
                 'exchange' => $exchange,
-                'id' => $id,
+                'exchange_details' => $details,
             ]);
             DB::rollBack();
             return false;

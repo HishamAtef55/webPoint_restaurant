@@ -9,6 +9,7 @@ use App\Models\Stock\Purchases;
 use App\Balances\Facades\Balance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\PurchasesDetails;
 use App\Models\Stock\StoreMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
@@ -80,7 +81,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             */
             $store->move()->where([
                 'material_id' => $details->material_id,
-                'invoice_nr' => $purchases->serial_nr
+                'invoice_nr' => $purchases->id
             ])->delete();
 
             /*
@@ -119,13 +120,14 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
 
     /**
      * deleteExchangeMovement
+     * 
      * @param Exchange $exchange
-     * @param int $id
+     * @param ExchangeDetails $details
      * @return bool
      */
     public function deleteExchangeMovement(
         Exchange $exchange,
-        int $id,
+        ExchangeDetails $details,
     ): bool {
 
         try {
@@ -134,18 +136,14 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
 
             $store = $exchange->store;
 
-            $details = $exchange->details()->find($id);
-
-            if (!$details) return false;
-
             /*
             *  store delete move
             */
-            $store->move()->where([
+           $store->move()->where([
                 'material_id' => $details->material_id,
-                'order_nr' => $exchange->order_nr
+                'order_nr' => $exchange->id
             ])->delete();
-
+ 
             /*
             *  update store balance
             */
@@ -157,18 +155,13 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
                 'qty' => $qty,
             ]);
 
-            /*
-            *  delete exchange item
-            */
-            $details->delete();
-
             DB::commit();
 
             return true;
         } catch (\Throwable $e) {
             Log::error('exchange details deleted failed: ' . $e->getMessage(), [
                 'exchange' => $exchange,
-                'id' => $id,
+                'exchange_details' => $details,
             ]);
             DB::rollBack();
             return false;

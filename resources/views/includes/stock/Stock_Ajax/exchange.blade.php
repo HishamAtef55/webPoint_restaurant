@@ -588,6 +588,14 @@
 
                         button.html(originalHtml).prop('disabled', false);
                     }
+                    if (response.status == 422) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+
+                        button.html(originalHtml).prop('disabled', false);
+                    }
                 },
                 error: handleAjaxError,
                 complete: function() {

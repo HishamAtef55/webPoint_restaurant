@@ -188,16 +188,23 @@ class Invoice implements InvoiceInterface
         Purchases $purchases,
         int $id
     ): bool {
+      
         try {
+           
             DB::beginTransaction();
+          
             if (!$purchases->hasDetails()) return false;
+          
             $result =  match ($purchases->purchases_method) {
                 PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->deletePurchaseMovement($purchases, $id),
                 PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->deletePurchaseMovement($purchases, $id),
                 default => throw new \Exception("Un supported purchase method", 1),
             };
+
             DB::commit();
+
             return $result;
+            
         } catch (\Exception $e) {
             // Log the exception for debugging
             Log::error('Purchase details deleting failed: ' . $e->getMessage(), [

@@ -5,6 +5,7 @@ namespace App\Movements\Interface;
 use App\Models\Stock\Store;
 use App\Models\Stock\Section;
 use App\Models\Stock\Exchange;
+use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\Purchases;
 use App\Models\Stock\PurchasesDetails;
 
@@ -34,11 +35,11 @@ interface MovementInterface
     /**
      * deleteExchangeMovement
      * @param Exchange $exchange
-     * @param int $id
+     * @param ExchangeDetails $details
      * @return bool
      */
     public function deleteExchangeMovement(
         Exchange $exchange,
-        int $id,
+        ExchangeDetails $details,
     ): bool;
 }

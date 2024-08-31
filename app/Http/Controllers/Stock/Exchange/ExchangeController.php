@@ -86,13 +86,25 @@ class ExchangeController extends Controller
         ExchangeService $service,
     ): ExchangeResource {
 
-        if ($service->update($request->validated(), $exchange)) {
-            return ExchangeResource::make(
-                $exchange
-            )->additional([
-                'message' => 'تم تعديل إذن الصرف بنجاح بنجاح',
-                'status' => Response::HTTP_OK
-            ], Response::HTTP_OK);
+        try {
+            if ($service->update($request->validated(), $exchange)) {
+                return ExchangeResource::make(
+                    $exchange
+                )->additional([
+                    'message' => 'تم تعديل إذن الصرف بنجاح بنجاح',
+                    'status' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            }
+
+            return response()->json([
+                'message' => 'لايمكن تعديل إذن الصرف',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -108,18 +120,25 @@ class ExchangeController extends Controller
         Exchange  $exchange,
         Request $request,
         ExchangeService $service
-    ): ExchangeResource|JsonResponse 
-    {
-        if ($service->delete($exchange, $request->details_id)) {
-            return response()->json([
-                'message' => "تم حذف الخامة",
-                'status' => Response::HTTP_OK
-            ]);
-        }
+    ): ExchangeResource|JsonResponse {
 
-        return response()->json([
-            'message' => 'لا يمكن حذف خامة على الاقل',
-            'status' => Response::HTTP_UNPROCESSABLE_ENTITY
-        ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        try {
+            if ($service->delete($exchange, $request->details_id)) {
+                return response()->json([
+                    'message' => "تم حذف الخامة",
+                    'status' => Response::HTTP_OK
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'لا يمكن حذف خامة على الاقل',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

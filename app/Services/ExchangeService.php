@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Movements\Facades\Movement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class ExchangeService
 {
@@ -159,10 +160,28 @@ class ExchangeService
         try {
 
             DB::beginTransaction();
+
             if (!$exchange->hasDetails()) return false;
-            $storeMaterialMove =  Movement::storeMaterialMovement()->deleteExchangeMovement($exchange, $id);
-            $sectionMaterialMove = Movement::sectionMaterialMovement()->deleteExchangeMovement($exchange, $id);
+
+            $details = $exchange->details()->find($id);
+
+            if (!$details) {
+                throw ValidationException::withMessages([
+                    'error' => 'the exchange details not found'
+                ]);
+            }
+
+            $storeMaterialMove =  Movement::storeMaterialMovement()->deleteExchangeMovement($exchange, $details);
+
+            $sectionMaterialMove = Movement::sectionMaterialMovement()->deleteExchangeMovement($exchange, $details);
+
+            /*
+            *  delete exchange item
+            */
+            $details->delete();
+
             DB::commit();
+
             return $storeMaterialMove && $sectionMaterialMove;
         } catch (\Exception $e) {
             // Log the exception for debugging
@@ -170,7 +189,7 @@ class ExchangeService
                 'exchange' => $exchange,
             ]);
             DB::rollBack();
-            return false;
+            throw $e;
         }
     }
 
