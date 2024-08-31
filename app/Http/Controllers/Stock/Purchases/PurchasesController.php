@@ -96,20 +96,32 @@ class PurchasesController extends Controller
      *
      * @param  UpdatePurchasesRequest  $request
      * @param  Purchases  $purchase
-     * @return PurchasesResource
+     * @return PurchasesResource|JsonResponse
      */
     public function update(
         Purchases  $purchase,
         UpdatePurchasesRequest  $request,
         Invoice $invoice
-    ): PurchasesResource {
-        if ($invoice->update($request->validated(), $purchase)) {
-            return PurchasesResource::make(
-                $purchase
-            )->additional([
-                'message' => 'تم تعديل الفاتورة بنجاح',
-                'status' => Response::HTTP_OK
-            ], Response::HTTP_OK);
+    ): PurchasesResource|JsonResponse {
+
+        try {
+            if ($invoice->update($request->validated(), $purchase)) {
+                return PurchasesResource::make(
+                    $purchase
+                )->additional([
+                    'message' => 'تم تعديل الفاتورة بنجاح',
+                    'status' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            }
+            return response()->json([
+                'message' => 'حدث خطأ',
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -124,16 +136,22 @@ class PurchasesController extends Controller
         Request $request,
         Invoice $invoice
     ): PurchasesResource|JsonResponse {
-        if ($invoice->delete($purchase, $request->details_id)) {
-            return response()->json([
-                'message' => "تم حذف الخامة",
-                'status' => Response::HTTP_OK
-            ]);
-        } else {
+        try {
+            if ($invoice->delete($purchase, $request->details_id)) {
+                return response()->json([
+                    'message' => "تم حذف الخامة",
+                    'status' => Response::HTTP_OK
+                ]);
+            }
             return response()->json([
                 'message' => 'لا يمكن حذف خامة على الاقل',
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

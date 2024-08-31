@@ -112,7 +112,7 @@ class Invoice implements InvoiceInterface
         $purchase,
     ): bool {
         try {
-
+            
             $data = $this->collectInvoiceData($params);
 
             if ($params['purchases_image'] != 'undefined') {
@@ -173,7 +173,7 @@ class Invoice implements InvoiceInterface
                 'params' => $params,
             ]);
             DB::rollBack();
-            return false;
+            throw $e;
         }
     }
 
@@ -188,13 +188,13 @@ class Invoice implements InvoiceInterface
         Purchases $purchases,
         int $id
     ): bool {
-      
+
         try {
-           
+
             DB::beginTransaction();
-          
+
             if (!$purchases->hasDetails()) return false;
-          
+
             $result =  match ($purchases->purchases_method) {
                 PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->deletePurchaseMovement($purchases, $id),
                 PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->deletePurchaseMovement($purchases, $id),
@@ -204,14 +204,13 @@ class Invoice implements InvoiceInterface
             DB::commit();
 
             return $result;
-            
         } catch (\Exception $e) {
             // Log the exception for debugging
             Log::error('Purchase details deleting failed: ' . $e->getMessage(), [
                 'purchases' => $purchases,
             ]);
             DB::rollBack();
-            return false;
+            throw $e;
         }
     }
 

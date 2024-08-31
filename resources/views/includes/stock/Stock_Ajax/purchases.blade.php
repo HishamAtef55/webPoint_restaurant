@@ -50,11 +50,11 @@
 
         // Common function to handle AJAX errors
         function handleAjaxError(reject) {
+            let response = $.parseJSON(reject.responseText);
             Toast.fire({
                 icon: 'error',
-                title: "حدث خطأ"
+                title: response.message
             });
-            let response = $.parseJSON(reject.responseText);
             $.each(response.errors, function(key, val) {
                 errorMsg(val[0]);
             });
@@ -528,7 +528,6 @@
                     total: $(this).find('td').eq(8).text(),
                 });
             });
-            console.log(materialArray)
 
             let formData = new FormData();
             if (method) {
@@ -554,7 +553,6 @@
             formData.append("payment_type", payType);
             formData.append("notes", notes.val());
             formData.append("purchases_image", purchases_image);
-            console.log(formData)
             return formData;
         }
 

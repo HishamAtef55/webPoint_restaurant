@@ -97,7 +97,7 @@ class ExchangeController extends Controller
             }
 
             return response()->json([
-                'message' => 'لايمكن تعديل إذن الصرف',
+                'message' => 'لا يمكن تعديل إذن الصرف',
                 'status' => Response::HTTP_UNPROCESSABLE_ENTITY
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (\Exception $e) {

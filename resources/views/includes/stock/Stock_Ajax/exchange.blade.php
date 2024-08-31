@@ -46,11 +46,11 @@
 
         // Common function to handle AJAX errors
         function handleAjaxError(reject) {
+            let response = $.parseJSON(reject.responseText);
             Toast.fire({
                 icon: 'error',
-                title: "حدث خطأ"
+                title: response.message
             });
-            let response = $.parseJSON(reject.responseText);
             $.each(response.errors, function(key, val) {
                 errorMsg(val[0]);
             });
