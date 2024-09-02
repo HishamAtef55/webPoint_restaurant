@@ -111,6 +111,107 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
+     * increaseBalance
+     * @param Store $store
+     * @return bool
+     */
+
+    public function increaseBalance(
+        $store
+    ): bool {
+        dd('increase balance');
+        try {
+
+            if (!$this->balance) return false;
+            /*
+            * increase balance of section
+            */
+            foreach ($this->balance as $balance) {
+                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
+                if ($oldBalance) {
+                    $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
+                    $qty = $oldBalance->qty += $balance['qty'];
+                    if ($qty < 0) return false;
+                    $oldBalance->update([
+                        'qty' => $qty,
+                        'avg_price' => $price,
+                    ]);
+                } else {
+                    $store->balance()->create(
+                        [
+                            'store_id' => $store->id,
+                            'material_id' => $balance['material_id'],
+                            'qty' =>  $balance['qty'],
+                            'avg_price' => $balance['price'],
+                        ]
+                    );
+                }
+            }
+
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('increase store balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * decreaseBalance
+     * @param Store $store
+     * @return bool
+     */
+
+    public function decreaseBalance(
+        $store
+    ): bool {
+        dd('decrease balance');
+        try {
+
+            if (!$this->balance) return false;
+            /*
+            * increase balance of section
+            */
+            foreach ($this->balance as $balance) {
+                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
+                if ($oldBalance) {
+                    $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
+                    $qty = $oldBalance->qty += $balance['qty'];
+                    if ($qty < 0) return false;
+                    $oldBalance->update([
+                        'qty' => $qty,
+                        'avg_price' => $price,
+                    ]);
+                } else {
+                    $store->balance()->create(
+                        [
+                            'store_id' => $store->id,
+                            'material_id' => $balance['material_id'],
+                            'qty' =>  $balance['qty'],
+                            'avg_price' => $balance['price'],
+                        ]
+                    );
+                }
+            }
+
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('increase store balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
      * currentBalanceByMaterial
      * @param Material $material
      * @param int $id

@@ -20,6 +20,7 @@ class SectionResource extends JsonResource
             'store' => StoreResource::make($this->store),
             'branch' => BranchResource::make($this->branch),
             'groups' => $this->groups,
+            'balance' => BalanceResource::collection($this->balance)
         ];
     }
 }

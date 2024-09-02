@@ -30,7 +30,6 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         $store,
     ): bool {
         try {
-
             if (!$this->movement) return false;
 
             DB::beginTransaction();
@@ -118,6 +117,117 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         }
     }
 
+
+    /**
+     * createTransferFromMovement
+     * @param Store $store
+     * @return void
+     */
+    public function createTransferFromMovement(
+        $store
+    ): bool {
+        try {
+
+            DB::beginTransaction();
+
+            /*
+            * material move inside section
+            */
+            foreach ($this->movement as &$move) {
+                $existingMovement = $store->move()->where([
+                    'material_id' => $move['material_id'],
+                    'transfer_nr' => $move['transfer_nr']
+                ])->first();
+                $store->move()->updateOrCreate(
+                    [
+                        'material_id' => $move['material_id'],
+                        'transfer_nr' => $move['transfer_nr']
+                    ],
+                    [
+                        'qty' => $move['qty'],
+                        'price' => $move['price'],
+                        'type' => $move['type'],
+                    ]
+                );
+                if ($existingMovement) {
+                    $move['qty'] -= $existingMovement->qty;
+                }
+            }
+
+            $result = Balance::sectionBalance()->validate($this->movement)->increaseBalance($store);
+            if ($result) {
+
+                DB::commit();
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Transfer from movement creation failed: ' . $e->getMessage(), [
+                'movement' => $this->movement,
+                'store' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * createTransferToMovement
+     * @param Store $store
+     * @return void
+     */
+    public function createTransferToMovement(
+        $store
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            /*
+            * material move inside section
+            */
+            foreach ($this->movement as &$move) {
+                $existingMovement = $store->move()->where([
+                    'material_id' => $move['material_id'],
+                    'transfer_nr' => $move['transfer_nr']
+                ])->first();
+                $store->move()->updateOrCreate(
+                    [
+                        'material_id' => $move['material_id'],
+                        'transfer_nr' => $move['transfer_nr']
+                    ],
+                    [
+                        'qty' => $move['qty'],
+                        'price' => $move['price'],
+                        'type' => $move['type'],
+                    ]
+                );
+                if ($existingMovement) {
+                    $move['qty'] -= $existingMovement->qty;
+                }
+            }
+
+            $result =  Balance::sectionBalance()->validate($this->movement)->decraseBalance($store);
+
+            if ($result) {
+
+                DB::commit();
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Transfer to movement creation failed: ' . $e->getMessage(), [
+                'movement' => $this->movement,
+                'section' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
     /**
      * deleteExchangeMovement
      * 
@@ -139,11 +249,11 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             /*
             *  store delete move
             */
-           $store->move()->where([
+            $store->move()->where([
                 'material_id' => $details->material_id,
                 'order_nr' => $exchange->id
             ])->delete();
- 
+
             /*
             *  update store balance
             */

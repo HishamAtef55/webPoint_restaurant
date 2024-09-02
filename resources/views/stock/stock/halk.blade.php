@@ -159,5 +159,5 @@
         </div>
     </div>
 </section>
-@include('includes.stock.Stock_Ajax.halk')
+{{-- @include('includes.stock.Stock_Ajax.halk') --}}
 @endsection

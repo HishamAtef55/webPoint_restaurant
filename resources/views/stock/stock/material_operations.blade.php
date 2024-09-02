@@ -153,5 +153,5 @@
         </div>
     </div>
 </div>
-@include('includes.stock.Stock_Ajax.material_operations')
+{{-- @include('includes.stock.Stock_Ajax.material_operations') --}}
 @stop

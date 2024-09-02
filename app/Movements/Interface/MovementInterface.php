@@ -42,4 +42,23 @@ interface MovementInterface
         Exchange $exchange,
         ExchangeDetails $details,
     ): bool;
+
+
+    /**
+     * createTransferFromMovement
+     * @param Section|Store $model
+     * @return bool
+     */
+    public function createTransferFromMovement(
+        Section|Store $section
+    ): bool;
+
+    /**
+     * createTransferToMovement
+     * @param Section|Store $model
+     * @return bool
+     */
+    public function createTransferToMovement(
+        Section|Store $section
+    ): bool;
 }

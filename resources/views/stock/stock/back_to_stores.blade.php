@@ -143,5 +143,5 @@
         </div>
     </div>
 </section>
-@include('includes.stock.Stock_Ajax.back_to_stores')
+{{-- @include('includes.stock.Stock_Ajax.back_to_stores') --}}
 @endsection

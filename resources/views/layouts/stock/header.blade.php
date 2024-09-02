@@ -84,8 +84,8 @@
                     <li class="@if (Route::current()->getName() == 'stock.exchange.index') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('stock.exchange.index') }}"> إذن صرف </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'transfers') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('transfers') }}"> إذن تحويل </a>
+                    <li class="@if (Route::current()->getName() == 'stock.material.transfer.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.transfer.index') }}"> إذن تحويل </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'halk') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('halk') }}"> إذن هالك </a>

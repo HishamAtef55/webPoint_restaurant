@@ -171,6 +171,116 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         }
     }
 
+
+    /**
+     * createTransferFromMovement
+     * @param Section $section
+     * @return void
+     */
+    public function createTransferFromMovement(
+        $section
+    ): bool {
+        try {
+
+            DB::beginTransaction();
+
+            /*
+            * material move inside section
+            */
+            foreach ($this->movement as &$move) {
+                $existingMovement = $section->move()->where([
+                    'material_id' => $move['material_id'],
+                    'transfer_nr' => $move['transfer_nr']
+                ])->first();
+                $section->move()->updateOrCreate(
+                    [
+                        'material_id' => $move['material_id'],
+                        'transfer_nr' => $move['transfer_nr']
+                    ],
+                    [
+                        'qty' => $move['qty'],
+                        'price' => $move['price'],
+                        'type' => $move['type'],
+                    ]
+                );
+                if ($existingMovement) {
+                    $move['qty'] -= $existingMovement->qty;
+                }
+            }
+
+            $result = Balance::sectionBalance()->validate($this->movement)->increaseBalance($section);
+            if ($result) {
+
+                DB::commit();
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Transfer from movement creation failed: ' . $e->getMessage(), [
+                'movement' => $this->movement,
+                'section' => $section,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * createTransferToMovement
+     * @param Section $section
+     * @return void
+     */
+    public function createTransferToMovement(
+        $section
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            /*
+            * material move inside section
+            */
+            foreach ($this->movement as &$move) {
+                $existingMovement = $section->move()->where([
+                    'material_id' => $move['material_id'],
+                    'transfer_nr' => $move['transfer_nr']
+                ])->first();
+                $section->move()->updateOrCreate(
+                    [
+                        'material_id' => $move['material_id'],
+                        'transfer_nr' => $move['transfer_nr']
+                    ],
+                    [
+                        'qty' => $move['qty'],
+                        'price' => $move['price'],
+                        'type' => $move['type'],
+                    ]
+                );
+                if ($existingMovement) {
+                    $move['qty'] -= $existingMovement->qty;
+                }
+            }
+
+            $result =  Balance::sectionBalance()->validate($this->movement)->decraseBalance($section);
+
+            if ($result) {
+
+                DB::commit();
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Transfer to movement creation failed: ' . $e->getMessage(), [
+                'movement' => $this->movement,
+                'section' => $section,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
     /**
      * handleMovementType
      * @param Section $section
@@ -253,6 +363,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             }
         }
     }
+
 
     /**
      * updateBalance

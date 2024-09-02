@@ -162,5 +162,5 @@
 
     </div>
 </section>
-@include('includes.stock.Stock_Ajax.material_manufacturing')
+{{-- @include('includes.stock.Stock_Ajax.material_manufacturing') --}}
 @stop
