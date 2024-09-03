@@ -147,7 +147,7 @@
                     </tbody>
                     <tfoot class="table-dark">
                         <th colspan="5"> الاجمالي </th>
-                        <th class="sumFinal"> </th>
+                        <th class="sumTotal"> </th>
                         <th></th>
                     </tfoot>
                 </table>

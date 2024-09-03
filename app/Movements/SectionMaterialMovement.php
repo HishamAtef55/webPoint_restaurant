@@ -183,7 +183,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         try {
 
             DB::beginTransaction();
-
+dd('vbd');
             /*
             * material move inside section
             */
@@ -207,8 +207,8 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
                     $move['qty'] -= $existingMovement->qty;
                 }
             }
-
-            $result = Balance::sectionBalance()->validate($this->movement)->increaseBalance($section);
+            dd($this->movement);
+            $result = Balance::sectionBalance()->validate($this->movement)->decreaseBalance($section);
             if ($result) {
 
                 DB::commit();
@@ -238,7 +238,6 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         try {
 
             DB::beginTransaction();
-
             /*
             * material move inside section
             */
@@ -263,7 +262,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
                 }
             }
 
-            $result =  Balance::sectionBalance()->validate($this->movement)->decraseBalance($section);
+            $result =  Balance::sectionBalance()->validate($this->movement)->increaseBalance($section);
 
             if ($result) {
 

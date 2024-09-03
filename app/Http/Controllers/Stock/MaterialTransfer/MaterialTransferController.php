@@ -4,14 +4,16 @@ namespace App\Http\Controllers\Stock\MaterialTransfer;
 
 use App\Models\Branch;
 use App\Models\Stock\Store;
+use Illuminate\Http\Request;
 use App\Models\Stock\Section;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Stock\MaterialTransfer;
 use App\Services\MaterialTransferService;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Resources\Stock\MaterialTransferResource;
 use App\Http\Requests\Stock\MaterialsTransfer\StoreMaterialTransferRequest;
-use Illuminate\Http\Request;
+use App\Http\Requests\Stock\MaterialsTransfer\UpdateMaterialTransferRequest;
 
 class MaterialTransferController extends Controller
 {
@@ -56,14 +58,14 @@ class MaterialTransferController extends Controller
     /**
      * show
      *
-     * @param  Exchange  $exchange
-     * @return ExchangeResource
+     * @param  MaterialTransfer  $transfer
+     * @return MaterialTransferResource
      */
     public function show(
-        Exchange  $exchange
-    ): ExchangeResource {
-        return ExchangeResource::make(
-            $exchange
+        MaterialTransfer  $transfer
+    ): MaterialTransferResource {
+        return MaterialTransferResource::make(
+            $transfer
         )->additional([
             'message' => null,
             'status' => Response::HTTP_OK
@@ -73,23 +75,22 @@ class MaterialTransferController extends Controller
     /**
      * update
      *
-     * @param  Exchange  $exchange
-     * @param  UpdateExchangeRequest  $request
-     * @param  ExchangeService $service,
-     * @return ExchangeResource
+     * @param  MaterialTransfer  $transfer
+     * @param  UpdateMaterialTransferRequest  $request
+     * @param  MaterialTransferService $service,
+     * @return MaterialTransferResource|JsonResponse
      */
     public function update(
-        Exchange  $exchange,
-        UpdateExchangeRequest  $request,
-        ExchangeService $service,
-    ): ExchangeResource {
-
+        MaterialTransfer  $transfer,
+        UpdateMaterialTransferRequest  $request,
+        MaterialTransferService $service,
+    ): MaterialTransferResource|JsonResponse {
         try {
-            if ($service->update($request->validated(), $exchange)) {
-                return ExchangeResource::make(
-                    $exchange
+            if ($service->update($request->validated(), $transfer)) {
+                return MaterialTransferResource::make(
+                    $transfer
                 )->additional([
-                    'message' => 'تم تعديل إذن الصرف بنجاح بنجاح',
+                    'message' => 'تم تعديل إذن التحويل بنجاح ',
                     'status' => Response::HTTP_OK
                 ], Response::HTTP_OK);
             }

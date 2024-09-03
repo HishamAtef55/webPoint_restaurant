@@ -204,9 +204,6 @@
         }
 
 
-
-
-
         /*
          * displaySections
          */
@@ -418,7 +415,7 @@
                     <span>${material_quantity.val()}</span>
                 </td>
                 
-                <td class="finalTotal">${parseFloat(finalTotal).toFixed(2)}</td>
+                <td class="totalPrice">${parseFloat(finalTotal).toFixed(2)}</td>
                 <td>
                     <div class="del-edit">
                         <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
@@ -470,15 +467,7 @@
                 totalPrice += value;
             });
 
-
-            // Sum finalTotal from elements with class 'finalTotal'
-            $('.finalTotal').each(function() {
-                let value = parseFloat($(this).text()) || 0;
-                finalTotal += value;
-            });
-
             $('.sumTotal').text(totalPrice.toFixed(2));
-            $('.sumFinal').text(finalTotal.toFixed(2));
         }
 
 
@@ -613,7 +602,7 @@
             formData.append("transfer_date", date.val());
             formData.append("image", image);
             formData.append("notes", notes.val());
-            formData.append("total", $('.sumFinal').text());
+            formData.append("total", $('.sumTotal').text());
 
             formData.append("materialArray", JSON.stringify(materialArray));
 
@@ -622,8 +611,8 @@
 
         $(document).on('click', '#save_material_transfer', function() {
             let button = $(this);
-            // let originalHtml = button.html();
-            // button.html(spinner).prop('disabled', true);
+            let originalHtml = button.html();
+            button.html(spinner).prop('disabled', true);
             $.ajax({
                 type: 'POST',
                 url: "{{ route('stock.material.transfer.store') }}",
@@ -634,8 +623,6 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
-                    console.log(response)
-                    return false;
                     if (response.status == 201) {
                         Toast.fire({
                             icon: 'success',
@@ -663,40 +650,72 @@
             });
         });
 
-        $(document).on('change', '#exchange_id', function(params) {
-            let excahnge = $(this).val();
-            if (!excahnge) return;
-            fetch(`/stock/exchange/${excahnge}`)
+        $(document).on('change', '#transfer_nr', function(params) {
+            let transfer = $(this).val();
+            if (!transfer) return;
+            fetch(`/stock/material/transfer/${transfer}`)
                 .then((response) => response.json())
                 .then((data) => {
+                    resetPage();
                     displayInvoices(data.data);
                 })
                 .catch((error) => errorMsg(error));
         })
 
-        function displayInvoices(exchange) {
-            $('#invoice_id').val(exchange.id).attr('disabled', true)
-            order_nr.val(exchange.order_nr)
-            order_nr.attr('disabled', true);
-            date.val(exchange.exchange_date)
-            notes.val(exchange.note)
-            updateExchangeOptions(exchange)
-            updateTableData(exchange.details)
+        function displayInvoices(invoice) {
+            $('#transfer_id').val(invoice.id).attr('disabled', true)
+            serial_nr.val(invoice.serial_nr)
+            serial_nr.attr('disabled', true);
+            date.val(invoice.transfer_date)
+            notes.val(invoice.notes)
+            updateInvoiceMethod(invoice, invoice.transfer_type)
+            updateTableData(invoice.details)
             saveBtn[0].classList.add("d-none");
             updateBtn[0].classList.remove("d-none");
-            updateBtn.attr('data-id', exchange.id)
+            updateBtn.attr('data-id', invoice.id)
             checkForm()
         }
 
-        function updateExchangeOptions(exchange) {
+        function updateInvoiceMethod(invoice, method) {
+            const purchasesMethod = document.querySelector(
+                `input[name="purchases_method"][value="${method}"]`).checked = true;
 
-            branchs.val(exchange.section.branch.id).trigger('change').attr("disabled", true)
-            sections.append(
-                `<option  value="${exchange.section.id}" selected>${exchange.section.name}</option>`
-            ).attr("disabled", true)
+            if (method === "sections") {
+                preventChangeEvent = true;
+                from_section.empty()
+                    .val("<option selected disabled>اختر القسم </option>")
+                    .trigger("change");
+                to_section.empty()
+                    .val("<option selected disabled>اختر القسم </option>")
+                    .trigger("change");
+                document
+                    .querySelectorAll(".stores")
+                    .forEach((el) => el.classList.add("d-none"));
+                document
+                    .querySelectorAll(".branch-sec")
+                    .forEach((el) => el.classList.remove("d-none"));
+                from_branch.val(invoice.from_section.branch.id).trigger('change').attr("disabled", true)
+                to_branch.val(invoice.to_section.branch.id).trigger('change').attr("disabled", true)
+                preventChangeEvent = false;
+                from_section.append(
+                    `<option  value="${invoice.from_section.id}" selected>${invoice.from_section.name}</option>`
+                ).trigger('change').attr("disabled", true);
+                to_section.append(
+                    `<option  value="${invoice.to_section.id}" selected>${invoice.to_section.name}</option>`
+                ).attr("disabled", true)
 
-            stores.val(exchange.store.id).trigger('change').attr("disabled", true)
+            } else if (method === "stores") {
+                document
+                    .querySelectorAll(".branch-sec")
+                    .forEach((el) => el.classList.add("d-none"));
+                document
+                    .querySelectorAll(".stores")
+                    .forEach((el) => el.classList.remove("d-none"));
+                from_store.val(invoice.from_store.id).trigger('change').attr("disabled", true)
+                to_store.val(invoice.to_store.id).trigger('change').attr("disabled", true)
 
+            }
+            preventChangeEvent = false;
         }
 
         function updateTableData(details) {
@@ -733,13 +752,13 @@
             calcTotal();
         }
 
-        $('#update_exchange').on('click', function() {
+        $('#update_material_transfer').on('click', function() {
             let button = $(this);
             let id = button.attr('data-id');
             if (!id) return;
             let originalHtml = button.html();
             button.html(spinner).prop('disabled', true);
-            let url = '{{ url('stock/exchange') }}/' + id;
+            let url = '{{ url('stock/material/transfer') }}/' + id;
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -750,6 +769,8 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
+                    console.log(response)
+                    return false;
                     if (response.status == 200) {
                         Toast.fire({
                             icon: 'success',

@@ -256,7 +256,7 @@
                     <span>${material_quantity.val()}</span>
                 </td>
                 
-                <td class="finalTotal">${parseFloat(finalTotal).toFixed(2)}</td>
+                <td class="totalPrice">${parseFloat(finalTotal).toFixed(2)}</td>
                 <td>
                     <div class="del-edit">
                         <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
@@ -300,7 +300,6 @@
 
         function calcTotal() {
             let totalPrice = 0;
-            let finalTotal = 0;
 
             // Sum totalPrice from elements with class 'totalPrice'
             $('.totalPrice').each(function() {
@@ -309,15 +308,8 @@
             });
 
 
-            // Sum finalTotal from elements with class 'finalTotal'
-            $('.finalTotal').each(function() {
-                let value = parseFloat($(this).text()) || 0;
-                finalTotal += value;
-            });
-
             $('.sumTotal').text(totalPrice.toFixed(2));
-            $('.sumFinal').text(finalTotal.toFixed(2));
-            // $('.netTotalPrice').text((finalTotal + taxValue).toFixed(2))
+
         }
 
 

@@ -131,7 +131,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             DB::beginTransaction();
 
             /*
-            * material move inside section
+            * material move inside store
             */
             foreach ($this->movement as &$move) {
                 $existingMovement = $store->move()->where([
@@ -154,7 +154,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
                 }
             }
 
-            $result = Balance::sectionBalance()->validate($this->movement)->increaseBalance($store);
+            $result = Balance::sectionBalance()->validate($this->movement)->decreaseBalance($store);
             if ($result) {
 
                 DB::commit();
@@ -184,9 +184,8 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         try {
 
             DB::beginTransaction();
-
             /*
-            * material move inside section
+            * material move inside store
             */
             foreach ($this->movement as &$move) {
                 $existingMovement = $store->move()->where([
@@ -209,7 +208,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
                 }
             }
 
-            $result =  Balance::sectionBalance()->validate($this->movement)->decraseBalance($store);
+            $result =  Balance::sectionBalance()->validate($this->movement)->increaseBalance($store);
 
             if ($result) {
 
@@ -220,7 +219,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         } catch (\Throwable $e) {
             Log::error('Transfer to movement creation failed: ' . $e->getMessage(), [
                 'movement' => $this->movement,
-                'section' => $store,
+                'store' => $store,
             ]);
             DB::rollBack();
             return false;

@@ -212,7 +212,7 @@ Route::group(
                     Route::get('/', 'index')->name('index');
                     Route::post('/', 'store')->name('store');
                     Route::get('/{transfer}', 'show')->name('show');
-                    Route::post('/{transfer}', 'update')->name('update');
+                    Route::post('/{transfer} ', 'update')->name('update');
                     Route::delete('/{transfer}', 'destroy')->name('destroy');
                 });
                 Route::get('/filter/{section}', SectionMaterialBalanceController::class)->name('section.filter');

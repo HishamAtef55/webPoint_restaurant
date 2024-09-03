@@ -22,15 +22,7 @@ class StoreMaterialMove extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'invoice_nr',
-        'order_nr',
-        'store_id',
-        'material_id',
-        'qty',
-        'price',
-        'type'
-    ];
+    protected $fillable = [];
 
     /**
      * The attributes that should be hidden for serialization.

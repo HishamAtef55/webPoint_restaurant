@@ -13,7 +13,7 @@
                     </div>
                     <div class="col-md-3">
 
-                        <select class="form-select" name="_transfer_id" id="_transfer_id">
+                        <select class="form-select" name="transfer_nr" id="transfer_nr">
                             <option selected disabled>اختر رقم الإذن</option>
                             @forelse ($transfers as $transfer)
                                 <option value="{{ $transfer->id }}">{{ $transfer->id }}</option>
@@ -195,7 +195,7 @@
                     </tbody>
                     <tfoot class="table-dark">
                         <th colspan="5"> الاجمالي </th>
-                        <th class="sumFinal"> </th>
+                        <th class="sumTotal"> </th>
                         <th></th>
                     </tfoot>
                 </table>

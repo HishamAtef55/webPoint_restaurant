@@ -6,6 +6,7 @@ use App\Enums\PaymentType;
 use App\Enums\PurchasesMethod;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class StoreMaterialTransferRequest extends FormRequest
 {
@@ -48,7 +49,7 @@ class StoreMaterialTransferRequest extends FormRequest
 
             'to_store_id' => [
                 'required_if:transfer_type,' . PurchasesMethod::STORES->value,
-                'exists:stock_stores,id'
+                'exists:stock_stores,id',
             ],
 
             'from_section_id' => [
@@ -83,5 +84,24 @@ class StoreMaterialTransferRequest extends FormRequest
 
 
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->transfer_type == PurchasesMethod::STORES->value) {
+            if ($this->to_store_id == $this->from_store_id) {
+                throw ValidationException::withMessages([
+                    'error' => 'لايمكن التحويل من مخزن الى نفس المخزن'
+                ]);
+            }
+        }
+
+        if ($this->transfer_type == PurchasesMethod::SECTIONS->value) {
+            if ($this->to_section_id == $this->from_section_id) {
+                throw ValidationException::withMessages([
+                    'error' => 'لايمكن التحويل من قسم الى نفس القسم'
+                ]);
+            }
+        }
     }
 }

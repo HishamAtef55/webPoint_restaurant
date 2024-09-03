@@ -60,35 +60,34 @@ class MaterialTransferService
 
             $transfer = MaterialTransfer::create($data);
 
-            // $request['materialArray'] = json_decode($request['materialArray'], true);
+            $request['materialArray'] = json_decode($request['materialArray'], true);
 
             // // // Check if decoding was successful
-            // if (json_last_error() === JSON_ERROR_NONE) {
-            foreach ($request['materialArray'] as $material) {
-                // Create the exchange details record
-                $transfer->details()->create([
-                    'material_id' => $material['material_id'],
-                    'qty' => $material['qty'],
-                    'price' => $material['price'] * 100,
-                    'total' => $material['total'] * 100,
-                ]);
-            }
-            // } else {
-            //     // Handle JSON decoding error
-            //     Log::error('Error decoding JSON: ' . json_last_error_msg());
-            //     throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
-            // };
+            if (json_last_error() === JSON_ERROR_NONE) {
+                foreach ($request['materialArray'] as $material) {
+                    // Create the exchange details record
+                    $transfer->details()->create([
+                        'material_id' => $material['material_id'],
+                        'qty' => $material['qty'],
+                        'price' => $material['price'] * 100,
+                        'total' => $material['total'] * 100,
+                    ]);
+                }
+            } else {
+                // Handle JSON decoding error
+                Log::error('Error decoding JSON: ' . json_last_error_msg());
+                throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
+            };
 
             $this->collectMaterialMovement($transfer->load('details'));
-            
+
             $result =  match ($transfer->transfer_type) {
                 PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferFromMovement($transfer->from_store)
                     && Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferToMovement($transfer->to_store),
                 PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferFromMovement($transfer->from_section)
-                    && Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferToMovement($transfer->to_section),
+                    && Movement::sectionMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferToMovement($transfer->to_section),
                 default => throw new \Exception("Un supported transfer type", 1),
             };
-            dd($result);
 
             if ($result) {
                 DB::commit();
@@ -105,15 +104,15 @@ class MaterialTransferService
     /**
      * update
      * @param array $params
-     * @param Exchange $exchange,
+     * @param MaterialTransfer  $transfer,
      * @return bool
      */
     public function update(
         array $request,
-        Exchange $exchange,
+        MaterialTransfer  $transfer,
     ): bool {
-        try {
 
+        try {
             $data = $this->collectMaterialTransferData($request);
 
             if ($request['image'] != 'undefined') {
@@ -125,41 +124,46 @@ class MaterialTransferService
             /*
             * update invoice
             */
-            $exchange->update($data);
 
-            $request['materialArray'] = json_decode($request['materialArray'], true);
+            $transfer->update($data);
+            // $request['materialArray'] = json_decode($request['materialArray'], true);
 
             // // // // Check if decoding was successful
-            if (json_last_error() === JSON_ERROR_NONE) {
-                foreach ($request['materialArray'] as $material) {
-                    // Create the exchange details record
-                    $exchange->details()->updateOrCreate(
-                        [
-                            'material_id' => $material['material_id'],
-                        ],
-                        [
-                            'qty' => $material['qty'],
-                            'price' => $material['price'] * 100,
-                            'total' => $material['total'] * 100,
-                        ]
-                    );
-                }
-            } else {
-                // Handle JSON decoding error
-                Log::error('Error decoding JSON: ' . json_last_error_msg());
-                throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
+            // if (json_last_error() === JSON_ERROR_NONE) {
+            foreach ($request['materialArray'] as $material) {
+                // Create the exchange details record
+                $transfer->details()->updateOrCreate(
+                    [
+                        'material_id' => $material['material_id'],
+                    ],
+                    [
+                        'qty' => $material['qty'],
+                        'price' => $material['price'] * 100,
+                        'total' => $material['total'] * 100,
+                    ]
+                );
+            }
+            // } else {
+            //     // Handle JSON decoding error
+            //     Log::error('Error decoding JSON: ' . json_last_error_msg());
+            //     throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
+            // };
+
+            $this->collectMaterialMovement($transfer->load('details'));
+
+            $result =  match ($transfer->transfer_type) {
+                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferFromMovement($transfer->from_store)
+                    && Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferToMovement($transfer->to_store),
+                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferFromMovement($transfer->from_section)
+                    && Movement::sectionMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->createTransferToMovement($transfer->to_section),
+                default => throw new \Exception("Un supported transfer type", 1),
             };
 
-            $this->collectMaterialMovement($exchange->load('details'));
-
-            $storeMaterialMove =  Movement::storeMaterialMovement()->validate(MaterialMove::EXCHANGE->value, $this->movement)->create($exchange->store);
-
-            $sectionMaterialMove =  Movement::sectionMaterialMovement()->validate(MaterialMove::EXCHANGE->value, $this->movement)->create($exchange->section);
-
-            if ($storeMaterialMove && $sectionMaterialMove) {
+            if ($result) {
                 DB::commit();
-                return true;
+                return $result;
             }
+            return $result;
         } catch (\Throwable $e) {
             Log::error('exchange creation failed: ' . $e->getMessage(), [
                 'request' => $request,

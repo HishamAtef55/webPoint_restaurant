@@ -91,7 +91,7 @@ class ExchangeController extends Controller
                 return ExchangeResource::make(
                     $exchange
                 )->additional([
-                    'message' => 'تم تعديل إذن الصرف بنجاح بنجاح',
+                    'message' => 'تم تعديل إذن الصرف بنجاح ',
                     'status' => Response::HTTP_OK
                 ], Response::HTTP_OK);
             }

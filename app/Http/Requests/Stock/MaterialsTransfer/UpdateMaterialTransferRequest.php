@@ -27,38 +27,37 @@ class UpdateMaterialTransferRequest extends FormRequest
     {
         return [
 
-            'payment_type' => ['required', 'string'],
+            'transfer_type' => ['required', 'string'],
 
-            'purchases_method' => ['required', 'string'],
+            'serial_nr' => ['nullable', 'string'],
 
-            'serial_nr' => [
-                'nullable',
-                 'string',
-                 Rule::unique('stock_purchases')->ignore($this->route('purchase')),
-                ],
+            'transfer_date' => 'required|date',
 
             'notes' => 'nullable|string',
 
+            'total' => 'required',
 
-            'tax' => 'required|integer',
-
-            'sumTotal' => 'required',
-
-
-            'purchases_date' => 'required|date',
+            'image' => 'nullable',
 
 
-            'supplier_id' => [
-                'required',
-                'exists:stock_suppliers,id'
+            'from_store_id' => [
+                'required_if:transfer_type,' . PurchasesMethod::STORES->value,
+                'exists:stock_stores,id'
             ],
 
-            'store_id' => [
-                'required_if:purchases_method,' . PurchasesMethod::STORES->value,
+            'to_store_id' => [
+                'required_if:transfer_type,' . PurchasesMethod::STORES->value,
+                'exists:stock_stores,id'
             ],
 
-            'section_id' => [
-                'required_if:purchases_method,' . PurchasesMethod::SECTIONS->value,
+            'from_section_id' => [
+                'required_if:transfer_type,' . PurchasesMethod::SECTIONS->value,
+                'exists:stock_sections,id'
+            ],
+
+            'to_section_id' => [
+                'required_if:transfer_type,' . PurchasesMethod::SECTIONS->value,
+                'exists:stock_sections,id'
             ],
 
 
@@ -68,10 +67,6 @@ class UpdateMaterialTransferRequest extends FormRequest
                 'integer',
                 'exists:stock_materials,id'
             ],
-            'materialArray.*.expire_date' => [
-                'required',
-                'date'
-            ],
             'materialArray.*.qty' => [
                 'required',
                 'integer'
@@ -80,16 +75,12 @@ class UpdateMaterialTransferRequest extends FormRequest
                 'required',
                 'integer'
             ],
-            'materialArray.*.discount' => [
-                'required',
-                'integer'
-            ],
             'materialArray.*.total' => [
                 'required',
                 'integer'
             ],
 
-            'purchases_image' => 'nullable'
+
         ];
     }
 }
