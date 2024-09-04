@@ -5,9 +5,11 @@ namespace App\Movements\Interface;
 use App\Models\Stock\Store;
 use App\Models\Stock\Section;
 use App\Models\Stock\Exchange;
-use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\Purchases;
+use App\Models\Stock\ExchangeDetails;
+use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\PurchasesDetails;
+use App\Models\Stock\MaterialTransferDetails;
 
 interface MovementInterface
 {
@@ -50,7 +52,7 @@ interface MovementInterface
      * @return bool
      */
     public function createTransferFromMovement(
-        Section|Store $section
+        Section|Store $model
     ): bool;
 
     /**
@@ -59,6 +61,30 @@ interface MovementInterface
      * @return bool
      */
     public function createTransferToMovement(
-        Section|Store $section
+        Section|Store $model
+    ): bool;
+
+    /**
+     * deleteTransferFromMovement
+     * 
+     * @param MaterialTransfer $transfer
+     * @param MaterialTransferDetails $details
+     * @return bool
+     */
+    public function deleteTransferFromMovement(
+        MaterialTransfer $transfer,
+        MaterialTransferDetails $details,
+    ): bool;
+
+    /**
+     * deleteTransferToMovement
+     * 
+     * @param MaterialTransfer $transfer
+     * @param MaterialTransferDetails $details
+     * @return bool
+     */
+    public function deleteTransferToMovement(
+        MaterialTransfer $transfer,
+        MaterialTransferDetails $details,
     ): bool;
 }

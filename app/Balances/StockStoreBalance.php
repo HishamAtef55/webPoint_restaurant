@@ -35,8 +35,8 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
                 if ($oldBalance) {
                     $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
-                    $qty = $oldBalance->qty += $balance['qty'];
-                    if ($qty < 0) return false;
+                    $qty = $oldBalance->qty + $balance['qty'];
+                    
                     $oldBalance->update([
                         'qty' => $qty,
                         'avg_price' => $price,
@@ -85,7 +85,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
             foreach ($this->balance as $balance) {
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
 
-                $qty = $oldBalance->qty -= $balance['qty'];
+                $qty = $oldBalance->qty - $balance['qty'];
 
                 if ($qty < 0) return false;
 
@@ -124,7 +124,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
 
                 if ($oldBalance) {
                     $qty = $oldBalance->qty + $balance['qty']; // Using + instead of +=
-                    if ($qty < 0) return false;
+
                     $oldBalance->update(['qty' => $qty]);
                 } else {
                     $store->balance()->create([
@@ -163,28 +163,17 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
 
             if (!$this->balance) return false;
             /*
-            * increase balance of store
+            * decrease balance of store
             */
             foreach ($this->balance as $balance) {
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
-                if ($oldBalance) {
-                    $qty = $oldBalance->qty -= $balance['qty'];
+                    $qty = $oldBalance->qty - $balance['qty'];
                     if ($qty < 0) return false;
                     $oldBalance->update([
                         'qty' => $qty,
                     ]);
-                } else {
-                    $store->balance()->create(
-                        [
-                            'section_id' => $store->id,
-                            'material_id' => $balance['material_id'],
-                            'qty' =>  $balance['qty'],
-                            'avg_price' => $balance['price'],
-                        ]
-                    );
-                }
-            }
 
+            }
 
             return true;
         } catch (\Throwable $e) {

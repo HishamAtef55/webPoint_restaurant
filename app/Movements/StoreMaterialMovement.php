@@ -10,10 +10,10 @@ use App\Balances\Facades\Balance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Stock\ExchangeDetails;
-use App\Models\Stock\PurchasesDetails;
+use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\StoreMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\Stock\MaterialTransferDetails;
 use App\Movements\Interface\MovementInterface;
 
 class StoreMaterialMovement extends MovementAbstract implements MovementInterface
@@ -88,10 +88,14 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             */
             $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
 
-            $qty = $oldBalance->qty -= $details->qty;
+            $qty = $oldBalance->qty - $details->qty;
+
+            if ($qty < 0) return false;
 
             if ($qty == 0) {
-                $oldBalance->delete();
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
             } else {
                 $price = ($oldBalance->avg_price - $details->price) /  ($qty);
                 $oldBalance->update([
@@ -116,116 +120,6 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             return false;
         }
     }
-
-
-    /**
-     * createTransferFromMovement
-     * @param Store $store
-     * @return void
-     */
-    public function createTransferFromMovement(
-        $store
-    ): bool {
-        try {
-
-            DB::beginTransaction();
-
-            /*
-            * material move inside store
-            */
-            foreach ($this->movement as &$move) {
-                $existingMovement = $store->move()->where([
-                    'material_id' => $move['material_id'],
-                    'transfer_nr' => $move['transfer_nr']
-                ])->first();
-                $store->move()->updateOrCreate(
-                    [
-                        'material_id' => $move['material_id'],
-                        'transfer_nr' => $move['transfer_nr']
-                    ],
-                    [
-                        'qty' => $move['qty'],
-                        'price' => $move['price'],
-                        'type' => $move['type'],
-                    ]
-                );
-                if ($existingMovement) {
-                    $move['qty'] -= $existingMovement->qty;
-                }
-            }
-
-            $result = Balance::sectionBalance()->validate($this->movement)->decreaseBalance($store);
-            if ($result) {
-
-                DB::commit();
-
-                return $result;
-            }
-        } catch (\Throwable $e) {
-            Log::error('Transfer from movement creation failed: ' . $e->getMessage(), [
-                'movement' => $this->movement,
-                'store' => $store,
-            ]);
-            DB::rollBack();
-            return false;
-        }
-    }
-
-
-    /**
-     * createTransferToMovement
-     * @param Store $store
-     * @return void
-     */
-    public function createTransferToMovement(
-        $store
-    ): bool {
-
-        try {
-
-            DB::beginTransaction();
-            /*
-            * material move inside store
-            */
-            foreach ($this->movement as &$move) {
-                $existingMovement = $store->move()->where([
-                    'material_id' => $move['material_id'],
-                    'transfer_nr' => $move['transfer_nr']
-                ])->first();
-                $store->move()->updateOrCreate(
-                    [
-                        'material_id' => $move['material_id'],
-                        'transfer_nr' => $move['transfer_nr']
-                    ],
-                    [
-                        'qty' => $move['qty'],
-                        'price' => $move['price'],
-                        'type' => $move['type'],
-                    ]
-                );
-                if ($existingMovement) {
-                    $move['qty'] -= $existingMovement->qty;
-                }
-            }
-
-            $result =  Balance::sectionBalance()->validate($this->movement)->increaseBalance($store);
-
-            if ($result) {
-
-                DB::commit();
-
-                return $result;
-            }
-        } catch (\Throwable $e) {
-            Log::error('Transfer to movement creation failed: ' . $e->getMessage(), [
-                'movement' => $this->movement,
-                'store' => $store,
-            ]);
-            DB::rollBack();
-            return false;
-        }
-    }
-
 
     /**
      * deleteExchangeMovement
@@ -258,7 +152,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             */
             $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
 
-            $qty = $oldBalance->qty += $details->qty;
+            $qty = $oldBalance->qty + $details->qty;
 
             $oldBalance->update([
                 'qty' => $qty,
@@ -276,6 +170,220 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             return false;
         }
     }
+
+
+    /**
+     * createTransferFromMovement
+     * @param Store $store
+     * @return bool
+     */
+    public function createTransferFromMovement(
+        $store
+    ): bool {
+        try {
+
+            DB::beginTransaction();
+
+            /*
+            * material move inside store
+            */
+            foreach ($this->movement as &$move) {
+                $existingMovement = $store->move()->where([
+                    'material_id' => $move['material_id'],
+                    'transfer_nr' => $move['transfer_nr']
+                ])->first();
+                $store->move()->updateOrCreate(
+                    [
+                        'material_id' => $move['material_id'],
+                        'transfer_nr' => $move['transfer_nr']
+                    ],
+                    [
+                        'qty' => $move['qty'],
+                        'price' => $move['price'],
+                        'type' => $move['type'],
+                    ]
+                );
+                if ($existingMovement) {
+                    $move['qty'] = $move['qty'] - $existingMovement->qty;
+                }
+            }
+
+            $result = Balance::storeBalance()->validate($this->movement)->decreaseBalance($store);
+            if ($result) {
+
+                DB::commit();
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Transfer from movement creation failed: ' . $e->getMessage(), [
+                'movement' => $this->movement,
+                'store' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * createTransferToMovement
+     * @param Store $store
+     * @return bool
+     */
+    public function createTransferToMovement(
+        $store
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+            /*
+            * material move inside store
+            */
+            foreach ($this->movement as &$move) {
+                $existingMovement = $store->move()->where([
+                    'material_id' => $move['material_id'],
+                    'transfer_nr' => $move['transfer_nr']
+                ])->first();
+                $store->move()->updateOrCreate(
+                    [
+                        'material_id' => $move['material_id'],
+                        'transfer_nr' => $move['transfer_nr']
+                    ],
+                    [
+                        'qty' => $move['qty'],
+                        'price' => $move['price'],
+                        'type' => $move['type'],
+                    ]
+                );
+                if ($existingMovement) {
+                    $move['qty'] -= $existingMovement->qty;
+                }
+            }
+
+            $result =  Balance::storeBalance()->validate($this->movement)->increaseBalance($store);
+
+            if ($result) {
+
+                DB::commit();
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::error('Transfer to movement creation failed: ' . $e->getMessage(), [
+                'movement' => $this->movement,
+                'store' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * deleteTransferFromMovement
+     * 
+     * @param MaterialTransfer $transfer
+     * @param MaterialTransferDetails $details
+     * @return bool
+     */
+    public function deleteTransferFromMovement(
+        MaterialTransfer $transfer,
+        MaterialTransferDetails $details,
+    ): bool {
+
+        try {
+
+            $store = $transfer->from_store;
+
+            DB::beginTransaction();
+
+            /*
+            *  store delete move
+            */
+            $store->move()->where([
+                'material_id' => $details->material_id,
+                'transfer_nr' => $transfer->id
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty + $details->qty;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('transfer details deleted failed: ' . $e->getMessage(), [
+                'transfer' => $transfer,
+                'transfer_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * deleteTransferToMovement
+     * 
+     * @param  MaterialTransfer $transfer
+     * @param MaterialTransferDetails $details
+     * @return bool
+     */
+    public function deleteTransferToMovement(
+        MaterialTransfer $transfer,
+        MaterialTransferDetails $details,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $store = $transfer->to_store;
+
+            /*
+           *  store delete move
+           */
+            $store->move()->where([
+                'material_id' => $details->material_id,
+                'transfer_nr' => $transfer->id
+            ])->delete();
+
+            /*
+           *  update store balance
+           */
+            $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty - $details->qty;
+
+            if ($qty < 0) return false;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('transfer details deleted failed: ' . $e->getMessage(), [
+                'transfer' => $transfer,
+                'transfer_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
 
     /**
      * handleMovementType

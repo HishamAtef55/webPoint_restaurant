@@ -25,11 +25,11 @@ class MaterialTransferService
     /**
      * store
      * @param array $request
-     * @return void
+     * @return bool
      */
     public function store(
         array $request
-    ) {
+    ): bool {
 
         try {
 
@@ -62,10 +62,10 @@ class MaterialTransferService
 
             $request['materialArray'] = json_decode($request['materialArray'], true);
 
-            // // // Check if decoding was successful
+            //  Check if decoding was successful
             if (json_last_error() === JSON_ERROR_NONE) {
                 foreach ($request['materialArray'] as $material) {
-                    // Create the exchange details record
+                    // Create the transfer details record
                     $transfer->details()->create([
                         'material_id' => $material['material_id'],
                         'qty' => $material['qty'],
@@ -126,28 +126,28 @@ class MaterialTransferService
             */
 
             $transfer->update($data);
-            // $request['materialArray'] = json_decode($request['materialArray'], true);
+            $request['materialArray'] = json_decode($request['materialArray'], true);
 
-            // // // // Check if decoding was successful
-            // if (json_last_error() === JSON_ERROR_NONE) {
-            foreach ($request['materialArray'] as $material) {
-                // Create the exchange details record
-                $transfer->details()->updateOrCreate(
-                    [
-                        'material_id' => $material['material_id'],
-                    ],
-                    [
-                        'qty' => $material['qty'],
-                        'price' => $material['price'] * 100,
-                        'total' => $material['total'] * 100,
-                    ]
-                );
-            }
-            // } else {
-            //     // Handle JSON decoding error
-            //     Log::error('Error decoding JSON: ' . json_last_error_msg());
-            //     throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
-            // };
+            // Check if decoding was successful
+            if (json_last_error() === JSON_ERROR_NONE) {
+                foreach ($request['materialArray'] as $material) {
+                    // Create the transfer details record
+                    $transfer->details()->updateOrCreate(
+                        [
+                            'material_id' => $material['material_id'],
+                        ],
+                        [
+                            'qty' => $material['qty'],
+                            'price' => $material['price'] * 100,
+                            'total' => $material['total'] * 100,
+                        ]
+                    );
+                }
+            } else {
+                // Handle JSON decoding error
+                Log::error('Error decoding JSON: ' . json_last_error_msg());
+                throw new \Exception('Error decoding JSON: ' . json_last_error_msg(), 1);
+            };
 
             $this->collectMaterialMovement($transfer->load('details'));
 
@@ -174,12 +174,12 @@ class MaterialTransferService
 
     /**
      * delete  
-     * @param  Exchange  $exchange
+     * @param  MaterialTransfer  $transfer
      * @param  int $id
      * @return bool
      */
     public function delete(
-        Exchange  $exchange,
+        MaterialTransfer  $transfer,
         int $id
     ): bool {
 
@@ -187,9 +187,9 @@ class MaterialTransferService
 
             DB::beginTransaction();
 
-            if (!$exchange->hasDetails()) return false;
+            if (!$transfer->hasDetails()) return false;
 
-            $details = $exchange->details()->find($id);
+            $details = $transfer->details()->find($id);
 
             if (!$details) {
                 throw ValidationException::withMessages([
@@ -197,22 +197,29 @@ class MaterialTransferService
                 ]);
             }
 
-            $storeMaterialMove =  Movement::storeMaterialMovement()->deleteExchangeMovement($exchange, $details);
+            $result =  match ($transfer->transfer_type) {
+                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->deleteTransferFromMovement($transfer, $details)
+                    && Movement::storeMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->deleteTransferToMovement($transfer, $details),
+                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->deleteTransferFromMovement($transfer, $details)
+                    && Movement::sectionMaterialMovement()->validate(MaterialMove::TRANSFER->value, $this->movement)->deleteTransferToMovement($transfer, $details),
+                default => throw new \Exception("Un supported transfer type", 1),
+            };
 
-            $sectionMaterialMove = Movement::sectionMaterialMovement()->deleteExchangeMovement($exchange, $details);
+            if ($result) {
 
-            /*
-            *  delete exchange item
-            */
-            $details->delete();
+                /*
+                *  delete exchange item
+                */
+                $details->delete();
 
-            DB::commit();
+                DB::commit();
 
-            return $storeMaterialMove && $sectionMaterialMove;
+                return $result;
+            }
         } catch (\Exception $e) {
             // Log the exception for debugging
-            Log::error('exchange details deleting failed: ' . $e->getMessage(), [
-                'exchange' => $exchange,
+            Log::error('transfer details deleting failed: ' . $e->getMessage(), [
+                'transfer' => $transfer,
             ]);
             DB::rollBack();
             throw $e;
@@ -248,7 +255,7 @@ class MaterialTransferService
             'transfer_type' => $params['transfer_type'],
             'serial_nr' => $params['serial_nr'],
             'transfer_date' => $params['transfer_date'],
-            'user_id' => 10, #Auth::id(),
+            'user_id' => Auth::id(),
             'notes' => $params['notes'],
             'total' => $params['total'],
         ];

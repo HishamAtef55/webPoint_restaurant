@@ -10,10 +10,12 @@ use App\Balances\Facades\Balance;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Stock\ExchangeDetails;
+use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\PurchasesDetails;
 use App\Models\Stock\SectionMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Stock\MaterialTransferDetails;
 use App\Movements\Interface\MovementInterface;
 
 class SectionMaterialMovement extends MovementAbstract implements MovementInterface
@@ -175,7 +177,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
     /**
      * createTransferFromMovement
      * @param Section $section
-     * @return void
+     * @return bool
      */
     public function createTransferFromMovement(
         $section
@@ -183,7 +185,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         try {
 
             DB::beginTransaction();
-dd('vbd');
+
             /*
             * material move inside section
             */
@@ -204,10 +206,10 @@ dd('vbd');
                     ]
                 );
                 if ($existingMovement) {
-                    $move['qty'] -= $existingMovement->qty;
+                    $move['qty'] = $move['qty'] - $existingMovement->qty;
                 }
             }
-            dd($this->movement);
+
             $result = Balance::sectionBalance()->validate($this->movement)->decreaseBalance($section);
             if ($result) {
 
@@ -218,7 +220,7 @@ dd('vbd');
         } catch (\Throwable $e) {
             Log::error('Transfer from movement creation failed: ' . $e->getMessage(), [
                 'movement' => $this->movement,
-                'section' => $section,
+                'store' => $section,
             ]);
             DB::rollBack();
             return false;
@@ -229,7 +231,7 @@ dd('vbd');
     /**
      * createTransferToMovement
      * @param Section $section
-     * @return void
+     * @return bool
      */
     public function createTransferToMovement(
         $section
@@ -246,6 +248,7 @@ dd('vbd');
                     'material_id' => $move['material_id'],
                     'transfer_nr' => $move['transfer_nr']
                 ])->first();
+
                 $section->move()->updateOrCreate(
                     [
                         'material_id' => $move['material_id'],
@@ -280,6 +283,105 @@ dd('vbd');
         }
     }
 
+    /**
+     * deleteTransferFromMovement
+     * 
+     * @param MaterialTransfer $transfer
+     * @param MaterialTransferDetails $details
+     * @return bool
+     */
+    public function deleteTransferFromMovement(
+        MaterialTransfer $transfer,
+        MaterialTransferDetails $details,
+    ): bool {
+
+        try {
+
+            $section = $transfer->from_section;
+
+            DB::beginTransaction();
+
+            /*
+            *  store delete move
+            */
+            $section->move()->where([
+                'material_id' => $details->material_id,
+                'transfer_nr' => $transfer->id
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            $oldBalance = $section->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty + $details->qty;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('transfer details deleted failed: ' . $e->getMessage(), [
+                'transfer' => $transfer,
+                'transfer_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * deleteTransferToMovement
+     * 
+     * @param  MaterialTransfer $transfer
+     * @param MaterialTransferDetails $details
+     * @return bool
+     */
+    public function deleteTransferToMovement(
+        MaterialTransfer $transfer,
+        MaterialTransferDetails $details,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $section = $transfer->to_section;
+
+            /*
+           *  store delete move
+           */
+            $section->move()->where([
+                'material_id' => $details->material_id,
+                'transfer_nr' => $transfer->id
+            ])->delete();
+
+            /*
+           *  update store balance
+           */
+            $oldBalance = $section->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty - $details->qty;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('transfer details deleted failed: ' . $e->getMessage(), [
+                'transfer' => $transfer,
+                'transfer_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
     /**
      * handleMovementType
      * @param Section $section

@@ -116,13 +116,13 @@ class MaterialTransferController extends Controller
      * @return ExchangeResource|JsonResponse
      */
     public function destroy(
-        Exchange  $exchange,
+        MaterialTransfer  $transfer,
         Request $request,
-        ExchangeService $service
-    ): ExchangeResource|JsonResponse {
+        MaterialTransferService $service
+    ): MaterialTransferResource|JsonResponse {
 
         try {
-            if ($service->delete($exchange, $request->details_id)) {
+            if ($service->delete($transfer, $request->details_id)) {
                 return response()->json([
                     'message' => "تم حذف الخامة",
                     'status' => Response::HTTP_OK

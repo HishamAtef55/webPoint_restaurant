@@ -499,11 +499,11 @@
                             calcTotal();
                             resolve();
                         } else {
-                            let id = $('#exchange_id').val();
+                            let id = $('#transfer_id').val();
                             if (!id) return;
                             $.ajax({
                                 type: 'DELETE',
-                                url: `{{ url('stock/exchange') }}/${id}`,
+                                url: `{{ url('stock/material/transfer') }}/${id}`,
                                 dataType: 'json',
                                 data: {
                                     "details_id": rowId,
@@ -769,8 +769,6 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
-                    console.log(response)
-                    return false;
                     if (response.status == 200) {
                         Toast.fire({
                             icon: 'success',
@@ -787,6 +785,10 @@
 
                         button.html(originalHtml).prop('disabled', false);
                     }
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
                 },
                 error: handleAjaxError,
                 complete: function() {

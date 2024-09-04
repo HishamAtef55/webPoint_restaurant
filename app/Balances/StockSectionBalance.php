@@ -36,7 +36,7 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
                 $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
                 if ($oldBalance) {
                     $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
-                    $qty = $oldBalance->qty += $balance['qty'];
+                    $qty = $oldBalance->qty + $balance['qty'];
                     $oldBalance->update([
                         'qty' => $qty,
                         'avg_price' => $price,
@@ -82,7 +82,7 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
             foreach ($this->balance as $balance) {
                 $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
                 if ($oldBalance) {
-                    $qty = $oldBalance->qty += $balance['qty'];
+                    $qty = $oldBalance->qty + $balance['qty'];
                     $oldBalance->update([
                         'qty' => $qty,
                     ]);
@@ -116,25 +116,25 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
      * @return bool
      */
 
-    public function increaseBalance(
+     public function increaseBalance(
         $section
     ): bool {
         try {
 
             if (!$this->balance) return false;
             /*
-            * increase balance of section
+            * increase balance of store
             */
             foreach ($this->balance as $balance) {
                 $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
 
                 if ($oldBalance) {
                     $qty = $oldBalance->qty + $balance['qty']; // Using + instead of +=
-                    if ($qty < 0) return false;
+
                     $oldBalance->update(['qty' => $qty]);
                 } else {
                     $section->balance()->create([
-                        'section_id' => $section->id,
+                        'store_id' => $section->id,
                         'material_id' => $balance['material_id'],
                         'qty' => $balance['qty'],
                         'avg_price' => $balance['price'],
@@ -147,7 +147,7 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
         } catch (\Throwable $e) {
             Log::error('increase section balance creation failed: ' . $e->getMessage(), [
                 'balance' => $this->balance,
-                'params' => $section,
+                'section' => $section,
             ]);
             DB::rollBack();
             return false;
@@ -169,28 +169,17 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
 
             if (!$this->balance) return false;
             /*
-            * increase balance of section
+            * decrease balance of section
             */
             foreach ($this->balance as $balance) {
                 $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
-                if ($oldBalance) {
-                    $qty = $oldBalance->qty -= $balance['qty'];
+                    $qty = $oldBalance->qty - $balance['qty'];
                     if ($qty < 0) return false;
                     $oldBalance->update([
                         'qty' => $qty,
                     ]);
-                } else {
-                    $section->balance()->create(
-                        [
-                            'section_id' => $section->id,
-                            'material_id' => $balance['material_id'],
-                            'qty' =>  $balance['qty'],
-                            'avg_price' => $balance['price'],
-                        ]
-                    );
-                }
-            }
 
+            }
 
             return true;
         } catch (\Throwable $e) {
