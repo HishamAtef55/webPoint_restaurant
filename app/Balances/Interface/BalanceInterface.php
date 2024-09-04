@@ -21,11 +21,32 @@ interface BalanceInterface
 
     /**
      * exchangeBalance
-     * @param Store $store
+     * @param Store|Section $model
      * @return bool
      */
     public function exchangeBalance(
-        $store
+        mixed $model
+    ): bool;
+
+    /**
+     * increaseBalance
+     * @param Store|Section $model
+     * @return bool
+     */
+
+    public function increaseBalance(
+        mixed $model
+    ): bool;
+
+
+    /**
+     * decreaseBalance
+     * @param Store|Section $model
+     * @return bool
+     */
+
+    public function decreaseBalance(
+        mixed $model
     ): bool;
 
     /**

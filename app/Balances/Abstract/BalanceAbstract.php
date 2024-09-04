@@ -24,6 +24,7 @@ abstract class BalanceAbstract
     public function validate(
         array $data
     ): self {
+        $this->balance = [];
         array_map(function ($balance) {
             return array_push($this->balance, [
                 'material_id' => $balance['material_id'],

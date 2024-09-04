@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\Stock\Exchange;
+namespace App\Http\Controllers\Stock\MaterialTransfer;
 
 use App\Models\Branch;
 use App\Models\Stock\Store;
 use Illuminate\Http\Request;
-use App\Models\Stock\Exchange;
-use App\Services\ExchangeService;
+use App\Models\Stock\Section;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Stock\ExchangeResource;
+use App\Models\Stock\MaterialTransfer;
+use App\Services\MaterialTransferService;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Resources\Stock\PurchasesResource;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use App\Http\Requests\Stock\Exchange\StoreExchangeRequest;
-use App\Http\Requests\Stock\Exchange\UpdateExchangeRequest;
+use App\Http\Resources\Stock\MaterialTransferResource;
+use App\Http\Requests\Stock\MaterialsTransfer\StoreMaterialTransferRequest;
+use App\Http\Requests\Stock\MaterialsTransfer\UpdateMaterialTransferRequest;
 
-class ExchangeController extends Controller
+class MaterialTransferController extends Controller
 {
 
     /**
@@ -25,27 +25,27 @@ class ExchangeController extends Controller
      */
     public function index()
     {
-        $lastExchangeNr = Exchange::latest()->first()?->id + 1 ?? 1;
-        $orders = Exchange::get();
-        $stores = Store::get();
+        $lastTransferNr = MaterialTransfer::latest()->first()?->id + 1 ?? 1;
+        $transfers = MaterialTransfer::get();
         $branches = Branch::get();
-        return view('stock.Exchange.index', compact('lastExchangeNr', 'stores', 'branches', 'orders'));
+        $stores = Store::get();
+        return view('stock.MaterialsTransfer.index', compact('lastTransferNr', 'stores', 'branches', 'transfers'));
     }
 
     /**
      * store
      *
-     * @param  StorePurchasesRequest  $request
+     * @param  StoreMaterialTransferRequest  $request
      * @param ExchangeService $exchange
      * @return JsonResponse
      */
     public function store(
-        StoreExchangeRequest  $request,
-        ExchangeService $exchange,
+        StoreMaterialTransferRequest  $request,
+        MaterialTransferService $service,
     ): JsonResponse {
-        if ($exchange->store($request->validated())) {
+        if ($service->store($request->validated())) {
             return response()->json([
-                'message' => 'تم إنشاء إذن الصرف بنجاح',
+                'message' => 'تم إنشاء إذن التحويل بنجاح',
                 'status' => Response::HTTP_CREATED
             ], Response::HTTP_CREATED);
         }
@@ -58,14 +58,14 @@ class ExchangeController extends Controller
     /**
      * show
      *
-     * @param  Exchange  $exchange
-     * @return ExchangeResource
+     * @param  MaterialTransfer  $transfer
+     * @return MaterialTransferResource
      */
     public function show(
-        Exchange  $exchange
-    ): ExchangeResource {
-        return ExchangeResource::make(
-            $exchange
+        MaterialTransfer  $transfer
+    ): MaterialTransferResource {
+        return MaterialTransferResource::make(
+            $transfer
         )->additional([
             'message' => null,
             'status' => Response::HTTP_OK
@@ -75,23 +75,22 @@ class ExchangeController extends Controller
     /**
      * update
      *
-     * @param  Exchange  $exchange
-     * @param  UpdateExchangeRequest  $request
-     * @param  ExchangeService $service,
-     * @return ExchangeResource
+     * @param  MaterialTransfer  $transfer
+     * @param  UpdateMaterialTransferRequest  $request
+     * @param  MaterialTransferService $service,
+     * @return MaterialTransferResource|JsonResponse
      */
     public function update(
-        Exchange  $exchange,
-        UpdateExchangeRequest  $request,
-        ExchangeService $service,
-    ): ExchangeResource {
-
+        MaterialTransfer  $transfer,
+        UpdateMaterialTransferRequest  $request,
+        MaterialTransferService $service,
+    ): MaterialTransferResource|JsonResponse {
         try {
-            if ($service->update($request->validated(), $exchange)) {
-                return ExchangeResource::make(
-                    $exchange
+            if ($service->update($request->validated(), $transfer)) {
+                return MaterialTransferResource::make(
+                    $transfer
                 )->additional([
-                    'message' => 'تم تعديل إذن الصرف بنجاح ',
+                    'message' => 'تم تعديل إذن التحويل بنجاح ',
                     'status' => Response::HTTP_OK
                 ], Response::HTTP_OK);
             }
@@ -117,13 +116,13 @@ class ExchangeController extends Controller
      * @return ExchangeResource|JsonResponse
      */
     public function destroy(
-        Exchange  $exchange,
+        MaterialTransfer  $transfer,
         Request $request,
-        ExchangeService $service
-    ): ExchangeResource|JsonResponse {
+        MaterialTransferService $service
+    ): MaterialTransferResource|JsonResponse {
 
         try {
-            if ($service->delete($exchange, $request->details_id)) {
+            if ($service->delete($transfer, $request->details_id)) {
                 return response()->json([
                     'message' => "تم حذف الخامة",
                     'status' => Response::HTTP_OK

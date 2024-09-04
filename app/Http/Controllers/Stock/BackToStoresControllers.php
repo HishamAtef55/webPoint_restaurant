@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
-use App\Models\backToStoreDetails;
-use App\Models\backToStoreMain;
-use App\Models\backToSuppliersDetails;
-use App\Models\backToSuppliersMain;
 use App\Models\Branch;
-use App\Models\exchangeDetails;
-use App\Models\exchangeMain;
+use App\Models\Stores;
+use App\Models\storeCost;
+use App\Models\Suppliers;
+use App\Models\stock_unit;
 use App\Models\materialLog;
 use App\Models\sectionCost;
-use App\Models\stock_unit;
-use App\Models\storeCost;
-use App\Models\Stores;
-use App\Models\Suppliers;
+use App\Models\Stock\Store;
+use App\Models\exchangeMain;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\backToStoreMain;
+use App\Models\exchangeDetails;
+use App\Models\backToStoreDetails;
 use Illuminate\Support\Facades\DB;
+use App\Models\backToSuppliersMain;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\backToSuppliersDetails;
 
 class BackToStoresControllers extends Controller
 {
@@ -34,7 +35,7 @@ class BackToStoresControllers extends Controller
     }
     public function index(){
         $serial = $this->getSerial();
-        $stores    = Stores::get()->all();
+        $stores    = Store::get()->all();
         $branches = Branch::get()->all();
         return view('stock.stock.back_to_stores',compact(['serial','stores','branches']));
     }

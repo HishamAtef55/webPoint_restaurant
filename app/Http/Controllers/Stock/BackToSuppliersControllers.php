@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Http\Controllers\Controller;
-use App\Models\backToSuppliersDetails;
-use App\Models\backToSuppliersMain;
 use App\Models\Branch;
-use App\Models\halkDetails;
+use App\Models\Stores;
 use App\Models\halkMain;
+use App\Models\storeCost;
+use App\Models\Suppliers;
+use App\Models\stock_unit;
+use App\Models\halkDetails;
 use App\Models\materialLog;
 use App\Models\sectionCost;
-use App\Models\stock_unit;
-use App\Models\storeCost;
-use App\Models\Stores;
-use App\Models\Suppliers;
+use App\Models\Stock\Store;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Stock\Supplier;
 use Illuminate\Support\Facades\DB;
+use App\Models\backToSuppliersMain;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\backToSuppliersDetails;
 
 class BackToSuppliersControllers extends Controller
 {
@@ -33,9 +35,9 @@ class BackToSuppliersControllers extends Controller
 
     public function index(){
         $serial = $this->getSerial();
-        $stores    = Stores::get()->all();
+        $stores    = Store::get()->all();
         $branches = Branch::get()->all();
-        $suppliers = Suppliers::get()->all();
+        $suppliers = Supplier::get()->all();
         return view('stock.stock.back_to_suppliers',compact(['serial','stores','branches','suppliers']));
     }
     protected function materialLog($data){

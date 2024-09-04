@@ -2,11 +2,13 @@
 
 namespace App\Models\Stock;
 
+use App\Models\Stock\Material;
+use App\Models\Stock\MaterialTransfer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class StoreMaterialMove extends Model
+class MaterialTransferDetails extends Model
 {
     use HasFactory;
 
@@ -15,7 +17,7 @@ class StoreMaterialMove extends Model
      *
      * @var string
      */
-    protected $table = "stock_store_material_move";
+    protected $table = "stock_materials_transfer_details";
 
     /**
      * The attributes that are mass assignable.
@@ -43,25 +45,26 @@ class StoreMaterialMove extends Model
      *
      * @var array<string, string>
      */
+    /**
+     * guarded
+     *
+     * @var array<string, string>
+     */
     protected $guarded = [];
 
 
-    /**
-     * groups
-     *
-     * @return BelongsTo
-     */
-    public function store(): BelongsTo
+    public function transfer()
     {
-        return $this->belongsTo(Store::class, 'store_id', 'id');
+        return $this->belongsTo(MaterialTransfer::class, 'transfer_id ', 'id');
     }
 
+
     /**
-     * groups
+     * materials
      *
      * @return BelongsTo
      */
-    public function material(): BelongsTo
+    public function materials(): BelongsTo
     {
         return $this->belongsTo(Material::class, 'material_id', 'id');
     }

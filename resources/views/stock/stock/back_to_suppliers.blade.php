@@ -168,5 +168,5 @@
         </div>
     </div>
 </section>
-@include('includes.stock.Stock_Ajax.back_to_suppliers')
+{{-- @include('includes.stock.Stock_Ajax.back_to_suppliers') --}}
 @endsection

@@ -1,10 +1,7 @@
 <?php
 
-use App\Models\materialRecipe;
-use App\Http\Controllers\Stock\old;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Stock\MaterialHalk;
-use App\Http\Controllers\Stock\MaterialTransfer;
 use App\Http\Controllers\Stock\OrdersControllers;
 use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Stock\materialManufacturing;
@@ -29,7 +26,6 @@ use App\Http\Controllers\Stock\Suppliers\SuppliersController;
 use App\Http\Controllers\StockReports\ItemsPricingController;
 use App\Http\Controllers\StockReports\StockReportsController;
 use App\Http\Controllers\Stock\ComponentDetailsItemController;
-use App\Http\Controllers\Stock\Items\ItemComponentsController;
 use App\Http\Controllers\StockReports\TransferReportController;
 use App\Http\Controllers\Stock\Material\FilterSectionController;
 use App\Http\Controllers\StockReports\CardItemReportsController;
@@ -50,6 +46,8 @@ use App\Http\Controllers\Stock\Material\FilterMaterialBranchController;
 use App\Http\Controllers\Stock\Material\FilterMaterialRecipeController;
 use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
 use App\Http\Controllers\Stock\Material\FilterNotRecipeMaterialController;
+use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
+use App\Http\Controllers\Stock\MaterialTransfer\SectionMaterialBalanceController;
 
 Route::group(
     [
@@ -199,6 +197,27 @@ Route::group(
                 Route::get('/materials/filter/{store}', MaterialBalanceController::class)->name('material.store.filter');
             }
         );
+
+
+        /*
+        * @routes('/exchange)
+        */
+        Route::group(
+            [
+                'prefix' => '/material/transfer',
+                'as' => 'material.transfer.',
+            ],
+            function () {
+                Route::controller(MaterialTransferController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::post('/', 'store')->name('store');
+                    Route::get('/{transfer}', 'show')->name('show');
+                    Route::post('/{transfer} ', 'update')->name('update');
+                    Route::delete('/{transfer}', 'destroy')->name('destroy');
+                });
+                Route::get('/filter/{section}', SectionMaterialBalanceController::class)->name('section.filter');
+            }
+        );
     }
 );
 
@@ -232,17 +251,17 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
 
-Route::group(['prefix' => 'stock', 'controller' => MaterialTransfer::class], function () {
-    Route::get('transfers', 'index')->name('transfers');
-    Route::post('changeTransferType', 'changeType')->name('changeTransferType');
-    Route::post('saveTransfer', 'save')->name('saveTransfer');
-    Route::post('getTransfer', 'getTransfer')->name('getTransfer');
-    Route::post('updateTransfer', 'updateTransfer')->name('updateTransfer');
-    Route::post('updateItemTransfer', 'updateItemTransfer')->name('updateItemTransfer');
-    Route::post('deleteItemTransfer', 'deleteItemTransfer')->name('deleteItemTransfer');
-    Route::post('getTransferViaSerial', 'getTransferViaSerial')->name('getTransferViaSerial');
-    Route::post('deleteTransfer', 'deleteTransfer')->name('deleteTransfer');
-});
+// Route::group(['prefix' => 'stock', 'controller' => MaterialTransfer::class], function () {
+//     Route::get('transfers', 'index')->name('transfers');
+//     Route::post('changeTransferType', 'changeType')->name('changeTransferType');
+//     Route::post('saveTransfer', 'save')->name('saveTransfer');
+//     Route::post('getTransfer', 'getTransfer')->name('getTransfer');
+//     Route::post('updateTransfer', 'updateTransfer')->name('updateTransfer');
+//     Route::post('updateItemTransfer', 'updateItemTransfer')->name('updateItemTransfer');
+//     Route::post('deleteItemTransfer', 'deleteItemTransfer')->name('deleteItemTransfer');
+//     Route::post('getTransferViaSerial', 'getTransferViaSerial')->name('getTransferViaSerial');
+//     Route::post('deleteTransfer', 'deleteTransfer')->name('deleteTransfer');
+// });
 
 Route::group(['prefix' => 'stock', 'controller' => MaterialHalk::class], function () {
     Route::get('halk', 'index')->name('halk');
