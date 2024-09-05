@@ -225,6 +225,7 @@ class ExchangeService
             'notes' => $params['notes'],
             'section_id' => $params['section_id'],
             'store_id' => $params['store_id'],
+            'total' => $params['total'],
         ];
     }
 

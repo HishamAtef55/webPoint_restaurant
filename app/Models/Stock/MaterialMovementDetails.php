@@ -63,6 +63,16 @@ class MaterialMovementDetails extends MorphPivot
     }
 
     /**
+     * halk
+     *
+     * @return MorphTo
+     */
+    public function halk(): MorphTo
+    {
+        return $this->morphTo(MaterialTransfer::class, 'stockable');
+    }
+
+    /**
      * materials
      *
      * @return BelongsTo

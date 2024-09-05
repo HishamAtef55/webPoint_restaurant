@@ -6,6 +6,7 @@ use App\Http\Controllers\Stock\Purchases\FilterSections;
 use App\Http\Controllers\Stock\Exchange\ExchangeController;
 use App\Http\Controllers\Stock\Purchases\PurchasesController;
 use App\Http\Controllers\Stock\Exchange\MaterialBalanceController;
+use App\Http\Controllers\Stock\MaterialHalk\MaterialHalkController;
 use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
 use App\Http\Controllers\Stock\MaterialTransfer\SectionMaterialBalanceController;
 
@@ -82,5 +83,24 @@ Route::group(
             Route::delete('/{transfer}', 'destroy')->name('destroy');
         });
         Route::get('/filter/{section}', SectionMaterialBalanceController::class)->name('section.filter');
+    }
+);
+
+/*
+        * @routes('/exchange)
+        */
+Route::group(
+    [
+        'prefix' => '/material/halk',
+        'as' => 'material.halk.',
+    ],
+    function () {
+        Route::controller(MaterialHalkController::class)->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('/{halk}', 'show')->name('show');
+            Route::post('/{halk} ', 'update')->name('update');
+            Route::delete('/{halk}', 'destroy')->name('destroy');
+        });
     }
 );

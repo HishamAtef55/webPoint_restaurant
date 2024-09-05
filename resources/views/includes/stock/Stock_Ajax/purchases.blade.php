@@ -104,6 +104,7 @@
                 document
                     .querySelectorAll(".branch-sec")
                     .forEach((el) => el.classList.remove("d-none"));
+                resetPage()
             } else if (purchasesMethod === "stores") {
                 stores.val(firstStoreOptionValue).change();
                 document
@@ -112,6 +113,7 @@
                 document
                     .querySelectorAll(".stores")
                     .forEach((el) => el.classList.remove("d-none"));
+                resetPage()
             }
         }
 
@@ -128,6 +130,7 @@
                 return;
             }
             if (preventChangeEvent) return;
+            resetPage()
             fetch(`/stock/purchases/sections/filter/${branchSelectId}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -576,7 +579,7 @@
                             title: response.message
                         });
                     }
-                    if(response.status == 422){
+                    if (response.status == 422) {
                         Toast.fire({
                             icon: 'error',
                             title: response.message
@@ -749,6 +752,22 @@
             });
         });
 
+        function resetPage() {
+            materials.html(`
+                         <select class="form-select" name="material_id" id="material_id">
+                            <option value="" selected disabled>اختر الخامة</option>
+                        </select>`)
+            material_quantity.val('')
+            material_unit.val('')
+            material_price.val('')
+            material_total_price.val('')
+            material_discount.val('')
+            material_last_price.val('')
+            material_current_Balance.val('')
+            tableBody.html('<tr class="not-found"> <td colspan="10">لا يوجد بيانات</td></tr>');
+            calcTotal();
+            checkForm();
+        }
 
     })
 </script>

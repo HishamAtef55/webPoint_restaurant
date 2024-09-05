@@ -111,12 +111,51 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
+     * halkBalance
+     * @param Section $section
+     * @return bool
+     */
+    public function halkBalance(
+        $section
+    ): bool {
+
+        try {
+
+            if (!$this->balance) return false;
+
+            /*
+            * increase balance of section
+            */
+
+            foreach ($this->balance as $balance) {
+                $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
+
+                $qty = $oldBalance->qty - $balance['qty'];
+
+                if ($qty < 0) return false;
+
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
+            }
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('halk section balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $section,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
      * increaseBalance
      * @param Section $section
      * @return bool
      */
 
-     public function increaseBalance(
+    public function increaseBalance(
         $section
     ): bool {
         try {
@@ -173,12 +212,11 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
             */
             foreach ($this->balance as $balance) {
                 $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
-                    $qty = $oldBalance->qty - $balance['qty'];
-                    if ($qty < 0) return false;
-                    $oldBalance->update([
-                        'qty' => $qty,
-                    ]);
-
+                $qty = $oldBalance->qty - $balance['qty'];
+                if ($qty < 0) return false;
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
             }
 
             return true;
