@@ -8,26 +8,16 @@ use App\Models\Branch;
 use Illuminate\View\View;
 use App\Models\Stock\Store;
 use Illuminate\Http\Request;
-use App\Enums\PurchasesMethod;
 use App\Models\Stock\Material;
 use App\Models\Stock\Supplier;
 use App\Models\Stock\Purchases;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Stock\PurchasesDetails;
-use Illuminate\Database\Eloquent\Builder;
-use App\Http\Resources\Stock\MaterialResource;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Resources\Stock\PurchasesResource;
-use App\Http\Requests\Stock\Material\StoreMaterialRequest;
-use App\Http\Requests\Stock\Material\UpdateMaterialRequest;
 use App\Http\Requests\Stock\Purchases\StorePurchasesRequest;
 use App\Http\Requests\Stock\Purchases\UpdatePurchasesRequest;
 use App\Invoices\Invoice;
-use App\Models\Stock\StoreBalance;
 
 class PurchasesController extends Controller
 {

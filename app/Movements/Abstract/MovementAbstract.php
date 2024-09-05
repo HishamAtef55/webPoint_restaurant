@@ -22,6 +22,15 @@ abstract class MovementAbstract
     protected $type = '';
 
     /**
+     * Reset all movement-related properties
+     */
+    protected function resetMovement(): void
+    {
+        $this->movement = [];
+        $this->type = '';
+    }
+
+    /**
      * validate
      * @param string $type
      * @param array $data
@@ -31,8 +40,16 @@ abstract class MovementAbstract
         string $type,
         array $data
     ): self {
-        $this->movement  = $data;
+
+        // Reset all previous movement data and type
+        $this->resetMovement();
+
+        // Set new movement data
+        $this->movement = $data;
+
+        // Set movement type
         $this->type = $type;
+
         return $this;
     }
 }

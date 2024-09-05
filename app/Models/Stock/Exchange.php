@@ -9,6 +9,7 @@ use App\Models\Stock\Supplier;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Exchange extends Model
@@ -92,11 +93,11 @@ class Exchange extends Model
     /**
      * details
      *
-     * @return HasMany
+     * @return MorphMany
      */
-    public function details(): HasMany
+    public function details(): MorphMany
     {
-        return $this->hasMany(ExchangeDetails::class, 'exchange_id', 'id');
+        return $this->morphMany(MaterialMovementDetails::class, 'stockable');
     }
 
     /**

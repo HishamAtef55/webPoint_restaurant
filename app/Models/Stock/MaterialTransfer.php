@@ -4,9 +4,8 @@ namespace App\Models\Stock;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Stock\MaterialTransferDetails;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MaterialTransfer extends Model
@@ -101,11 +100,11 @@ class MaterialTransfer extends Model
     /**
      * details
      *
-     * @return HasMany
+     * @return MorphMany
      */
-    public function details(): HasMany
+    public function details(): MorphMany
     {
-        return $this->hasMany(MaterialTransferDetails::class, 'transfer_id', 'id');
+        return $this->morphMany(MaterialMovementDetails::class, 'stockable');
     }
 
     /**

@@ -628,12 +628,6 @@
                             icon: 'success',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
-
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 300)
                     }
                     if (response.status == 422) {
                         Toast.fire({
@@ -641,6 +635,10 @@
                             title: response.message
                         });
                     }
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
 
                 },
                 error: handleAjaxError,
@@ -677,8 +675,6 @@
         }
 
         function updateInvoiceMethod(invoice, method) {
-            const purchasesMethod = document.querySelector(
-                `input[name="purchases_method"][value="${method}"]`).checked = true;
 
             if (method === "sections") {
                 preventChangeEvent = true;
@@ -715,6 +711,20 @@
                 to_store.val(invoice.to_store.id).trigger('change').attr("disabled", true)
 
             }
+            let existingMethodCheckboxContainer = $('.method-checkbox');
+
+            // Define the new HTML content
+            let newMethodCheckboxContainer = `
+                <div class='form-check'>
+                    <input class="form-check-input purchases-method" type="radio" value="${method}"
+                        id="${method}_method" name="purchases_method" checked>
+                    <label class="form-check-label" for="${method}_method">
+                        ${method === 'sections' ? 'اقسام' : 'مخازن'}
+                    </label>
+                </div>`;
+
+            // Update the HTML content using jQuery
+            existingMethodCheckboxContainer.html(newMethodCheckboxContainer);
             preventChangeEvent = false;
         }
 
@@ -774,18 +784,14 @@
                             icon: 'success',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
                     }
                     if (response.status == 422) {
                         Toast.fire({
                             icon: 'error',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
                     }
-
+                    button.html(originalHtml).prop('disabled', false);
                     setTimeout(() => {
                         window.location.reload();
                     }, 300)

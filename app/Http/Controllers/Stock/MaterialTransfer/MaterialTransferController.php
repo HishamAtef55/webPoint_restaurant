@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Stock\MaterialTransfer;
 use App\Models\Branch;
 use App\Models\Stock\Store;
 use Illuminate\Http\Request;
-use App\Models\Stock\Section;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Stock\MaterialTransfer;

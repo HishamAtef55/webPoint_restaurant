@@ -16,7 +16,7 @@ class MaterialTransferDetailsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'transfer_id ' => $this->transfer_id ,
+            'transfer_id ' => $this->stockable_id,
             'material_id' => $this->material_id,
             'qty' => $this->qty,
             'price' => $this->price / 100,

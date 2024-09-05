@@ -57,7 +57,7 @@
                 </div>
                 <hr />
                 <div class="row align-items-end" style="margin-top: -1rem;">
-                    <div class="col-md-1">
+                    <div class="col-md-1 method-checkbox">
                         <div class="form-check">
                             <input class="form-check-input purchases-method" type="radio" value="sections"
                                 id="sections_method" name="purchases_method">

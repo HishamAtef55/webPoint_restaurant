@@ -180,7 +180,7 @@ class Material extends Model
     */
     public function details(): HasMany
     {
-        return $this->hasMany(PurchasesDetails::class, 'material_id', 'id');
+        return $this->hasMany(MaterialMovementDetails::class, 'material_id', 'id');
     }
 
 

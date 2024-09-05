@@ -575,13 +575,17 @@
                             icon: 'success',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
-
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 300)
                     }
+                    if(response.status == 422){
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    }
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
 
                 },
                 error: handleAjaxError,
@@ -621,10 +625,6 @@
 
         function updateInvoiceMethod(invoice, method) {
 
-            // document.querySelectorAll('input[name="purchases_method"]').forEach(input => {
-            //     input.checked = input.value === method;
-            // });
-
             if (method === "sections") {
                 preventChangeEvent = true;
                 sections.empty()
@@ -640,7 +640,6 @@
                 sections.append(
                     `<option  value="${invoice.section.id}" selected>${invoice.section.name}</option>`
                 ).attr("disabled", true)
-                // sections.val(invoice.section.id).trigger('change')
 
             } else if (method === "stores") {
                 document
@@ -731,9 +730,17 @@
                             icon: 'success',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
                     }
+                    if (response.status == 422) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    }
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
                 },
                 error: handleAjaxError,
                 complete: function() {

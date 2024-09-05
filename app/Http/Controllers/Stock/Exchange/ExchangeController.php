@@ -10,7 +10,6 @@ use App\Services\ExchangeService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Stock\ExchangeResource;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Resources\Stock\PurchasesResource;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Http\Requests\Stock\Exchange\StoreExchangeRequest;
 use App\Http\Requests\Stock\Exchange\UpdateExchangeRequest;
@@ -78,13 +77,13 @@ class ExchangeController extends Controller
      * @param  Exchange  $exchange
      * @param  UpdateExchangeRequest  $request
      * @param  ExchangeService $service,
-     * @return ExchangeResource
+     * @return ExchangeResource|JsonResponse
      */
     public function update(
         Exchange  $exchange,
         UpdateExchangeRequest  $request,
         ExchangeService $service,
-    ): ExchangeResource {
+    ): ExchangeResource|JsonResponse {
 
         try {
             if ($service->update($request->validated(), $exchange)) {

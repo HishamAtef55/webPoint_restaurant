@@ -16,11 +16,10 @@ class PurchasesDetailsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'purchases_id' => $this->purchases_id,
+            'purchases_id' => $this->stockable_id,
             'material_id' => $this->material_id,
             'expire_date' => $this->expire_date,
             'qty' => $this->qty,
-            // 'current_balance' => $this->
             'price' => $this->price / 100,
             'discount' => $this->discount / 100,
             'total' => $this->total / 100,

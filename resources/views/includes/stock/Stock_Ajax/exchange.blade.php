@@ -463,12 +463,6 @@
                             icon: 'success',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
-
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 300)
                     }
                     if (response.status == 422) {
                         Toast.fire({
@@ -476,7 +470,10 @@
                             title: response.message
                         });
                     }
-
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
                 },
                 error: handleAjaxError,
                 complete: function() {
@@ -577,17 +574,17 @@
                             icon: 'success',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
                     }
                     if (response.status == 422) {
                         Toast.fire({
                             icon: 'error',
                             title: response.message
                         });
-
-                        button.html(originalHtml).prop('disabled', false);
                     }
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
                 },
                 error: handleAjaxError,
                 complete: function() {

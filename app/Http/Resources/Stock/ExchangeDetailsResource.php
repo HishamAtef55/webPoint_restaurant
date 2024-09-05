@@ -16,7 +16,7 @@ class ExchangeDetailsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'exchange_id' => $this->exchange_id,
+            'exchange_id' => $this->stockable_id,
             'material_id' => $this->material_id,
             'qty' => $this->qty,
             'price' => $this->price / 100,

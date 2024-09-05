@@ -7,8 +7,8 @@ use App\Models\Stock\Store;
 use App\Models\Stock\Section;
 use App\Models\Stock\Supplier;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Purchases extends Model
@@ -90,15 +90,15 @@ class Purchases extends Model
     {
         return $this->belongsTo(Section::class, 'section_id', 'id');
     }
-    
+
     /**
      * details
      *
-     * @return HasMany
+     * @return MorphMany
      */
-    public function details(): HasMany
+    public function details(): MorphMany
     {
-        return $this->hasMany(PurchasesDetails::class, 'purchases_id', 'id');
+        return $this->morphMany(MaterialMovementDetails::class, 'stockable');
     }
 
     /**

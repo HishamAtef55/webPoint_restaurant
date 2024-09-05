@@ -17,6 +17,14 @@ abstract class BalanceAbstract
     protected $balance = [];
 
     /**
+     * Reset balance property
+     */
+    protected function resetBalance(): void
+    {
+        $this->balance = [];
+    }
+
+    /**
      * validate
      * @param array $data
      * @return self
@@ -24,7 +32,9 @@ abstract class BalanceAbstract
     public function validate(
         array $data
     ): self {
-        $this->balance = [];
+
+        $this->resetBalance();
+
         array_map(function ($balance) {
             return array_push($this->balance, [
                 'material_id' => $balance['material_id'],
