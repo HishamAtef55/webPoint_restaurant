@@ -629,9 +629,10 @@
                     .querySelectorAll(".branch-sec")
                     .forEach((el) => el.classList.remove("d-none"));
                 branchs.val(invoice.section.branch.id).trigger('change').attr("disabled", true)
+                preventChangeEvent = false;
                 sections.append(
                     `<option  value="${invoice.section.id}" selected>${invoice.section.name}</option>`
-                ).attr("disabled", true)
+                ).trigger('change').attr("disabled", true);
 
             } else if (method === "stores") {
                 document
