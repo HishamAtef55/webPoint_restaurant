@@ -13,15 +13,15 @@ class CreateExchangeDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stock_exchange_details', function (Blueprint $table) {
+        Schema::create('stock_materials_exchange_details', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('order_id');
-            $table->string('code',50);
-            $table->string('name',150);
-            $table->string('unit',50);
-            $table->double('qty',10,3);
-            $table->double('price',10,3);
-            $table->double('total',10,3);
+            $table->string('code', 50);
+            $table->string('name', 150);
+            $table->string('unit', 50);
+            $table->double('qty', 10, 3);
+            $table->double('price', 10, 3);
+            $table->double('total', 10, 3);
             $table->timestamps();
         });
     }
@@ -33,6 +33,6 @@ class CreateExchangeDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stock_exchange_details');
+        Schema::dropIfExists('stock_materials_exchange_details');
     }
 }

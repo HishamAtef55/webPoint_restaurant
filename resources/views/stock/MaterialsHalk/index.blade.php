@@ -29,8 +29,8 @@
                 <div class="row">
                     <div class="col-md-2">
                         <div class="custom-form invalid">
-                            <input type="number" value="{{ $lastHalkNr }}" name="transfer_id" id="transfer_id">
-                            <label for="transfer_id">رقم الاذن</label>
+                            <input type="number" value="{{ $lastHalkNr }}" name="halk_id" id="halk_id">
+                            <label for="halk_id">رقم الاذن</label>
                         </div>
                     </div>
                     <div class="col-md-2">

@@ -32,7 +32,7 @@ class UpdateExchangeRequest extends FormRequest
             'order_nr' => [
                 'nullable',
                 'string',
-                Rule::unique('stock_exchange')->ignore($this->route('exchange')),
+                Rule::unique('stock_materials_exchange')->ignore($this->route('exchange')),
             ],
             'notes' => 'nullable|string',
 
@@ -49,7 +49,7 @@ class UpdateExchangeRequest extends FormRequest
                 'integer',
                 'exists:stock_sections,id'
             ],
-
+            'total' => 'required',
             'materialArray' => 'required',
 
             'materialArray.*.material_id' => [

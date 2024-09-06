@@ -13,12 +13,12 @@ class CreateExchangeMainsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stock_exchange_mains', function (Blueprint $table) {
+        Schema::create('stock_materials_exchange_mains', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('serial_id',150)->nullable();
-            $table->string('order_id',150)->nullable();
-            $table->string('date',150);
-            $table->string('image',150)->nullable();
+            $table->string('serial_id', 150)->nullable();
+            $table->string('order_id', 150)->nullable();
+            $table->string('date', 150);
+            $table->string('image', 150)->nullable();
             $table->text('note')->nullable();
             $table->integer('store_id');
             $table->integer('branch_id');
@@ -36,6 +36,6 @@ class CreateExchangeMainsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stock_exchange_mains');
+        Schema::dropIfExists('stock_materials_exchange_mains');
     }
 }

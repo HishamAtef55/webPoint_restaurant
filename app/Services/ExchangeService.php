@@ -36,6 +36,7 @@ class ExchangeService
                 $data['image'] = $this->storeExchangeImage($request['image']);
             }
 
+
             DB::beginTransaction();
 
             /*
@@ -139,7 +140,7 @@ class ExchangeService
                 return true;
             }
         } catch (\Throwable $e) {
-            Log::error('exchange creation failed: ' . $e->getMessage(), [
+            Log::error('exchange updating failed: ' . $e->getMessage(), [
                 'request' => $request,
             ]);
             return false;
@@ -225,7 +226,7 @@ class ExchangeService
             'notes' => $params['notes'],
             'section_id' => $params['section_id'],
             'store_id' => $params['store_id'],
-            'total' => $params['total'],
+            'total' => $params['total'] * 100,
         ];
     }
 

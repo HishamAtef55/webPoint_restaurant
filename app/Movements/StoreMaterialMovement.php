@@ -529,7 +529,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
     private function createHalkMovement(
         Store $store
     ): void {
-
+        
         /*
         * material move inside store
         */

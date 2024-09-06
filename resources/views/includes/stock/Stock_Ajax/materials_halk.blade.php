@@ -1,7 +1,7 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let serial_nr = $('#serial_number');
-    let date = $('#transfer_date');
+    let serial_nr = $('#serial_nr');
+    let date = $('#halk_date');
     let branchs = $('#branch_id');
     let sections = $('#section_id')
     let stores = $('#store_id');
@@ -14,9 +14,9 @@
     let notes = $('#notes');
     let tableBody = $('.table-purchases tbody');
     let tableFoot = $('.table-purchases tfoot');
-    let updateBtn = $('#update_material_transfer');
-    let saveBtn = $('#save_material_transfer');
-    let deleteBtn = $('#delete_material_transfer');
+    let updateBtn = $('#update_material_halk');
+    let saveBtn = $('#save_material_halk');
+    let deleteBtn = $('#delete_material_halk');
     let image;
     let now = new Date();
     let spinner = $(
@@ -200,11 +200,11 @@
          */
         function displaySections(sections) {
             let container = $("#section_id");
-            // let html = '<option selected disabled>اختر القسم</option>';
             let html = '';
             if (!sections.length) {
                 html += `<option value="">لاتوجد اقسام</option>`;
             } else {
+                html = '<option selected disabled>اختر القسم</option>';
                 sections.forEach((section) => {
                     html += `<option value="${section.id}">${section.name}</option>`;
                 });
@@ -443,11 +443,11 @@
                             calcTotal();
                             resolve();
                         } else {
-                            let id = $('#transfer_id').val();
+                            let id = $('#halk_id').val();
                             if (!id) return;
                             $.ajax({
                                 type: 'DELETE',
-                                url: `{{ url('stock/material/transfer') }}/${id}`,
+                                url: `{{ url('stock/material/halk') }}/${id}`,
                                 dataType: 'json',
                                 data: {
                                     "details_id": rowId,
@@ -534,13 +534,13 @@
 
             }
             formData.append("halk_type", halk_type);
-            if (transfer_type == "sections") {
+            if (halk_type == "sections") {
                 formData.append("section_id", sections.val());
-            } else if (transfer_type === "stores") {
+            } else if (halk_type === "stores") {
                 formData.append("store_id", stores.val());
             }
             formData.append("serial_nr", serial_nr.val());
-            formData.append("transfer_type", transfer_type);
+            formData.append("halk_type", halk_type);
             formData.append("halk_date", date.val());
             formData.append("image", image);
             formData.append("notes", notes.val());
@@ -603,7 +603,7 @@
         })
 
         function displayInvoices(invoice) {
-            $('#transfer_id').val(invoice.id).attr('disabled', true)
+            $('#halk_id').val(invoice.id).attr('disabled', true)
             serial_nr.val(invoice.serial_nr)
             serial_nr.attr('disabled', true);
             date.val(invoice.halk_date)
@@ -617,7 +617,6 @@
         }
 
         function updateInvoiceMethod(invoice, method) {
-
             if (method === "sections") {
                 preventChangeEvent = true;
                 sections.empty()

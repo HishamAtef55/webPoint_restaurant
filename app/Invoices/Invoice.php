@@ -245,7 +245,7 @@ class Invoice implements InvoiceInterface
             'payment_type' => $params['payment_type'],
             'tax' => $params['tax'],
             'total' => $params['sumTotal'] * 100,
-            'note' => $params['notes'],
+            'notes' => $params['notes'],
             'section_id' => null,
             'store_id' => null,
         ];

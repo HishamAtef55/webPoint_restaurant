@@ -24,10 +24,10 @@ class MaterialHalkResource extends JsonResource
             'image' => $this->image,
             'notes' => $this->notes,
             'details' => MaterialHalkDetailsResource::collection($this->details),
-            $this->mergeWhen($this->transfer_type == PurchasesMethod::SECTIONS->value, [
+            $this->mergeWhen($this->halk_type == PurchasesMethod::SECTIONS->value, [
                 'section' => SectionResource::make($this->section),
             ]),
-            $this->mergeWhen($this->transfer_type == PurchasesMethod::STORES->value, [
+            $this->mergeWhen($this->halk_type == PurchasesMethod::STORES->value, [
                 'store' => StoreResource::make($this->store),
             ]),
         ];

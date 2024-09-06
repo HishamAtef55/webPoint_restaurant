@@ -35,8 +35,8 @@ class MaterialHalkService
 
             $data = $this->collectInvoiceData($params);
 
-            if ($params['purchases_image'] != 'undefined') {
-                $data['image'] = $this->storeInvoiceImage($params['purchases_image']);
+            if ($params['image'] != 'undefined') {
+                $data['image'] = $this->storeInvoiceImage($params['image']);
             }
 
             if ($params['halk_type'] === PurchasesMethod::STORES->value) {
@@ -61,9 +61,9 @@ class MaterialHalkService
                     // Create the material halk details record
                     $material_halk->details()->create([
                         'material_id' => $material['material_id'],
-                        'qty' => $material['qty'],
-                        'price' => $material['price'] * 100,
-                        'total' => $material['total'] * 100,
+                        'qty'         => $material['qty'],
+                        'price'       => $material['price'] * 100,
+                        'total'       => $material['total'] * 100,
                     ]);
                 }
             } else {
@@ -75,8 +75,8 @@ class MaterialHalkService
             $this->collectMaterialMovement($material_halk->load('details'));
 
             $result =  match ($material_halk->halk_type) {
-                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::PURCHASES->value, $this->movement)->create($material_halk->store),
-                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::PURCHASES->value, $this->movement)->create($material_halk->section),
+                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::HALK->value, $this->movement)->create($material_halk->store),
+                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::HALK->value, $this->movement)->create($material_halk->section),
                 default => throw new \Exception("Un supported halk type", 1),
             };
             if ($result) {
@@ -109,8 +109,8 @@ class MaterialHalkService
 
             $data = $this->collectInvoiceData($params);
 
-            if ($params['purchases_image'] != 'undefined') {
-                $data['image'] = $this->storeInvoiceImage($params['purchases_image']);
+            if ($params['image'] != 'undefined') {
+                $data['image'] = $this->storeInvoiceImage($params['image']);
             }
 
             if ($params['halk_type'] === PurchasesMethod::STORES->value) {
@@ -150,8 +150,8 @@ class MaterialHalkService
 
             $this->collectMaterialMovement($material_halk->load('details'));
             $result =  match ($material_halk->halk_type) {
-                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::PURCHASES->value, $this->movement)->create($material_halk->store),
-                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::PURCHASES->value, $this->movement)->create($material_halk->section),
+                PurchasesMethod::STORES->value => Movement::storeMaterialMovement()->validate(MaterialMove::HALK->value, $this->movement)->create($material_halk->store),
+                PurchasesMethod::SECTIONS->value => Movement::sectionMaterialMovement()->validate(MaterialMove::HALK->value, $this->movement)->create($material_halk->section),
                 default => throw new \Exception("Un supported halk type", 1),
             };
             if ($result) {
@@ -251,7 +251,7 @@ class MaterialHalkService
             'halk_type' => $params['halk_type'],
             'notes' => $params['notes'],
             'user_id' => Auth::id(),
-            'total' => $params['total'],
+            'total' => $params['total'] * 100,
         ];
     }
 
@@ -263,6 +263,7 @@ class MaterialHalkService
     private function collectMaterialMovement(
         MaterialHalk $material_halk
     ): void {
+
         $material_halk->details->map(function ($item) use ($material_halk) {
             return [
                 array_push($this->movement, [

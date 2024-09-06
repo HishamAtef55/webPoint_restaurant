@@ -31,7 +31,7 @@ class UpdateMaterialHalkRequest extends FormRequest
 
             'halk_type' => ['required', 'string'],
 
-            'serial_nr' => ['nullable', 'string', 'unique:stock_materials_halk,serial_nr'],
+            'serial_nr' => ['nullable', 'string'],
 
             'halk_date' => 'required|date',
 

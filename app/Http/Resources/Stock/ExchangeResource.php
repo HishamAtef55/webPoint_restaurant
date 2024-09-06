@@ -21,6 +21,7 @@ class ExchangeResource extends JsonResource
             'section' => SectionResource::make($this->section),
             'store' => StoreResource::make($this->store),
             'note' => $this->notes,
+            'total' => $this->total / 100,
             'details' => ExchangeDetailsResource::collection($this->details),
         ];
     }

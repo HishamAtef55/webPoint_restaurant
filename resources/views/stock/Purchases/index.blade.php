@@ -16,7 +16,7 @@
                         <select class="form-select" name="purchases_id" id="purchases_id">
                             <option selected disabled>اختر رقم الفاتورة</option>
                             @forelse ($invoices as $invoice)
-                                <option value="{{ $invoice->id }}">{{ $invoice->serial_nr }}</option>
+                                <option value="{{ $invoice->id }}">{{ $invoice->id }}</option>
                             @empty
                                 <option value="">لاتوجد فواتير متاحة</option>
                             @endforelse

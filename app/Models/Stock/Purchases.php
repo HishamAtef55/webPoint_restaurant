@@ -20,7 +20,7 @@ class Purchases extends Model
      *
      * @var string
      */
-    protected $table = "stock_purchases";
+    protected $table = "stock_materials_purchases";
 
     /**
      * The attributes that are mass assignable.

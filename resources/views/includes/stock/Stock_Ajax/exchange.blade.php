@@ -438,6 +438,7 @@
 
             // formData.append("tax", tax.val());
             formData.append("exchange_date", date.val());
+            formData.append("total", $('.sumTotal').text());
 
             formData.append("materialArray", JSON.stringify(materialArray));
 
@@ -510,12 +511,12 @@
         }
 
         function updateExchangeOptions(exchange) {
-
+            preventChangeEvent = true;
             branchs.val(exchange.section.branch.id).trigger('change').attr("disabled", true)
             sections.append(
                 `<option  value="${exchange.section.id}" selected>${exchange.section.name}</option>`
             ).attr("disabled", true)
-
+            preventChangeEvent = false;
             stores.val(exchange.store.id).trigger('change').attr("disabled", true)
 
         }

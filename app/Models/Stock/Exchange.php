@@ -21,7 +21,7 @@ class Exchange extends Model
      *
      * @var string
      */
-    protected $table = "stock_exchange";
+    protected $table = "stock_materials_exchange";
 
     /**
      * The attributes that are mass assignable.
@@ -35,7 +35,8 @@ class Exchange extends Model
         'notes',
         'user_id',
         'store_id',
-        'section_id'
+        'section_id',
+        'total'
     ];
 
     /**

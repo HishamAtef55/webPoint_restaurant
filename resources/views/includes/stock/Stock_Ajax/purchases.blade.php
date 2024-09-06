@@ -98,6 +98,7 @@
                     .val("<option selected disabled>اختر القسم </option>")
                     .trigger("change");
                 branchs.val(firstBranchOptionValue).change();
+               supplier.val(supplier.find("option:first").val()).change();
                 document
                     .querySelectorAll(".stores")
                     .forEach((el) => el.classList.add("d-none"));
@@ -163,12 +164,16 @@
         }
 
         materials.on('change', function(params) {
+            let materialSelectVal = materials.val();
+            if (!materialSelectVal) {
+                return;
+            }
             let material = $(this).find("option:selected");
-            const lastPriceAttr = material.attr('data-last-price');
-            const lastPrice = parseFloat(lastPriceAttr) / 100;
+            let lastPriceAttr = material.attr('data-last-price');
+            let lastPrice = parseFloat(lastPriceAttr) / 100;
 
             // Check if lastPrice is a valid number, otherwise default to 0
-            const formattedLastPrice = isNaN(lastPrice) ? '0.00' : lastPrice.toFixed(2);
+            let formattedLastPrice = isNaN(lastPrice) ? '0.00' : lastPrice.toFixed(2);
 
             let method = document.querySelector(
                 'input[name="purchases_method"]:checked'
@@ -200,7 +205,7 @@
                 };
             }
 
-            let url = '{{ url('stock/purchases') }}/' + material.val() + '/filter';
+            let url = '{{ url('stock/purchases') }}/' + materialSelectVal + '/filter';
             let queryString = $.param(initialParams);
 
 
@@ -616,7 +621,7 @@
             supplier.val(invoice.supplier.id).trigger('change')
             date.val(invoice.purchases_date)
             tax.val(invoice.tax)
-            notes.val(invoice.note)
+            notes.val(invoice.notes)
             document.querySelector(`input[name="pay_method"][value="${invoice.payment_type}"]`).checked = true;
             updateInvoiceMethod(invoice, invoice.purchases_method)
             updateTableData(invoice.details)
@@ -753,10 +758,7 @@
         });
 
         function resetPage() {
-            materials.html(`
-                         <select class="form-select" name="material_id" id="material_id">
-                            <option value="" selected disabled>اختر الخامة</option>
-                        </select>`)
+           materials.val(materials.find("option:first").val()).change();
             material_quantity.val('')
             material_unit.val('')
             material_price.val('')
