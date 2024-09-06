@@ -28,7 +28,7 @@ class StoreExchangeRequest extends FormRequest
     {
         return [
 
-            'order_nr' => ['nullable', 'string', 'unique:stock_exchange,order_nr'],
+            'order_nr' => ['nullable', 'string', 'unique:stock_materials_exchange,order_nr'],
 
             'notes' => 'nullable|string',
 
@@ -45,6 +45,8 @@ class StoreExchangeRequest extends FormRequest
                 'integer',
                 'exists:stock_sections,id'
             ],
+
+            'total' => 'required',
 
             'materialArray' => 'required',
 

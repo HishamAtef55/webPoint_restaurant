@@ -3,16 +3,12 @@
 namespace App\Models\Stock;
 
 use App\Models\User;
-use App\Models\Stock\Store;
-use App\Models\Stock\Section;
-use App\Models\Stock\Supplier;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Exchange extends Model
+class MaterialHalk extends Model
 {
     use HasFactory;
 
@@ -21,23 +17,14 @@ class Exchange extends Model
      *
      * @var string
      */
-    protected $table = "stock_materials_exchange";
+    protected $table = "stock_materials_halk";
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'order_nr',
-        'exchange_date',
-        'image',
-        'notes',
-        'user_id',
-        'store_id',
-        'section_id',
-        'total'
-    ];
+    protected $fillable = [];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -60,17 +47,6 @@ class Exchange extends Model
      */
     protected $guarded = [];
 
-
-    /**
-     * store
-     *
-     * @return BelongsTo
-     */
-    public function store(): BelongsTo
-    {
-        return $this->belongsTo(Store::class, 'store_id', 'id');
-    }
-
     /**
      * user
      *
@@ -89,6 +65,16 @@ class Exchange extends Model
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class, 'section_id', 'id');
+    }
+
+    /**
+     * store
+     *
+     * @return BelongsTo
+     */
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class, 'store_id', 'id');
     }
 
     /**

@@ -84,6 +84,7 @@
                 return;
             }
             if (preventChangeEvent) return;
+            resetPage()
             fetch(`/stock/purchases/sections/filter/${branchSelectId}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -100,6 +101,7 @@
             if (!storeSelectId) return;
 
             if (preventChangeEvent) return;
+            resetPage()
             fetch(`/stock/exchange/materials/filter/${storeSelectId}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -436,6 +438,7 @@
 
             // formData.append("tax", tax.val());
             formData.append("exchange_date", date.val());
+            formData.append("total", $('.sumTotal').text());
 
             formData.append("materialArray", JSON.stringify(materialArray));
 
@@ -508,12 +511,12 @@
         }
 
         function updateExchangeOptions(exchange) {
-
+            preventChangeEvent = true;
             branchs.val(exchange.section.branch.id).trigger('change').attr("disabled", true)
             sections.append(
                 `<option  value="${exchange.section.id}" selected>${exchange.section.name}</option>`
             ).attr("disabled", true)
-
+            preventChangeEvent = false;
             stores.val(exchange.store.id).trigger('change').attr("disabled", true)
 
         }
@@ -592,6 +595,21 @@
                 }
             });
         });
+
+        function resetPage() {
+            materials.html(`
+                         <select class="form-select" name="material_id" id="material_id">
+                            <option value="" selected disabled>اختر الخامة</option>
+                        </select>`)
+            material_quantity.val('')
+            material_unit.val('')
+            material_price.val('')
+            material_total_price.val('')
+            material_current_Balance.val('')
+            tableBody.html('<tr class="not-found"> <td colspan="10">لا يوجد بيانات</td></tr>');
+            calcTotal();
+            checkForm();
+        }
 
 
     })

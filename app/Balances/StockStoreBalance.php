@@ -36,7 +36,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
                 if ($oldBalance) {
                     $price = ($oldBalance->avg_price + $balance['price']) /  ($oldBalance->qty  + $balance['qty']);
                     $qty = $oldBalance->qty + $balance['qty'];
-                    
+
                     $oldBalance->update([
                         'qty' => $qty,
                         'avg_price' => $price,
@@ -105,6 +105,46 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
     }
 
     /**
+     * halkBalance
+     * @param Store $store
+     * @return bool
+     */
+    public function halkBalance(
+        $store
+    ): bool {
+
+        try {
+
+            if (!$this->balance) return false;
+
+            /*
+            * increase balance of section
+            */
+
+            foreach ($this->balance as $balance) {
+                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
+
+                $qty = $oldBalance->qty - $balance['qty'];
+
+                if ($qty < 0) return false;
+
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
+            }
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('halk store balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
      * increaseBalance
      * @param Store $store
      * @return bool
@@ -167,12 +207,11 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
             */
             foreach ($this->balance as $balance) {
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
-                    $qty = $oldBalance->qty - $balance['qty'];
-                    if ($qty < 0) return false;
-                    $oldBalance->update([
-                        'qty' => $qty,
-                    ]);
-
+                $qty = $oldBalance->qty - $balance['qty'];
+                if ($qty < 0) return false;
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
             }
 
             return true;

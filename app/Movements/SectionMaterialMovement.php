@@ -7,15 +7,13 @@ use App\Models\Stock\Section;
 use App\Models\Stock\Exchange;
 use App\Models\Stock\Purchases;
 use App\Balances\Facades\Balance;
+use App\Models\Stock\MaterialHalk;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\MaterialTransfer;
-use App\Models\Stock\PurchasesDetails;
 use App\Models\Stock\SectionMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
-use Illuminate\Database\Eloquent\Collection;
-use App\Models\Stock\MaterialTransferDetails;
+use App\Models\Stock\MaterialMovementDetails;
 use App\Movements\Interface\MovementInterface;
 
 class SectionMaterialMovement extends MovementAbstract implements MovementInterface
@@ -124,12 +122,12 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
      * deleteExchangeMovement
      * 
      * @param Exchange $exchange
-     * @param ExchangeDetails $details
+     * @param MaterialMovementDetails $details
      * @return bool
      */
     public function deleteExchangeMovement(
         Exchange $exchange,
-        ExchangeDetails $details,
+        MaterialMovementDetails $details,
     ): bool {
 
         try {
@@ -167,6 +165,56 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             Log::error('exchange details deleted failed: ' . $e->getMessage(), [
                 'exchange' => $exchange,
                 'exchange_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * deleteHalkMovement
+     * 
+     * @param MaterialHalk $material_halk
+     * @param MaterialMovementDetails $details
+     * @return bool
+     */
+    public function deleteHalkMovement(
+        MaterialHalk $material_halk,
+        MaterialMovementDetails $details,
+    ): bool { 
+
+        try {
+
+            DB::beginTransaction();
+
+            $section = $material_halk->section;
+
+            /*
+            *  store delete move
+            */
+            $section->move()->where([
+                'material_id' => $details->material_id,
+                'halk_nr' => $material_halk->id
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            $oldBalance = $section->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty + $details->qty;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('halk details deleted failed: ' . $e->getMessage(), [
+                'material_halk' => $material_halk,
+                'halk_details' => $details,
             ]);
             DB::rollBack();
             return false;
@@ -287,14 +335,14 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
      * deleteTransferFromMovement
      * 
      * @param MaterialTransfer $transfer
-     * @param MaterialTransferDetails $details
+     * @param MaterialMovementDetails $details
      * @return bool
      */
     public function deleteTransferFromMovement(
         MaterialTransfer $transfer,
-        MaterialTransferDetails $details,
+        MaterialMovementDetails $details,
     ): bool {
-
+        
         try {
 
             $section = $transfer->from_section;
@@ -337,12 +385,12 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
      * deleteTransferToMovement
      * 
      * @param  MaterialTransfer $transfer
-     * @param MaterialTransferDetails $details
+     * @param MaterialMovementDetails $details
      * @return bool
      */
     public function deleteTransferToMovement(
         MaterialTransfer $transfer,
-        MaterialTransferDetails $details,
+        MaterialMovementDetails $details,
     ): bool {
 
         try {
@@ -393,6 +441,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         match ($this->type) {
             MaterialMove::PURCHASES->value => $this->createPurchasesMovement($section),
             MaterialMove::EXCHANGE->value => $this->createExchangeMovement($section),
+            MaterialMove::HALK->value => $this->createHalkMovement($section),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -465,6 +514,40 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         }
     }
 
+    /**
+     * createHalkMovement
+     * @param Section $section
+     * @return void
+     */
+    private function createHalkMovement(
+        Section $section
+    ): void {
+
+        /*
+        * material move inside store
+        */
+        foreach ($this->movement as &$move) {
+            $existingMovement = $section->move()->where([
+                'material_id' => $move['material_id'],
+                'halk_nr' => $move['halk_nr']
+            ])->first();
+            $section->move()->updateOrCreate(
+                [
+                    'material_id' => $move['material_id'],
+                    'halk_nr' => $move['halk_nr']
+                ],
+                [
+                    'qty' => $move['qty'],
+                    'price' => $move['price'],
+                    'type' => $move['type'],
+                ]
+            );
+            if ($existingMovement) {
+                $move['qty'] -= $existingMovement->qty;
+            }
+        }
+    }
+
 
     /**
      * updateBalance
@@ -477,6 +560,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         return match ($this->type) {
             MaterialMove::PURCHASES->value => Balance::sectionBalance()->validate($this->movement)->purchasesBalance($section),
             MaterialMove::EXCHANGE->value => Balance::sectionBalance()->validate($this->movement)->exchangeBalance($section),
+            MaterialMove::HALK->value => Balance::sectionBalance()->validate($this->movement)->halkBalance($section),
             default => false,
         };
     }

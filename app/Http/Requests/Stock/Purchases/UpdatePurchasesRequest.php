@@ -33,9 +33,9 @@ class UpdatePurchasesRequest extends FormRequest
 
             'serial_nr' => [
                 'nullable',
-                 'string',
-                 Rule::unique('stock_purchases')->ignore($this->route('purchase')),
-                ],
+                'string',
+                Rule::unique('stock_materials_purchases')->ignore($this->route('purchase')),
+            ],
 
             'notes' => 'nullable|string',
 

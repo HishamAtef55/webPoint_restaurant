@@ -6,9 +6,11 @@ use App\Models\Stock\Store;
 use App\Models\Stock\Section;
 use App\Models\Stock\Exchange;
 use App\Models\Stock\Purchases;
+use App\Models\Stock\MaterialHalk;
 use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\PurchasesDetails;
+use App\Models\Stock\MaterialMovementDetails;
 use App\Models\Stock\MaterialTransferDetails;
 
 interface MovementInterface
@@ -37,12 +39,12 @@ interface MovementInterface
     /**
      * deleteExchangeMovement
      * @param Exchange $exchange
-     * @param ExchangeDetails $details
+     * @param MaterialMovementDetails $details
      * @return bool
      */
     public function deleteExchangeMovement(
         Exchange $exchange,
-        ExchangeDetails $details,
+        MaterialMovementDetails $details,
     ): bool;
 
 
@@ -68,23 +70,35 @@ interface MovementInterface
      * deleteTransferFromMovement
      * 
      * @param MaterialTransfer $transfer
-     * @param MaterialTransferDetails $details
+     * @param MaterialMovementDetails $details
      * @return bool
      */
     public function deleteTransferFromMovement(
         MaterialTransfer $transfer,
-        MaterialTransferDetails $details,
+        MaterialMovementDetails $details,
     ): bool;
 
     /**
      * deleteTransferToMovement
      * 
      * @param MaterialTransfer $transfer
-     * @param MaterialTransferDetails $details
+     * @param MaterialMovementDetails $details
      * @return bool
      */
     public function deleteTransferToMovement(
         MaterialTransfer $transfer,
-        MaterialTransferDetails $details,
+        MaterialMovementDetails $details,
+    ): bool;
+
+    /**
+     * deleteHalkMovement
+     * 
+     * @param MaterialHalk $material_halk
+     * @param MaterialMovementDetails $details
+     * @return bool
+     */
+    public function deleteHalkMovement(
+        MaterialHalk $material_halk,
+        MaterialMovementDetails $details,
     ): bool;
 }

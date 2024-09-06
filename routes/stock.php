@@ -40,6 +40,7 @@ use App\Http\Controllers\Stock\Exchange\MaterialBalanceController;
 use App\Http\Controllers\StockReports\BackStoresReportsController;
 use App\Http\Controllers\StockReports\OperationsReportsController;
 use App\Http\Controllers\Stock\Items\FilterItemComponentController;
+use App\Http\Controllers\Stock\MaterialHalk\MaterialHalkController;
 use App\Http\Controllers\StockReports\BackSuppliersReportsController;
 use App\Http\Controllers\StockReports\ManufacturingReportsController;
 use App\Http\Controllers\Stock\Material\FilterMaterialBranchController;
@@ -218,6 +219,25 @@ Route::group(
                 Route::get('/filter/{section}', SectionMaterialBalanceController::class)->name('section.filter');
             }
         );
+
+        /*
+        * @routes('/exchange)
+        */
+        Route::group(
+            [
+                'prefix' => '/material/halk',
+                'as' => 'material.halk.',
+            ],
+            function () {
+                Route::controller(MaterialHalkController::class)->group(function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::post('/', 'store')->name('store');
+                    Route::get('/{halk}', 'show')->name('show');
+                    Route::post('/{halk} ', 'update')->name('update');
+                    Route::delete('/{halk}', 'destroy')->name('destroy');
+                });
+            }
+        );
     }
 );
 
@@ -251,34 +271,6 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
 
-// Route::group(['prefix' => 'stock', 'controller' => MaterialTransfer::class], function () {
-//     Route::get('transfers', 'index')->name('transfers');
-//     Route::post('changeTransferType', 'changeType')->name('changeTransferType');
-//     Route::post('saveTransfer', 'save')->name('saveTransfer');
-//     Route::post('getTransfer', 'getTransfer')->name('getTransfer');
-//     Route::post('updateTransfer', 'updateTransfer')->name('updateTransfer');
-//     Route::post('updateItemTransfer', 'updateItemTransfer')->name('updateItemTransfer');
-//     Route::post('deleteItemTransfer', 'deleteItemTransfer')->name('deleteItemTransfer');
-//     Route::post('getTransferViaSerial', 'getTransferViaSerial')->name('getTransferViaSerial');
-//     Route::post('deleteTransfer', 'deleteTransfer')->name('deleteTransfer');
-// });
-
-Route::group(['prefix' => 'stock', 'controller' => MaterialHalk::class], function () {
-    Route::get('halk', 'index')->name('halk');
-    Route::post('changeHalkType', 'changeType')->name('changeHalkType');
-    Route::post('saveHalk', 'save')->name('saveHalk');
-    Route::post('getHalk', 'getHalk')->name('getHalk');
-    Route::post('updateHalk', 'updateHalk')->name('updateHalk');
-    Route::post('updateItemHalk', 'updateItemHalk')->name('updateItemHalk');
-    Route::post('deleteItemHalk', 'deleteItemHalk')->name('deleteItemHalk');
-    Route::post('getHalkViaSerial', 'getHalkViaSerial')->name('getHalkViaSerial');
-    Route::post('deleteHalk', 'deleteHalk')->name('deleteHalk');
-    // Halk Items
-    Route::get('halkItem', 'halkItem')->name('halkItem');
-    Route::post('save_halk_item', 'save_halk_item')->name('save_halk_item');
-    Route::post('deleteHalkItem', 'deleteHalkItem')->name('deleteHalkItem');
-    Route::post('getHalkOld', 'getHalkOld')->name('getHalkOld');
-});
 
 Route::group(['prefix' => 'stock', 'controller' => BackToSuppliersControllers::class], function () {
     Route::get('back_to_suppliers', 'index')->name('back_to_suppliers');

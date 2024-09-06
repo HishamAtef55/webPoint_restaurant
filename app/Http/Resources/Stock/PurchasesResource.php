@@ -24,7 +24,7 @@ class PurchasesResource extends JsonResource
             'purchases_date' => $this->purchases_date,
             'payment_type' => $this->payment_type,
             'tax' => $this->tax,
-            'note' => $this->note,
+            'notes' => $this->notes,
             'total' => $this->total / 100,
             'details' => PurchasesDetailsResource::collection($this->details),
         ];

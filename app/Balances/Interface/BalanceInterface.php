@@ -29,6 +29,15 @@ interface BalanceInterface
     ): bool;
 
     /**
+     * halkBalance
+     * @param Store|Section $model
+     * @return bool
+     */
+    public function halkBalance(
+        mixed $model
+    ): bool;
+
+    /**
      * increaseBalance
      * @param Store|Section $model
      * @return bool

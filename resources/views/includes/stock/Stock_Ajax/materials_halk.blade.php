@@ -1,30 +1,23 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let serial_number = $('#serial_number');
-    let supplier = $('#supplier_id');
-    let tax = $('#tax');
-    let date = $('#purchases_date');
+    let serial_nr = $('#serial_nr');
+    let date = $('#halk_date');
     let branchs = $('#branch_id');
     let sections = $('#section_id')
     let stores = $('#store_id');
-    let materials = $('#material_purchases').find('select[name="material_id"]')
-    let material_expire_date = $('#material_purchases').find('input[name="expire_date"]')
-    let material_quantity = $('#material_purchases').find('input[name="quantity"]')
-    let material_unit = $('#material_purchases').find('input[name="unit"]')
-    let material_price = $('#material_purchases').find('input[name="price"]')
-    let material_discount = $('#material_purchases').find('input[name="discount"]')
-    let material_total_price = $('#material_purchases').find('input[name="total_price"]')
-    let material_last_price = $('#material_purchases').find('input[name="last_price"]')
-    let material_current_Balance = $('#material_purchases').find('input[name="current_balance"]')
+    let materials = $('#transfer_materials').find('select[name="material_id"]')
+    let material_quantity = $('#transfer_materials').find('input[name="quantity"]')
+    let material_unit = $('#transfer_materials').find('input[name="unit"]')
+    let material_price = $('#transfer_materials').find('input[name="price"]')
+    let material_total_price = $('#transfer_materials').find('input[name="total_price"]')
+    let material_current_Balance = $('#transfer_materials').find('input[name="current_balance"]')
     let notes = $('#notes');
     let tableBody = $('.table-purchases tbody');
     let tableFoot = $('.table-purchases tfoot');
-    let permissionId = $('#permissionId');
-    let updateBtn = $('#update_purchases');
-    let saveBtn = $('#save_purchases');
-    let deleteBtn = $('#delete_purchases');
-    let addToTableBtn = $('#material_purchases').find('button[id="arrow-down"]')
-    let purchases_image;
+    let updateBtn = $('#update_material_halk');
+    let saveBtn = $('#save_material_halk');
+    let deleteBtn = $('#delete_material_halk');
+    let image;
     let now = new Date();
     let spinner = $(
         '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
@@ -39,8 +32,12 @@
     let preventChangeEvent = false; // Flag to control change event execution
 
     $(document).ready(function() {
+
         getSections();
 
+        getMaterials();
+
+        getSectionsMaterials()
 
         $.ajaxSetup({
             headers: {
@@ -70,8 +67,8 @@
             });
         }
 
-        $('#invoice_image').on('change', function(e) {
-            purchases_image = e.target.files[0]
+        $('#image').on('change', function(e) {
+            image = e.target.files[0]
         })
 
         /*
@@ -98,7 +95,6 @@
                     .val("<option selected disabled>اختر القسم </option>")
                     .trigger("change");
                 branchs.val(firstBranchOptionValue).change();
-               supplier.val(supplier.find("option:first").val()).change();
                 document
                     .querySelectorAll(".stores")
                     .forEach((el) => el.classList.add("d-none"));
@@ -118,9 +114,68 @@
             }
         }
 
+        stores.on("change", getMaterials)
+
+
         branchs.on("change", getSections);
 
-        addToTableBtn.on("click", addDataToTable)
+        sections.on("change", getSectionsMaterials)
+
+        /*
+         * getMaterials
+         */
+        function getSectionsMaterials() {
+            const sectionSelectId = sections.val();
+            if (!sectionSelectId) return;
+
+            if (preventChangeEvent) return;
+            fetch(`/stock/material/transfer/filter/${sectionSelectId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    displaySectionsMaterials(data.data);
+                })
+                .catch((error) => errorMsg(error));
+        }
+
+        /*
+         * getMaterials
+         */
+        function getMaterials() {
+            const storeSelectId = stores.val();
+            if (!storeSelectId) return;
+
+            if (preventChangeEvent) return;
+            resetPage();
+            fetch(`/stock/exchange/materials/filter/${storeSelectId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    displayMaterials(data.data);
+                })
+                .catch((error) => errorMsg(error));
+        }
+
+        /*
+         * displayMaterials
+         */
+        function displayMaterials(data) {
+            let container = $("#material_id");
+            let html = '';
+            if (!data.balance.length) {
+                html += `<option value="">لاتوجد خامات</option>`;
+            } else {
+                html = `<option value="" disabled selected>اختر الخامة</option>`;
+                data.balance.forEach((balance) => {
+                    html += `<option value="${balance.material.id}"
+                                     data-unit=${balance.material.unit.sub_unit.name_ar}
+                                     data-current-balance=${balance.qty}
+                                     data-price=${balance.avg_price}
+                                  >
+                                  ${balance.material.name}
+                                  </option>`;
+                });
+            }
+            container.html(html);
+        }
 
         /*
          * getSections
@@ -145,11 +200,11 @@
          */
         function displaySections(sections) {
             let container = $("#section_id");
-            // let html = '<option selected disabled>اختر القسم</option>';
             let html = '';
             if (!sections.length) {
                 html += `<option value="">لاتوجد اقسام</option>`;
             } else {
+                html = '<option selected disabled>اختر القسم</option>';
                 sections.forEach((section) => {
                     html += `<option value="${section.id}">${section.name}</option>`;
                 });
@@ -163,70 +218,57 @@
             // container.select2("open");
         }
 
+        /*
+         * displayMaterials
+         */
+        function displaySectionsMaterials(data) {
+            let container = $("#material_id");
+            let html = '';
+            if (!data.balance.length) {
+                html += `<option value="">لاتوجد خامات</option>`;
+            } else {
+                html = `<option value="" disabled selected>اختر الخامة</option>`;
+                data.balance.forEach((balance) => {
+                    html += `<option value="${balance.material.id}"
+                                     data-unit=${balance.material.unit.sub_unit.name_ar}
+                                     data-current-balance=${balance.qty}
+                                     data-price=${balance.avg_price}
+                                  >
+                                  ${balance.material.name}
+                                  </option>`;
+                });
+            }
+            container.html(html);
+        }
+
+
+        function resetPage() {
+            materials.html(`
+                         <select class="form-select" name="material_id" id="material_id">
+                            <option value="" selected disabled>اختر الخامة</option>
+                        </select>`)
+            material_quantity.val('')
+            material_unit.val('')
+            material_price.val('')
+            material_total_price.val('')
+            material_current_Balance.val('')
+            tableBody.html('<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>');
+            calcTotal();
+            checkForm();
+        }
+
         materials.on('change', function(params) {
-            let materialSelectVal = materials.val();
-            if (!materialSelectVal) {
-                return;
-            }
             let material = $(this).find("option:selected");
-            let lastPriceAttr = material.attr('data-last-price');
-            let lastPrice = parseFloat(lastPriceAttr) / 100;
 
-            // Check if lastPrice is a valid number, otherwise default to 0
-            let formattedLastPrice = isNaN(lastPrice) ? '0.00' : lastPrice.toFixed(2);
-
-            let method = document.querySelector(
-                'input[name="purchases_method"]:checked'
-            )?.value;
-            let initialParams = {};
-            if (method === "sections") {
-                if (!sections.val()) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'يجب اختبار قسم'
-                    });
-                    return false
-                }
-                initialParams = {
-                    "section_id": sections.val(),
-                    "type": "sections"
-                };
-            } else if (method === "stores") {
-                if (!stores.val()) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'يجب اختبار مخزن'
-                    });
-                    return false
-                }
-                initialParams = {
-                    "store_id": stores.val(),
-                    "type": "stores"
-                };
-            }
-
-            let url = '{{ url('stock/purchases') }}/' + materialSelectVal + '/filter';
-            let queryString = $.param(initialParams);
+            material_unit.val(material.attr('data-unit'))
+            material_current_Balance.val(material.attr('data-current-balance'))
+            material_price.val(material.attr('data-price'))
+            checkForm()
+            setTimeout(() => {
+                material_quantity.focus();
+            }, 100);
 
 
-            $.ajax({
-                type: "GET",
-                url: `${url}?${queryString}`,
-                dataType: 'json',
-                success: function(response) {
-                    if (response.status === 200) {
-                        material_unit.val(material.attr('data-unit'))
-                        material_current_Balance.val(response.qty)
-                        material_last_price.val(formattedLastPrice)
-                        checkForm()
-                        setTimeout(() => {
-                            material_price.focus();
-                        }, 100);
-                    }
-
-                },
-                error: handleAjaxError,
-            })
 
         })
 
@@ -295,41 +337,29 @@
                 });
                 return false
             }
-            if (!tax.val()) {
+
+            if (+material_quantity.val() > +material_current_Balance.val()) {
                 Toast.fire({
                     icon: 'error',
-                    title: 'يجب ادخال الضريبة'
+                    title: 'يجب ادخال كمية اقل او تساوى من الرصيد الحالى'
                 });
                 return false
             }
 
-            if (!material_discount.val()) {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'يجب ادخال الخصم'
-                });
-                return false
-            }
-            let finalTotal = material_total_price.val() - material_discount.val();
+            let finalTotal = material_total_price.val();
 
             let html = `<tr rowId="${code}" class="new">
 
                 <td>${code}</td>
                 <td>${name}</td>
-                <td>${material_expire_date.val() || '-'}</td>
                 <td>${unit}</td>
-                <td>
-                    <input type="number" value="${material_price.val()}" class="material_price"/>
-                    <span>${parseFloat(material_price.val()).toFixed(2)}</span>
-                </td>
+                <td class="material_price">${parseFloat(material_price.val()).toFixed(2)}</td>
                 <td>
                     <input type="number" class="material_quantity" value="${material_quantity.val()}"/>
                     <span>${material_quantity.val()}</span>
                 </td>
-                <td class="totalPrice">${material_total_price.val()}</td>
-                <td class="material_discount">${parseFloat(material_discount.val()).toFixed(2)}</td>
                 
-                <td class="finalTotal">${parseFloat(finalTotal).toFixed(2)}</td>
+                <td class="totalPrice">${parseFloat(finalTotal).toFixed(2)}</td>
                 <td>
                     <div class="del-edit">
                         <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
@@ -350,18 +380,13 @@
             material_quantity.val('');
             material_price.val('');
             material_unit.val('');
-            material_discount.val('');
+            material_current_Balance.val('');
 
             materials.select2('open');
             calcTotal();
             checkForm();
         }
 
-        material_discount.on('keyup', function(e) {
-            if (e.keyCode === 13) {
-                addDataToTable()
-            }
-        });
 
         material_quantity.on('keyup', function(e) {
             if (e.keyCode === 13) {
@@ -369,30 +394,16 @@
             }
         });
 
-        material_price.on('keyup', function(e) {
-            if (e.keyCode === 13) {
-                material_quantity.focus();
-            }
-        });
-
         material_total_price.on('keyup', function(e) {
-            if (e.keyCode === 13) {
-                material_discount.focus();
-            }
-        });
-
-        material_discount.on('keyup', function(e) {
             if (e.keyCode === 13) {
                 addDataToTable();
             }
-        })
+        });
 
 
         function calcTotal() {
             let totalPrice = 0;
-            let totalDiscount = 0;
             let finalTotal = 0;
-            let taxValue = 0;
 
             // Sum totalPrice from elements with class 'totalPrice'
             $('.totalPrice').each(function() {
@@ -400,24 +411,7 @@
                 totalPrice += value;
             });
 
-            // Sum totalDiscount from elements with class 'material_discount'
-            $('.material_discount').each(function() {
-                let value = parseFloat($(this).text()) || 0;
-                totalDiscount += value;
-            });
-
-            // Sum finalTotal from elements with class 'finalTotal'
-            $('.finalTotal').each(function() {
-                let value = parseFloat($(this).text()) || 0;
-                finalTotal += value;
-            });
-
             $('.sumTotal').text(totalPrice.toFixed(2));
-            $('.sumDiscount').text(totalDiscount.toFixed(2));
-            $('.sumFinal').text(finalTotal.toFixed(2));
-            taxValue = finalTotal.toFixed(2) * tax.val() / 100
-            $('.sumTax').text(taxValue.toFixed(2))
-            $('.netTotalPrice').text((finalTotal + taxValue).toFixed(2))
         }
 
 
@@ -449,11 +443,11 @@
                             calcTotal();
                             resolve();
                         } else {
-                            let id = $('#purchases_id').val();
+                            let id = $('#halk_id').val();
                             if (!id) return;
                             $.ajax({
                                 type: 'DELETE',
-                                url: `{{ url('stock/purchases') }}/${id}`,
+                                url: `{{ url('stock/material/halk') }}/${id}`,
                                 dataType: 'json',
                                 data: {
                                     "details_id": rowId,
@@ -468,8 +462,8 @@
                                             .length === 0) {
                                             tableBody.append(
                                                 `<tr class="not-found">
-                                        <td colspan="7">لا يوجد بيانات</td>
-                                    </tr>`
+                                                    <td colspan="7">لا يوجد بيانات</td>
+                                                </tr>`
                                             );
                                         }
                                         calcTotal();
@@ -488,6 +482,9 @@
                 }
 
             });
+
+
+
         });
 
 
@@ -503,17 +500,14 @@
 
             let rowParent = $(this).closest('tr'); // Get the row being updated
 
-            let price = parseFloat(rowParent.find('input.material_price').val()) || 0;
+            let price = parseFloat(rowParent.find('.material_price').text()) || 0;
             let qty = parseFloat(rowParent.find('input.material_quantity').val()) || 0;
-            let discount = parseFloat(rowParent.find('.material_discount').text()) || 0;
             let total = price * qty;
-            let finalTotal = (total - discount);
 
             // Update the table cells
-            rowParent.find('td').eq(4).find('span').text(price.toFixed(2)); // Update price
-            rowParent.find('td').eq(5).find('span').text(qty); // Update quantity
-            rowParent.find('td').eq(6).text(total.toFixed(2)); // Update total price
-            rowParent.find('td').eq(8).text(finalTotal.toFixed(2)); // Update final total
+            rowParent.find('td').eq(3).find('span').text(price.toFixed(2)); // Update price
+            rowParent.find('td').eq(4).find('span').text(qty); // Update quantity
+            rowParent.find('td').eq(5).text(total.toFixed(2)); // Update total price
 
             // Remove 'edit' class to return to base state
             rowParent.removeClass('edit');
@@ -524,16 +518,13 @@
 
         function setData(method = null) {
             let materialArray = [];
-            let purchases_method = $('input[name="purchases_method"]:checked').val();
-            let payType = $('input[name="pay_method"]:checked').val();
+            let halk_type = $('input[name="purchases_method"]:checked').val();
             tableBody.find('tr').each(function() {
                 materialArray.push({
                     material_id: $(this).find('td').eq(0).text(),
-                    expire_date: $(this).find('td').eq(2).text(),
-                    price: $(this).find('td').eq(4).text(),
-                    qty: $(this).find('td').eq(5).text(),
-                    discount: $(this).find('td').eq(7).text(),
-                    total: $(this).find('td').eq(8).text(),
+                    price: $(this).find('td').eq(3).text(),
+                    qty: $(this).find('td').eq(4).text(),
+                    total: $(this).find('td').eq(5).text(),
                 });
             });
 
@@ -542,35 +533,31 @@
                 formData.append('_method', method);
 
             }
-            formData.append("purchases_method", purchases_method);
-            formData.append("serial_nr", serial_number.val());
-            formData.append("supplier_id", supplier.val());
-            formData.append("section_id", sections.val());
-            formData.append("store_id", stores.val());
-
-            // formData.append("tax", tax.val());
-            formData.append("purchases_date", date.val());
+            formData.append("halk_type", halk_type);
+            if (halk_type == "sections") {
+                formData.append("section_id", sections.val());
+            } else if (halk_type === "stores") {
+                formData.append("store_id", stores.val());
+            }
+            formData.append("serial_nr", serial_nr.val());
+            formData.append("halk_type", halk_type);
+            formData.append("halk_date", date.val());
+            formData.append("image", image);
+            formData.append("notes", notes.val());
+            formData.append("total", $('.sumTotal').text());
 
             formData.append("materialArray", JSON.stringify(materialArray));
 
-            formData.append("sumTotal", $('.netTotalPrice').text());
-
-            formData.append("tax", tax.val());
-
-
-            formData.append("payment_type", payType);
-            formData.append("notes", notes.val());
-            formData.append("purchases_image", purchases_image);
             return formData;
         }
 
-        $(document).on('click', '#save_purchases', function() {
+        $(document).on('click', '#save_material_halk', function() {
             let button = $(this);
             let originalHtml = button.html();
             button.html(spinner).prop('disabled', true);
             $.ajax({
                 type: 'POST',
-                url: "{{ route('stock.purchases.store') }}",
+                url: "{{ route('stock.material.halk.store') }}",
                 dataType: 'json',
                 enctype: "multipart/form-data",
                 processData: false,
@@ -603,27 +590,25 @@
             });
         });
 
-        $(document).on('change', '#purchases_id', function(params) {
-            let purchase = $(this).val();
-            if (!purchase) return;
-            fetch(`/stock/purchases/${purchase}`)
+        $(document).on('change', '#halk_nr', function(params) {
+            let transfer = $(this).val();
+            if (!transfer) return;
+            fetch(`/stock/material/halk/${transfer}`)
                 .then((response) => response.json())
                 .then((data) => {
+                    resetPage();
                     displayInvoices(data.data);
                 })
                 .catch((error) => errorMsg(error));
         })
 
         function displayInvoices(invoice) {
-            $('#invoice_id').val(invoice.id).attr('disabled', true)
-            serial_number.val(invoice.serial_nr)
-            serial_number.attr('disabled', true);
-            supplier.val(invoice.supplier.id).trigger('change')
-            date.val(invoice.purchases_date)
-            tax.val(invoice.tax)
+            $('#halk_id').val(invoice.id).attr('disabled', true)
+            serial_nr.val(invoice.serial_nr)
+            serial_nr.attr('disabled', true);
+            date.val(invoice.halk_date)
             notes.val(invoice.notes)
-            document.querySelector(`input[name="pay_method"][value="${invoice.payment_type}"]`).checked = true;
-            updateInvoiceMethod(invoice, invoice.purchases_method)
+            updateInvoiceMethod(invoice, invoice.halk_type)
             updateTableData(invoice.details)
             saveBtn[0].classList.add("d-none");
             updateBtn[0].classList.remove("d-none");
@@ -632,7 +617,6 @@
         }
 
         function updateInvoiceMethod(invoice, method) {
-
             if (method === "sections") {
                 preventChangeEvent = true;
                 sections.empty()
@@ -685,19 +669,13 @@
                 html += `<tr rowId="${item.id}" class="old">
             <td>${item.material.id}</td>
             <td>${item.material.name}</td>
-            <td>${item.expire_date}</td>
             <td>${item.material.unit.name_ar}</td>
-            <td>
-                <input type="number" value="${item.price}" class="material_price"/>
-                <span>${parseFloat(item.price).toFixed(2)}</span>
-            </td>
+            <td class="material_price">${parseFloat(item.price).toFixed(2)}</td>
             <td>
                 <input type="number" class="material_quantity" value="${item.qty}"/>
                 <span>${item.qty}</span>
             </td>
-            <td class="totalPrice">${parseFloat(item.qty * item.price).toFixed(2)}</td>
-            <td class="material_discount">${parseFloat(item.discount).toFixed(2)}</td>
-            <td class="finalTotal">${parseFloat(item.total).toFixed(2)}</td>
+            <td class="totalPrice">${parseFloat(item.total).toFixed(2)}</td>
             <td>
                 <div class="del-edit">
                     <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
@@ -716,13 +694,13 @@
             calcTotal();
         }
 
-        $('#update_purchases').on('click', function() {
+        $('#update_material_halk').on('click', function() {
             let button = $(this);
             let id = button.attr('data-id');
             if (!id) return;
             let originalHtml = button.html();
             button.html(spinner).prop('disabled', true);
-            let url = '{{ url('stock/purchases') }}/' + id;
+            let url = '{{ url('stock/material/halk') }}/' + id;
             $.ajax({
                 type: 'POST',
                 url: url,
@@ -756,20 +734,5 @@
                 }
             });
         });
-
-        function resetPage() {
-           materials.val(materials.find("option:first").val()).change();
-            material_quantity.val('')
-            material_unit.val('')
-            material_price.val('')
-            material_total_price.val('')
-            material_discount.val('')
-            material_last_price.val('')
-            material_current_Balance.val('')
-            tableBody.html('<tr class="not-found"> <td colspan="10">لا يوجد بيانات</td></tr>');
-            calcTotal();
-            checkForm();
-        }
-
-    })
+    });
 </script>

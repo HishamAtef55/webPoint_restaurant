@@ -85,14 +85,16 @@
                         <a class="text-muted py-1 d-block" href="{{ route('stock.exchange.index') }}"> إذن صرف </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'stock.material.transfer.index') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.transfer.index') }}"> إذن تحويل </a>
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.transfer.index') }}"> إذن
+                            تحويل </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'halk') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('halk') }}"> إذن هالك </a>
+                    <li class="@if (Route::current()->getName() == 'stock.material.halk.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.halk.index') }}"> إذن هالك
+                        </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'halkItem') active @endif">
+                    {{-- <li class="@if (Route::current()->getName() == 'halkItem') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('halkItem') }}"> إذن هالك صنف </a>
-                    </li>
+                    </li> --}}
                     <li class="@if (Route::current()->getName() == 'back_to_suppliers') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('back_to_suppliers') }}"> مرتجع الي مورد </a>
                     </li>
