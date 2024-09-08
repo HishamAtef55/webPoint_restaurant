@@ -109,10 +109,10 @@ class MaterialTransferController extends Controller
     /**
      * destroy
      *
-     * @param  Exchange  $exchange
+     * @param  MaterialTransfer  $transfer
      * @param  Request $reques
-     * @param  ExchangeService $service
-     * @return ExchangeResource|JsonResponse
+     * @param  MaterialTransferService $service
+     * @return MaterialTransferResource|JsonResponse
      */
     public function destroy(
         MaterialTransfer  $transfer,

@@ -8,7 +8,7 @@
                 <div class="col-md-12 d-flex align-items-center mb-2">
                     <div class="col-md-1">
                         <button type="button" class="btn btn-success" onClick="window.location.reload()">
-                            Refresh
+                            جديد
                         </button>
                     </div>
                     <div class="col-md-3">

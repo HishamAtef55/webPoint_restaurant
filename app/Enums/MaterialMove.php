@@ -8,6 +8,7 @@ enum MaterialMove: string
     case EXCHANGE = 'exchange';
     case TRANSFER = 'transfer';
     case HALK = 'halk';
+    case HALKITEM = 'halk_item';
 
     public function toString(): string
     {
@@ -16,6 +17,7 @@ enum MaterialMove: string
             self::EXCHANGE => 'صرف',
             self::TRANSFER => 'تحويل',
             self::HALK => 'هالك',
+            self::HALKITEM => 'هالك صنف',
         };
     }
 }

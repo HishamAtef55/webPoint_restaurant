@@ -29,7 +29,7 @@ class FilterMaterialRecipeController extends Controller
             $material->recipes
         )->additional([
             'total_price' => $material->total_price / 100,
-            'component_qty' => $material->component->qty,
+            'component_qty' => $material->component->qty ?? 1,
             'message' => null,
             'status' => Response::HTTP_OK
         ]);

@@ -402,6 +402,14 @@
                 return false
             }
 
+            if (+material_quantity.val() < 0) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'لايمكن إضافة كمية'
+                });
+                return false
+            }
+
             let finalTotal = material_total_price.val();
 
             let html = `<tr rowId="${code}" class="new">

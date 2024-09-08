@@ -8,6 +8,8 @@ use App\Http\Controllers\Stock\Purchases\PurchasesController;
 use App\Http\Controllers\Stock\Exchange\MaterialBalanceController;
 use App\Http\Controllers\Stock\MaterialHalk\MaterialHalkController;
 use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
+use App\Http\Controllers\Stock\MaterialHalk\Item\MaterialHalkItemController;
+use App\Http\Controllers\Stock\MaterialHalk\Item\FilterSectionItemsController;
 use App\Http\Controllers\Stock\MaterialTransfer\SectionMaterialBalanceController;
 
 /*
@@ -102,5 +104,20 @@ Route::group(
             Route::post('/{halk} ', 'update')->name('update');
             Route::delete('/{halk}', 'destroy')->name('destroy');
         });
+    }
+);
+
+
+/*
+        * @routes(/material/halk/item)
+        */
+Route::group(
+    [
+        'prefix' => '/material/halks',
+        'as' => 'material.halks.',
+    ],
+    function () {
+        Route::resource('item', MaterialHalkItemController::class);
+        Route::get('item/{branch}/filter', FilterSectionItemsController::class);
     }
 );

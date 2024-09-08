@@ -92,9 +92,10 @@
                         <a class="text-muted py-1 d-block" href="{{ route('stock.material.halk.index') }}"> إذن هالك
                         </a>
                     </li>
-                    {{-- <li class="@if (Route::current()->getName() == 'halkItem') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('halkItem') }}"> إذن هالك صنف </a>
-                    </li> --}}
+                    <li class="@if (Route::current()->getName() == 'stock.material.halks.item.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.halks.item.index') }}"> إذن
+                            هالك صنف </a>
+                    </li>
                     <li class="@if (Route::current()->getName() == 'back_to_suppliers') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('back_to_suppliers') }}"> مرتجع الي مورد </a>
                     </li>

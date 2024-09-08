@@ -119,6 +119,8 @@ class PurchasesController extends Controller
      * destroy
      *
      * @param  Purchases  $purchase
+     * @param  Request  $request
+     * @param  Invoice  $invoice
      * @return PurchasesResource|JsonResponse
      */
     public function destroy(

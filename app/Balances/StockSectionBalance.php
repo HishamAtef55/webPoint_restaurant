@@ -12,6 +12,7 @@ use App\Balances\Interface\BalanceInterface;
 use App\Models\Stock\Material;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Stock\Section;
+use Illuminate\Validation\ValidationException;
 
 class StockSectionBalance extends BalanceAbstract implements BalanceInterface
 {
@@ -141,6 +142,48 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
             return true;
         } catch (\Throwable $e) {
             Log::error('halk section balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $section,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * halkItemBalance
+     * @param Section $section
+     * @return bool
+     */
+    public function halkItemBalance(
+        $section
+    ): bool {
+
+        try {
+
+            if (!$this->balance) return false;
+
+            /*
+            * increase balance of section
+            */
+
+            foreach ($this->balance as $balance) {
+
+                $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
+
+                if (!$oldBalance) return false;
+
+                $qty = $oldBalance->qty - $balance['qty'];
+
+                if ($qty < 0) return false;
+
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
+            }
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('halk item section balance creation failed: ' . $e->getMessage(), [
                 'balance' => $this->balance,
                 'params' => $section,
             ]);

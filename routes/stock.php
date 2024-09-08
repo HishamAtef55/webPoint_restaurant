@@ -48,7 +48,10 @@ use App\Http\Controllers\Stock\Material\FilterMaterialRecipeController;
 use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
 use App\Http\Controllers\Stock\Material\FilterNotRecipeMaterialController;
 use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
+use App\Http\Controllers\Stock\MaterialHalk\Item\MaterialHalkItemController;
+use App\Http\Controllers\Stock\MaterialHalk\Item\FilterSectionItemsController;
 use App\Http\Controllers\Stock\MaterialTransfer\SectionMaterialBalanceController;
+
 
 Route::group(
     [
@@ -201,7 +204,7 @@ Route::group(
 
 
         /*
-        * @routes('/exchange)
+        * @routes('/material/transfer)
         */
         Route::group(
             [
@@ -221,7 +224,7 @@ Route::group(
         );
 
         /*
-        * @routes('/exchange)
+        * @routes('/material/halk)
         */
         Route::group(
             [
@@ -236,6 +239,20 @@ Route::group(
                     Route::post('/{halk} ', 'update')->name('update');
                     Route::delete('/{halk}', 'destroy')->name('destroy');
                 });
+            }
+        );
+
+        /*
+        * @routes(/material/halks/item)
+        */
+        Route::group(
+            [
+                'prefix' => '/material/halks',
+                'as' => 'material.halks.',
+            ],
+            function () {
+                Route::resource('item', MaterialHalkItemController::class);
+                Route::get('item/{branch}/filter', FilterSectionItemsController::class);
             }
         );
     }

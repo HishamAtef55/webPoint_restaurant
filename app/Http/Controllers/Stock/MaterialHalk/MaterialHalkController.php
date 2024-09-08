@@ -109,9 +109,9 @@ class MaterialHalkController extends Controller
     /**
      * destroy
      *
-     * @param  Exchange  $exchange
+     * @param  MaterialHalk  $halk
      * @param  Request $reques
-     * @param  ExchangeService $service
+     * @param  MaterialHalkService $service
      * @return MaterialHalkResource|JsonResponse
      */
     public function destroy(

@@ -98,7 +98,7 @@
                     .val("<option selected disabled>اختر القسم </option>")
                     .trigger("change");
                 branchs.val(firstBranchOptionValue).change();
-               supplier.val(supplier.find("option:first").val()).change();
+                supplier.val(supplier.find("option:first").val()).change();
                 document
                     .querySelectorAll(".stores")
                     .forEach((el) => el.classList.add("d-none"));
@@ -310,6 +310,15 @@
                 });
                 return false
             }
+
+            if (+material_quantity.val() < 0) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'لايمكن إضافة كمية'
+                });
+                return false
+            }
+
             let finalTotal = material_total_price.val() - material_discount.val();
 
             let html = `<tr rowId="${code}" class="new">
@@ -758,7 +767,7 @@
         });
 
         function resetPage() {
-           materials.val(materials.find("option:first").val()).change();
+            materials.val(materials.find("option:first").val()).change();
             material_quantity.val('')
             material_unit.val('')
             material_price.val('')

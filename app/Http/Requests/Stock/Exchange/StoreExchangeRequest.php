@@ -58,6 +58,7 @@ class StoreExchangeRequest extends FormRequest
             'materialArray.*.qty' => [
                 'required',
                 'integer',
+                'min:1',
                 function ($attribute, $value, $fail) {
                     // Extract the index from the attribute
                     preg_match('/materialArray\.(\d+)\.qty/', $attribute, $matches);

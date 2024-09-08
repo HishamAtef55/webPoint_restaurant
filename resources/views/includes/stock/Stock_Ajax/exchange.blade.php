@@ -115,11 +115,12 @@
          */
         function displaySections(sections) {
             let container = $("#section_id");
-            // let html = '<option selected disabled>اختر القسم</option>';
             let html = '';
             if (!sections.length) {
                 html += `<option value="">لاتوجد اقسام</option>`;
             } else {
+                html = '<option selected disabled>اختر القسم</option>';
+
                 sections.forEach((section) => {
                     html += `<option value="${section.id}">${section.name}</option>`;
                 });
@@ -241,6 +242,13 @@
                 Toast.fire({
                     icon: 'error',
                     title: 'يجب ادخال كمية اقل او تساوى من الرصيد الحالى'
+                });
+                return false
+            }
+            if (+material_quantity.val() < 0) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'لايمكن إضافة كمية'
                 });
                 return false
             }
@@ -597,10 +605,6 @@
         });
 
         function resetPage() {
-            materials.html(`
-                         <select class="form-select" name="material_id" id="material_id">
-                            <option value="" selected disabled>اختر الخامة</option>
-                        </select>`)
             material_quantity.val('')
             material_unit.val('')
             material_price.val('')

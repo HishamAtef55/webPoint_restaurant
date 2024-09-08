@@ -69,7 +69,8 @@ class UpdateMaterialTransferRequest extends FormRequest
             ],
             'materialArray.*.qty' => [
                 'required',
-                'integer'
+                'integer',
+                'min:1',
             ],
             'materialArray.*.price' => [
                 'required',

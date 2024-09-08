@@ -143,6 +143,44 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
         }
     }
 
+    /**
+     * halkItemBalance
+     * @param Store $store
+     * @return bool
+     */
+    public function halkItemBalance(
+        $store
+    ): bool {
+
+        try {
+
+            if (!$this->balance) return false;
+
+            /*
+            * increase balance of section
+            */
+
+            foreach ($this->balance as $balance) {
+                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
+
+                $qty = $oldBalance->qty - $balance['qty'];
+
+                if ($qty < 0) return false;
+
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
+            }
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('halk item store balance creation failed: ' . $e->getMessage(), [
+                'balance' => $this->balance,
+                'params' => $store,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
 
     /**
      * increaseBalance

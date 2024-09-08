@@ -10,9 +10,11 @@ use App\Balances\Facades\Balance;
 use App\Models\Stock\MaterialHalk;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\SectionMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
+use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
 use App\Movements\Interface\MovementInterface;
 
@@ -43,8 +45,8 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
 
             if ($result) {
                 DB::commit();
-                return $result;
             }
+            return $result;
         } catch (\Throwable $e) {
             Log::error('Movement creation failed: ' . $e->getMessage(), [
                 'movement' => $this->movement,
@@ -181,7 +183,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
     public function deleteHalkMovement(
         MaterialHalk $material_halk,
         MaterialMovementDetails $details,
-    ): bool { 
+    ): bool {
 
         try {
 
@@ -215,6 +217,60 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             Log::error('halk details deleted failed: ' . $e->getMessage(), [
                 'material_halk' => $material_halk,
                 'halk_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
+    /**
+     * deleteHalkItemMovement
+     * 
+     * @param MaterialHalkItem $halk_item,alk
+     * @param MaterialHalkItemDetails $details
+     * @return bool
+     */
+    public function deleteHalkItemMovement(
+        MaterialHalkItem $halk_item,
+        MaterialHalkItemDetails $details,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $section = $halk_item->section;
+
+            /*
+            *  store delete move
+            */
+            $materialIds  = $details->components->pluck('material_id')->all();
+
+            $section->move()->whereIn('material_id', $materialIds)
+                ->where('halk_item_nr', $halk_item->id)
+                ->delete();
+            /*
+            *  update store balance
+            */
+            foreach ($materialIds as $materialId) {
+                $oldBalance = $section->balance()->where('material_id', $materialId)->first();
+                if (!$oldBalance) return false;
+                
+                $qty = $oldBalance->qty + $details->qty;
+
+                $oldBalance->update([
+                    'qty' => $qty,
+                ]);
+            }
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('halk item details deleted failed: ' . $e->getMessage(), [
+                'halk_item' => $halk_item,
+                'halk_item_details' => $details,
             ]);
             DB::rollBack();
             return false;
@@ -342,7 +398,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         MaterialTransfer $transfer,
         MaterialMovementDetails $details,
     ): bool {
-        
+
         try {
 
             $section = $transfer->from_section;
@@ -442,6 +498,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             MaterialMove::PURCHASES->value => $this->createPurchasesMovement($section),
             MaterialMove::EXCHANGE->value => $this->createExchangeMovement($section),
             MaterialMove::HALK->value => $this->createHalkMovement($section),
+            MaterialMove::HALKITEM->value => $this->createHalkItemMovement($section),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -548,6 +605,41 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
         }
     }
 
+    /**
+     * createHalkItemMovement
+     * @param Section $section
+     * @return void
+     */
+    private function createHalkItemMovement(
+        Section $section
+    ): void {
+
+        /*
+        * material move inside store
+        */
+        foreach ($this->movement as &$move) {
+            $existingMovement = $section->move()->where([
+                'material_id' => $move['material_id'],
+                'halk_item_nr' => $move['halk_item_nr']
+            ])->first();
+            $section->move()->updateOrCreate(
+                [
+                    'material_id' => $move['material_id'],
+                    'halk_item_nr' => $move['halk_item_nr']
+                ],
+                [
+                    'qty' => $move['qty'],
+                    'price' => $move['price'],
+                    'type' => $move['type'],
+                ]
+            );
+            if ($existingMovement) {
+                $move['qty'] -= $existingMovement->qty;
+            }
+        }
+    }
+
+
 
     /**
      * updateBalance
@@ -561,6 +653,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             MaterialMove::PURCHASES->value => Balance::sectionBalance()->validate($this->movement)->purchasesBalance($section),
             MaterialMove::EXCHANGE->value => Balance::sectionBalance()->validate($this->movement)->exchangeBalance($section),
             MaterialMove::HALK->value => Balance::sectionBalance()->validate($this->movement)->halkBalance($section),
+            MaterialMove::HALKITEM->value => Balance::sectionBalance()->validate($this->movement)->halkItemBalance($section),
             default => false,
         };
     }

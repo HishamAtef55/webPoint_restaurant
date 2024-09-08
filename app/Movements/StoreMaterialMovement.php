@@ -11,9 +11,11 @@ use App\Models\Stock\MaterialHalk;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Stock\ExchangeDetails;
+use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\StoreMaterialMove;
 use App\Movements\Abstract\MovementAbstract;
+use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
 use App\Models\Stock\MaterialTransferDetails;
 use App\Movements\Interface\MovementInterface;
@@ -223,6 +225,56 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         }
     }
 
+
+    /**
+     * deleteHalkItemMovement
+     * 
+     * @param MaterialHalkItem $halk_item,alk
+     * @param MaterialHalkItemDetails $details
+     * @return bool
+     */
+    public function deleteHalkItemMovement(
+        MaterialHalkItem $halk_item,
+        MaterialHalkItemDetails $details,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $store = $halk_item->store;
+
+            /*
+            *  store delete move
+            */
+            $store->move()->where([
+                'material_id' => $details->material_id,
+                'halk_item_nr' => $halk_item->id
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            $oldBalance = $store->balance()->where('material_id', $details->material_id)->first();
+
+            $qty = $oldBalance->qty + $details->qty;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error(' item details deleted failed: ' . $e->getMessage(), [
+                'halk_item' => $halk_item,
+                'halk_item_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
 
     /**
      * createTransferFromMovement
@@ -529,7 +581,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
     private function createHalkMovement(
         Store $store
     ): void {
-        
+
         /*
         * material move inside store
         */

@@ -8,8 +8,10 @@ use App\Models\Stock\Exchange;
 use App\Models\Stock\Purchases;
 use App\Models\Stock\MaterialHalk;
 use App\Models\Stock\ExchangeDetails;
+use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\PurchasesDetails;
+use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
 use App\Models\Stock\MaterialTransferDetails;
 
@@ -100,5 +102,17 @@ interface MovementInterface
     public function deleteHalkMovement(
         MaterialHalk $material_halk,
         MaterialMovementDetails $details,
+    ): bool;
+
+    /**
+     * deleteHalkItemMovement
+     * 
+     * @param MaterialHalkItem $halk_item,alk
+     * @param MaterialHalkItemDetails $details
+     * @return bool
+     */
+    public function deleteHalkItemMovement(
+        MaterialHalkItem $halk_item,
+        MaterialHalkItemDetails $details,
     ): bool;
 }

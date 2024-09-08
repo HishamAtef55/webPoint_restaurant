@@ -60,6 +60,7 @@ class UpdateExchangeRequest extends FormRequest
             'materialArray.*.qty' => [
                 'required',
                 'integer',
+                'min:1',
             ],
             'materialArray.*.price' => [
                 'required',
