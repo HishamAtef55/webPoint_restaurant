@@ -714,9 +714,35 @@ input.unit {
     text-align: center;
 }
 
+/* End Component Items Page Design */
+/* Start Purchases Page Design */
+.table-refund tr input,
+.table-refund tr .update {
+    display: none;
+}
+
+.table-refund tr.edit input,
+.table-refund tr.edit .update {
+    display: block;
+    margin: auto;
+}
+
+.table-refund tr.edit span {
+    display: none;
+}
+
+.table-refund tr.edit .del-edit {
+    display: none;
+}
+
+.table-refund tr input {
+    max-width: 80px;
+    text-align: center;
+}
+
 .expenses_table tr input,
 .expenses_name_table tr input {
     max-width: 100%;
 }
 
-/* End Purchases Page Design */
+/* End refund Page Design */

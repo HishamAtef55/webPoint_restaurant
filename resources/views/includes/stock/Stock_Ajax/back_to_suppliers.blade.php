@@ -1,681 +1,727 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let permission = $('#permission');
-    let seriesNumber = $('#series_number');
-    let supplier = $('#supplier');
-    let tax = $('#tax');
-    let date = $('#date');
-    let branch = $('#branch');
-    let sections = $('#sections');
-    let stores = $('#stores');
-    let items = $('#items');
-    let unit = $('#unit');
-    let quantity = $('#quantity');
-    let priceUnit = $('#price_unit');
-    let totalUnit = $('#total_unit');
-    let lastPrice = $('#last_price');
-    let currentBalance = $('#current_balance');
-    let Expire = $('#Expire');
-    let discount = $('#discount');
+    let serial_number = $('#serial_number');
+    let supplier = $('#supplier_id');
+    let date = $('#refund_date');
+    let branchs = $('#branch_id');
+    let sections = $('#section_id')
+    let stores = $('#store_id');
+    let materials = $('#material_refund').find('select[name="material_id"]')
+    let material_expire_date = $('#material_refund').find('input[name="expire_date"]')
+    let material_quantity = $('#material_refund').find('input[name="quantity"]')
+    let material_unit = $('#material_refund').find('input[name="unit"]')
+    let material_price = $('#material_refund').find('input[name="price"]')
+    let material_total_price = $('#material_refund').find('input[name="total_price"]')
+    let material_last_price = $('#material_refund').find('input[name="last_price"]')
+    let material_current_Balance = $('#material_refund').find('input[name="current_balance"]')
     let notes = $('#notes');
-    let tableBody = $('.table-purchases tbody');
-    let permissionId = $('#permissionId');
-    let updateBtn = $('#update_purchases');
-    let saveBtn = $('#save_purchases');
+    let tableBody = $('.table-refund tbody');
+    let tableFoot = $('.table-refund tfoot');
+    let updateBtn = $('#update_supplier_refund');
+    let saveBtn = $('#save_supplier_refund');
     let deleteBtn = $('#delete_purchases');
-    let Image;
+    let refund_image;
     let now = new Date();
+    let spinner = $(
+        '<div class="spinner-border text-light" style="width: 18px; height: 18px;" role="status"><span class="sr-only">Loading...</span></div>'
+    );
+
 
     let day = ("0" + now.getDate()).slice(-2);
     let month = ("0" + (now.getMonth() + 1)).slice(-2);
 
-    let today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+    let today = now.getFullYear() + "-" + (month) + "-" + (day);
+
+    let preventChangeEvent = false; // Flag to control change event execution
+
+    $(document).ready(function() {
+        getSections();
 
 
-$(document).ready(function() {
-
-    $('select').select2({
-        selectOnClose: true,
-        dir: "rtl"
-    });
-    items.select2({
-        matcher: customMatcher
-    });
-    function customMatcher(params, data) {
-        // Always return the object if there is nothing to compare
-        if ($.trim(params.term) === '') {
-            return data;
-        }
-
-        // Check if the text contains the term
-        if (data.text.indexOf(params.term) > -1) {
-            return data;
-        }
-
-        // Check if the data occurs
-        if ($(data.element).attr('code').toString().indexOf(params.term) > -1) {
-            return data;
-        }
-
-        // If it doesn't contain the term, don't return anything
-        return null;
-    }
-    /*  ======================== Start Change Purchases Method ============================== */
-    $('input[name="purchases_method"]').on('change', function() {
-        let type = $(this).val()
-        $.ajax({
-            url: "{{route('changePurchasesType')}}",
-            method: 'post',
-            data: {
-                _token,
-                type,
-            },
-            success: function(data) {
-                permission.val(data.serial)
-                permissionId.attr('value', data.serial)
-                if (type === 'section') {
-                    $('.branch-sec').removeClass('d-none')
-                    $('.stores').addClass('d-none')
-                } else if(type === 'store') {
-                    $('.branch-sec').addClass('d-none')
-                    $('.stores').removeClass('d-none')
-                }
-                resetPage();
-                calcTotal();
+        $.ajaxSetup({
+            headers: {
+                "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr('content'),
             }
-        });
-    });
-    /*  ======================== End Change Purchases Method ============================== */
-    /*  ======================== Start Change Branch ============================== */
-    branch.on('change',function() {
+        })
+
+        // Common function to handle AJAX errors
+        function handleAjaxError(reject) {
+            let response = $.parseJSON(reject.responseText);
+            Toast.fire({
+                icon: 'error',
+                title: response.message
+            });
+            $.each(response.errors, function(key, val) {
+                errorMsg(val[0]);
+            });
+        }
+
+        // Common function to error response message
+        function handleResponseMessageError(message, title, icon) {
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: icon,
+                timer: 5000
+            });
+        }
+
+        $('#refund_image').on('change', function(e) {
+            refund_image = e.target.files[0]
+        })
+
+        /*
+         * trigger method event
+         */
+        document
+            .querySelectorAll('input[name="purchases_method"]')
+            .forEach((radio) => {
+                radio.addEventListener("change", changePurchasesMethod);
+            });
+
+        /*
+         * changePurchasesMethod
+         */
+        function changePurchasesMethod() {
+            const firstBranchOptionValue = branchs.find("option:first").val();
+            const firstStoreOptionValue = stores.find("option:first").val();
+            const purchasesMethod = document.querySelector(
+                'input[name="purchases_method"]:checked'
+            )?.value;
+
+            if (purchasesMethod === "sections") {
+                sections.empty()
+                    .val("<option selected disabled>اختر القسم </option>")
+                    .trigger("change");
+                branchs.val(firstBranchOptionValue).change();
+                supplier.val(supplier.find("option:first").val()).change();
+                document
+                    .querySelectorAll(".stores")
+                    .forEach((el) => el.classList.add("d-none"));
+                document
+                    .querySelectorAll(".branch-sec")
+                    .forEach((el) => el.classList.remove("d-none"));
+                resetPage()
+            } else if (purchasesMethod === "stores") {
+                stores.val(firstStoreOptionValue).change();
+                document
+                    .querySelectorAll(".branch-sec")
+                    .forEach((el) => el.classList.add("d-none"));
+                document
+                    .querySelectorAll(".stores")
+                    .forEach((el) => el.classList.remove("d-none"));
+                resetPage()
+            }
+        }
+
+        branchs.on("change", getSections);
+
+        /*
+         * getSections
+         */
+        function getSections() {
+            const branchSelectId = branchs.val();
+            console.log(branchSelectId)
+            if (!branchSelectId) {
+                return;
+            }
+            if (preventChangeEvent) return;
+            resetPage()
+            fetch(`/stock/purchases/sections/filter/${branchSelectId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    displaySections(data.data);
+                })
+                .catch((error) => errorMsg(error));
+        }
+
+        /*
+         * displaySections
+         */
+        function displaySections(sections) {
+            let container = $("#section_id");
+            let html = '';
+            if (!sections.length) {
+                html += `<option value="">لاتوجد اقسام</option>`;
+            } else {
+                html = '<option selected disabled>اختر القسم</option>';
+                sections.forEach((section) => {
+                    html += `<option value="${section.id}">${section.name}</option>`;
+                });
+            }
+
+            container.html(html);
+            // container.select2({
+            //     dir: "rtl",
+            // });
+
+            // container.select2("open");
+        }
+
+        materials.on('change', function(params) {
+            let materialSelectVal = materials.val();
+            if (!materialSelectVal) {
+                return;
+            }
+            let material = $(this).find("option:selected");
+            let lastPriceAttr = material.attr('data-last-price');
+            let lastPrice = parseFloat(lastPriceAttr) / 100;
+
+            // Check if lastPrice is a valid number, otherwise default to 0
+            let formattedLastPrice = isNaN(lastPrice) ? '0.00' : lastPrice.toFixed(2);
+
+            let method = document.querySelector(
+                'input[name="purchases_method"]:checked'
+            )?.value;
+            let initialParams = {};
+            if (method === "sections") {
+                if (!sections.val()) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'يجب اختبار قسم'
+                    });
+                    return false
+                }
+                initialParams = {
+                    "section_id": sections.val(),
+                    "type": "sections"
+                };
+            } else if (method === "stores") {
+                if (!stores.val()) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'يجب اختبار مخزن'
+                    });
+                    return false
+                }
+                initialParams = {
+                    "store_id": stores.val(),
+                    "type": "stores"
+                };
+            }
+
+            let url = '{{ url('stock/purchases') }}/' + materialSelectVal + '/filter';
+            let queryString = $.param(initialParams);
+
+
             $.ajax({
-                url: "{{route('changePurchasesBranch')}}",
-                method: 'post',
-                data: {
-                    _token,
-                    branch: branch.val(),
+                type: "GET",
+                url: `${url}?${queryString}`,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 200) {
+                        material_unit.val(material.attr('data-unit'))
+                        material_current_Balance.val(response.qty)
+                        material_last_price.val(formattedLastPrice)
+                        checkForm()
+                        setTimeout(() => {
+                            material_price.focus();
+                        }, 100);
+                    }
+
                 },
-                success: function(data) {
-                    let html = '<option value="" disabled selected></option>';
-                    data.sections.forEach((section) => {
-                        html += `<option value="${section.id}">${section.name}</option>`
-                    });
-                    sections.html(html)
-                },
-            });
-    });
-    /*  ======================== End Change Branch ============================== */
-    /*  ======================== Start Change Stores ============================== */
-    stores.on('change',function() {
-        $.ajax({
-            url: "{{route('changePurchasesStore')}}",
-            method: 'post',
-            data: {
-                _token,
-                store: stores.val(),
-            },
-            success: function(data) {
-                let html = '<option value=""code="" disabled selected></option>';
-                data.materials.forEach((material) => {
-                    html += `<option value="${material.id}" code="${material.code}">${material.material}</option>`
-                });
-                items.html(html);
-            },
-        });
-    });
-    /*  ======================== End Change Stores ============================== */
-    /*  ======================== Start Change Sections ============================== */
-    sections.on('change',function() {
-        $.ajax({
-            url: "{{route('changePurchasesSection')}}",
-            method: 'post',
-            data: {
-                _token,
-                section: sections.val(),
-            },
-            success: function(data) {
-                let html = '<option value="" disabled selected></option>';
-                data.materials.forEach((material) => {
-                    html += `<option value="${material.id}" code="${material.code}">${material.material}</option>`
-                });
-                items.html(html)
-            },
-        });
-    });
-    /*  ======================== End Change Sections ============================== */
-    /*  ======================== Start Change Items ============================== */
-    items.on('change', function() {
-        let type = $('input[name="purchases_method"]:checked').val()
-        $.ajax({
-            url: "{{route('changePurchasesUnit')}}",
-            method: 'post',
-            data: {
-                _token,
-                type,
-                id: items.val()
-            },
-            success: function(data) {
-                let html = '<option value="" disabled selected></option>';
-                data.units.forEach((unit) => {
-                    html += `<option value="${unit.size}">${unit.name}</option>`
-                });
-                unit.html(html);
-                unit.val(data.units[0].size);
-                lastPrice.val(data.last_price);
-                priceUnit.val(data.last_price).select().focus();
-                currentBalance.val(data.qty);
-                checkForm();
-            },
-        });
-    });
-    /*  ======================== End Change Items ============================== */
-    /*  ======================== Start Change QTY & Price & Total ============================== */
-    quantity.on('change', function() {
-        if(priceUnit.val()) {
-            totalUnit.val((+priceUnit.val() * +$(this).val()).toFixed(2))
-        }
-        if(totalUnit.val()) {
-            priceUnit.val((+totalUnit.val() / +$(this).val()).toFixed(2))
-        }
-        checkForm();
-    });
-    priceUnit.on('change', function() {
-        if(quantity.val()) {
-            totalUnit.val((+quantity.val() * +$(this).val()).toFixed(2))
-        }
-        if(totalUnit.val()) {
-            quantity.val((+totalUnit.val() / +$(this).val()).toFixed(2))
-        }
-        checkForm();
-    });
-    totalUnit.on('change', function() {
-        if(quantity.val()) {
-            priceUnit.val((+$(this).val() / +quantity.val()).toFixed(2))
-        }
-        if(priceUnit.val()) {
-            quantity.val(( +$(this).val() / +priceUnit.val()).toFixed(2))
-        }
-        checkForm();
-    });
-    /*  ======================== End Change QTY & Price & Total ============================== */
-    /*  ======================== Start Add Data To Table ============================== */
-    function addDataToTable() {
-        let code = items.find('option:selected').attr('code');
-        let itemName = items.find('option:selected').html();
-        let unitName = unit.find('option:selected').html();
+                error: handleAjaxError,
+            })
 
-        if (!code) {
-            Toast.fire({
-                icon: 'error',
-                title: 'يجب اختبار صنف'
-            });
-            return false
-        }
-        if (!unitName) {
-            Toast.fire({
-                icon: 'error',
-                title: 'يجب اختبار وحدة قياس'
-            });
-            return false
-        }
-        if (!priceUnit.val()) {
-            Toast.fire({
-                icon: 'error',
-                title: 'يجب ادخال سعر'
-            });
-            return false
-        }
-        if (!quantity.val()) {
-            Toast.fire({
-                icon: 'error',
-                title: 'يجب ادخال كمية'
-            });
-            return false
-        }
-        if (!totalUnit.val()) {
-            Toast.fire({
-                icon: 'error',
-                title: 'يجب ادخال اجمالى'
-            });
-            return false
-        }
-        let taxPrice = (+totalUnit.val() * ((+tax.val() || 0) / 100)).toFixed(2)
-        let discountPrice = (+totalUnit.val() * ((+discount.val() || 0) / 100)).toFixed(2);
-        let finalTotal = (+totalUnit.val() + +taxPrice - +discountPrice).toFixed(2)
+        })
 
-        let html = `<tr rowId="0" class="new">
-            <td>${code}</td>
-            <td>${itemName}</td>
-            <td>${unitName}</td>
-            <td>
-                <input type="number" value="${priceUnit.val()}"/>
-                <span>${priceUnit.val()}</span>
-            </td>
-            <td>
-                <input type="number" value="${quantity.val()}"/>
-                <span>${quantity.val()}</span>
-            </td>
-            <td class="finalTotal">${finalTotal}</td>
-            <td>
-                <div class="del-edit">
-                    <button class="btn btn-danger delete_unit"><i class="fa-regular fa-trash-can"></i></button>
-                    <button class="btn btn-warning edit_unite"><i class="fa-regular fa-pen-to-square"></i></button>
-                </div>
-                <button class="btn btn-primary update_unite update">Update</button>
-            </td>
-        </tr>`
 
-        tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
-        tableBody.append($(html));
-        discount.val('');
-        totalUnit.val('');
-        quantity.val('');
-        priceUnit.val('');
-        supplier.prop('disabled', true);
-        branch.prop('disabled', true);
-        sections.prop('disabled', true);
-        stores.prop('disabled', true);
-        items.select2('open');
-        calcTotal();
-        checkForm();
-    }
-    /*  ======================== End Add Data To Table ============================== */
-    /*  ======================== Start Add Row In Table ============================== */
-    discount.on('keyup', function(e) {
-        if (e.keyCode === 13) {
-            addDataToTable()
-        }
-    });
-    quantity.on('keyup', function(e) {
-        if (e.keyCode === 13) {
-            totalUnit.focus();
-        }
-    });
-    priceUnit.on('keyup', function(e) {
-        if (e.keyCode === 13) {
-            quantity.focus();
-        }
-    });
-    totalUnit.on('keyup', function(e) {
-        if (e.keyCode === 13) {
-            addDataToTable()
-        }
-    });
-    /*  ======================== Start Add Row In Table ============================== */
-    /*  ======================== Start Delete Row In Table ============================== */
-    $(document).on('click', '.delete_unit', function() {
-        let rowParent = $(this).parents('tr');
-        let type = $('input[name="purchases_method"]:checked').val();
-        let rowId = rowParent.attr('rowId');
-        let code = rowParent.find('td').eq(0).text();
-        Swal.fire({
-            title: 'هل أنت متأكد؟',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: 'rgb(21, 157, 113)',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'نعم',
-            cancelButtonText: 'لا'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                calcTotal();
-                if (rowParent.hasClass('new')) {
-                    rowParent.remove();
-                } else if (rowParent.hasClass('old')) {
-                    $.ajax({
-                        url: "{{route('deleteItemBackToSuppliers')}}",
-                        method: 'post',
-                        data: {
-                            _token,
-                            type,
-                            rowId,
-                            code,
-                            permission: permission.val(),
-                            sumFinal: $('.sumFinal').text(),
-                        },
-                        success: function(data) {
-                            if (data.status == true) {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: data.data
-                                });
-                                rowParent.remove();
-                                calcTotal();
-                            }
-                        },
-                    });
-                }
+        material_quantity.on('change', function() {
+            if (material_price.val()) {
+                material_total_price.val((+material_price.val() * +$(this).val()).toFixed(2))
             }
-        })
-    });
-    /*  ======================== End Delete Row In Table ============================== */
-    /*  ======================== Start Edit Row In Table ============================== */
-    $(document).on('click', '.edit_unite', function() {
-        let rowParent = $(this).parents('tr');
-        rowParent.addClass('edit');
-        rowParent.find('input').eq(0).focus().select()
-    });
-    /*  ======================== End Edit Row In Table ============================== */
-    /*  ======================== Start Update Row In Table ============================== */
-    $(document).on('click', '.update_unite', function() {
-        let type = $('input[name="purchases_method"]:checked').val()
-        let rowParent = $(this).parents('tr');
-        let rowId = rowParent.attr('rowId');
-        let code = rowParent.find('td').eq(0).text()
-        rowParent.removeClass('edit');
-        let taxRatio = +rowParent.find('.tax-ratio').text()
-        let discountRatio = +rowParent.find('.discount-ratio').text()
-
-        let price = +rowParent.find('input').eq(0).val()
-        let qty =  +rowParent.find('input').eq(1).val()
-
-        let total = price * qty;
-
-        let taxPrice = (total * (taxRatio / 100)).toFixed(2);
-        let discountPrice = (total * (discountRatio / 100)).toFixed(2);
-        let finalTotal = (total + +taxPrice - +discountPrice).toFixed(2);
-
-        rowParent.find('td').eq(3).find('span').text(price);
-        rowParent.find('td').eq(4).find('span').text(qty);
-        rowParent.find('td').eq(5).text(finalTotal);
-
-        calcTotal();
-        if (rowParent.hasClass('old')) {
-            $.ajax({
-                url: "{{route('updateItemBackToSuppliers')}}",
-                method: 'post',
-                data: {
-                    _token,
-                    rowId,
-                    code,
-                    type,
-                    permission: permission.val(),
-                    sumFinal: $('.sumFinal').text(),
-                    priceUnit: price,
-                    quantity: qty,
-                    finalTotal,
-                },
-                success: function(data) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: data.data
-                    });
-                },
-            });
-        }
-
-    });
-    /*  ======================== End Update Row In Table ============================== */
-    /*  ======================== Start Calculate Total Table ============================== */
-    function calcTotal() {
-        let totalPrice = 0
-        let totalTax = 0
-        let totalDiscount = 0
-        let finalTotal = 0
-        $('.totalPrice').each(function() {
-            totalPrice += +$(this).text();
-        });
-        $('.totalTax').each(function() {
-            totalTax += +$(this).text();
-        });
-        $('.totalDiscount').each(function() {
-            totalDiscount += +$(this).text();
-        });
-        $('.finalTotal').each(function() {
-            finalTotal += +$(this).text();
-        });
-
-        $('.sumTotal').text(totalPrice)
-        $('.sumTax').text(totalTax)
-        $('.sumDiscount').text(totalDiscount)
-        $('.sumFinal').text(finalTotal)
-    }
-    /*  ======================== End Calculate Total Table ============================== */
-    $('#permission_file').on('change', function(e) {
-        Image = e.target.files[0]
-    })
-    /*  ======================== Start Save Table ============================== */
-    function setData() {
-        let materialArray = [];
-        let type = $('input[name="purchases_method"]:checked').val();
-        let payType = $('input[name="pay_method"]:checked').val();
-
-        tableBody.find('tr.new').each(function() {
-            materialArray.push({
-                code: $(this).find('td').eq(0).text(),
-                itemName: $(this).find('td').eq(1).text(),
-                unitName: $(this).find('td').eq(2).text(),
-                priceUnit: $(this).find('td').eq(3).find('span').text(),
-                quantity: $(this).find('td').eq(4).find('span').text(),
-                finalTotal: $(this).find('td').eq(5).text(),
-            });
-        })
-
-        let formData = new FormData();
-        formData.set("_token", _token);
-        formData.set("type", type)
-        formData.set("permission", permission.val())
-        formData.set("seriesNumber", seriesNumber.val())
-        formData.set("supplier", supplier.val())
-        formData.set("tax", tax.val())
-        formData.set("date", date.val())
-        formData.set("branch", branch.val())
-        formData.set("sections", sections.val())
-        formData.set("stores", stores.val())
-        formData.set("materialArray", JSON.stringify(materialArray))
-        formData.set("sumTotal", $('.sumTotal').text())
-        formData.set("sumTax", $('.sumTax').text())
-        formData.set("sumDiscount", $('.sumDiscount').text())
-        formData.set("sumFinal", $('.sumFinal').text())
-        formData.set("payType", payType)
-        formData.set("notes", notes.val())
-        formData.set("image", Image);
-        if (materialArray.length == 0) {
-            Toast.fire({
-                icon: 'error',
-                title: "لم يتم التعديل على اى شىء"
-            });
-            return false
-        } else {
-            return formData;
-        }
-    }
-    saveBtn.on('click', function() {
-        $.ajax({
-            url: "{{route('saveBackToSuppliers')}}",
-            method:'post',
-            enctype:"multipart/form-data",
-            processData:false,
-            cache : false,
-            contentType:false,
-            'data' : setData(),
-            success: function(data) {
-                if (data.status == true) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: data.data
-                    });
-                    resetPage();
-                    permissionId.attr('value', data.id);
-                    permission.val(data.id);
-                }
-            },
-        });
-    });
-    updateBtn.on('click', function() {
-        $.ajax({
-            url: "{{route('updateBackToSuppliers')}}",
-            method:'post',
-            enctype:"multipart/form-data",
-            processData:false,
-            cache : false,
-            contentType:false,
-            'data' : setData(),
-            success: function(data) {
-                if (data.status == true) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: data.data
-                    });
-                    resetPage();
-                    permission.val(permissionId.attr('value'));
-                }
-            },
-        });
-    });
-    deleteBtn.on('click', function() {
-        let type = $('input[name="purchases_method"]:checked').val();
-        Swal.fire({
-            title: 'هل أنت متأكد؟',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: 'rgb(21, 157, 113)',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'نعم',
-            cancelButtonText: 'لا'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "{{route('deleteBackToSuppliers')}}",
-                    method: 'post',
-                    data: {
-                        _token,
-                        type,
-                        permission: permission.val()
-                    },
-                    success: function(data) {
-                        if (data.status == true) {
-                            Toast.fire({
-                                icon: 'success',
-                                title: data.data
-                            });
-                            resetPage();
-                            permission.val(permissionId.attr('value'));
-                        }
-                    },
-                });
+            if (material_total_price.val()) {
+                material_price.val((+material_total_price.val() / +$(this).val()).toFixed(2))
             }
-        })
-    });
-    /*  ======================== End Save Table ============================== */
-    /*  ======================== Start Permission Search ============================== */
-    function getPurchase(data) {
-        let type = $('input[name="purchases_method"]:checked').val();
-        if (!data.data) {
-            resetPage();
-            Toast.fire({
-                icon: 'error',
-                title: 'الرقم الذى ادخلته غير موجود'
-            });
-            return false
-        }
-        if (type === 'section') {
-            branch.val(data.data.branch_id).trigger('change').prop('disabled', true);
-            setTimeout(() => {
-                sections.val(data.data.from).trigger('change').prop('disabled', true);
-            }, 500);
-        } else if(type === 'store') {
-            stores.val(data.data.from).trigger('change').prop('disabled', true);
-        }
-        permission.val(data.data.id);
-        seriesNumber.val(data.data.serial);
-        date.val(data.data.date);
-        notes.val(data.data.note || '');
-        supplier.val(data.data.supplier).trigger('change').prop('disabled', true);
-        $(`input[name="pay_method"][value="${data.data.type}"]`).prop('checked', true);
-        $('.sumFinal').text(data.data.total);
-        let html = "";
-        data.data.details.forEach((detail) => {
-            html += html = `<tr rowId="${detail.id}" class="old">
-                <td>${detail.code}</td>
-                <td>${detail.name}</td>
-                <td>${detail.unit}</td>
+            checkForm();
+        });
+
+        material_price.on('change', function() {
+            if (material_quantity.val()) {
+                material_total_price.val((+material_quantity.val() * +$(this).val()).toFixed(2))
+            }
+            if (material_total_price.val()) {
+                material_quantity.val((+material_total_price.val() / +$(this).val()).toFixed(2))
+            }
+            checkForm();
+        });
+
+        material_total_price.on('change', function() {
+            if (material_quantity.val()) {
+                material_price.val((+$(this).val() / +material_quantity.val()).toFixed(2))
+            }
+            if (material_price.val()) {
+                material_quantity.val((+$(this).val() / +material_price.val()).toFixed(2))
+            }
+            checkForm();
+        });
+
+        function addDataToTable() {
+            let material = materials.find("option:selected");
+            let code = materials.val();
+            let name = material.html();
+            let unit = material.attr('data-unit')
+
+            if (!code) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب اختبار خامة'
+                });
+                return false
+            }
+            if (!material_price.val()) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب ادخال سعر'
+                });
+                return false
+            }
+            if (!material_quantity.val()) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب ادخال كمية'
+                });
+                return false
+            }
+            if (!material_total_price.val()) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'يجب ادخال اجمالى'
+                });
+                return false
+            }
+
+
+            if (+material_quantity.val() < 0) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'لايمكن إضافة كمية'
+                });
+                return false
+            }
+
+
+            let html = `<tr rowId="${code}" class="new">
+
+                <td>${code}</td>
+                <td>${name}</td>
+                <td>${material_expire_date.val() || '-'}</td>
+                <td>${unit}</td>
                 <td>
-                    <input type="number" value="${detail.price}"/>
-                    <span>${detail.price}</span>
+                    <input type="number" value="${material_price.val()}" class="material_price"/>
+                    <span>${parseFloat(material_price.val()).toFixed(2)}</span>
                 </td>
                 <td>
-                    <input type="number" value="${detail.qty}"/>
-                    <span>${detail.qty}</span>
+                    <input type="number" class="material_quantity" value="${material_quantity.val()}"/>
+                    <span>${material_quantity.val()}</span>
                 </td>
-                <td class="finalTotal">${detail.total}</td>
+                <td class="totalPrice">${material_total_price.val()}</td>
+                
                 <td>
                     <div class="del-edit">
-                        <button class="btn btn-danger delete_unit"><i class="fa-regular fa-trash-can"></i></button>
-                        <button class="btn btn-warning edit_unite"><i class="fa-regular fa-pen-to-square"></i></button>
+                        <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
+                        <button class="btn btn-warning edit_material"><i class="fa-regular fa-pen-to-square"></i></button>
                     </div>
-                    <button class="btn btn-primary update_unite">Update</button>
+                    <button class="btn btn-primary update_material update">تعديل</button>
                 </td>
-            </tr>`
+                </tr>`
+
+            tableBody.find('tr.not-found').length ? $('tr.not-found').remove() : '';
+            let existingRow = tableBody.find(`tr[rowId="${code}"]`);
+            if (existingRow.length > 0) {
+                existingRow.replaceWith(html);
+            } else {
+                tableBody.append($(html));
+            }
+            material_total_price.val('');
+            material_quantity.val('');
+            material_price.val('');
+            material_unit.val('');
+
+            materials.select2('open');
+            calcTotal();
+            checkForm();
+        }
+
+        material_quantity.on('keyup', function(e) {
+            if (e.keyCode === 13) {
+                material_total_price.focus();
+            }
         });
-        tableBody.html(html);
-        saveBtn.addClass('d-none')
-        updateBtn.removeClass('d-none')
-        deleteBtn.removeClass('d-none')
-        checkForm();
-    }
 
-    permission.on('change', function() {
-        let type = $('input[name="purchases_method"]:checked').val()
-
-        $.ajax({
-            url: "{{route('getBackToSuppliers')}}",
-            method: 'post',
-            data: {
-                _token,
-                type,
-                permission: permission.val(),
-            },
-            success: function(data) {
-                getPurchase(data)
-            },
+        material_price.on('keyup', function(e) {
+            if (e.keyCode === 13) {
+                material_quantity.focus();
+            }
         });
-    });
 
-    seriesNumber.on('change', function() {
-        let type = $('input[name="purchases_method"]:checked').val()
-        $.ajax({
-            url: "{{route('getBackToSuppliersViaSerial')}}",
-            method: 'post',
-            data: {
-                _token,
-                type,
-                serial: seriesNumber.val(),
-            },
-            success: function(data) {
-                getPurchase(data)
-            },
+        material_total_price.on('keyup', function(e) {
+            if (e.keyCode === 13) {
+                addDataToTable();
+            }
         });
-    });
-    /*  ======================== End Permission Search ============================== */
-    /*  ======================== Start Reset Page ============================== */
-    function resetPage() {
-        permission.val(permissionId.attr('value'));
-        seriesNumber.val('');
-        supplier.val('').prop('disabled', false);
-        tax.val('');
-        date.val(today);
-        branch.val('').prop('disabled', false);
-        sections.val('').prop('disabled', false);
-        stores.val('').prop('disabled', false);
-        items.val('');
-        unit.val('');
-        quantity.val('');
-        priceUnit.val('');
-        totalUnit.val('');
-        lastPrice.val('');
-        currentBalance.val('');
-        Expire.val(today);
-        discount.val('');
-        notes.val('');
-        tableBody.html('<tr class="not-found"> <td colspan="7">لا يوجد بيانات</td></tr>');
-        saveBtn.removeClass('d-none');
-        updateBtn.addClass('d-none');
-        deleteBtn.addClass('d-none');
-        calcTotal();
-        checkForm();
-    }
-    /*  ======================== End Reset Page ============================== */
 
-});
+
+
+
+        function calcTotal() {
+            let totalPrice = 0;
+            let finalTotal = 0;
+
+            // Sum totalPrice from elements with class 'totalPrice'
+            $('.totalPrice').each(function() {
+                let value = parseFloat($(this).text()) || 0;
+                totalPrice += value;
+            });
+
+            $('.sumTotal').text(totalPrice.toFixed(2));
+        }
+
+        $(document).on('click', '.delete_material', function() {
+            let rowParent = $(this).closest('tr');
+            let rowId = rowParent.attr('data-id');
+
+            Swal.fire({
+                title: 'حذف !',
+                text: 'هل انت متأكد من حذف الخامة',
+                icon: 'warning',
+                showCancelButton: true,
+                showLoaderOnConfirm: true,
+                confirmButtonColor: '#5cb85c',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'لا',
+                confirmButtonText: 'نعم',
+                preConfirm: () => {
+                    return new Promise((resolve) => {
+                        if (rowParent.hasClass('new')) {
+                            rowParent.remove();
+                            if (tableBody.find('tr').length === 0) {
+                                tableBody.append(
+                                    `<tr class="not-found">
+                                        <td colspan="8">لا يوجد بيانات</td>
+                                    </tr>`
+                                );
+                            }
+                            calcTotal();
+                            resolve();
+                        } else {
+                            let id = $('#refund_id').val();
+                            if (!id) return;
+                            $.ajax({
+                                type: 'DELETE',
+                                url: `{{ url('stock/material/supplier/refund') }}/${id}`,
+                                dataType: 'json',
+                                data: {
+                                    "details_id": rowId,
+                                },
+                                success: function(response) {
+                                    if (response.status === 200) {
+                                        handleResponseMessageError(
+                                            response.message,
+                                            'تم الحذف', 'success')
+                                        rowParent.remove();
+                                        if (tableBody.find('tr')
+                                            .length === 0) {
+                                            tableBody.append(
+                                                `<tr class="not-found">
+                                        <td colspan="8">لا يوجد بيانات</td>
+                                    </tr>`
+                                            );
+                                        }
+                                        calcTotal();
+                                        resolve();
+                                    }
+                                },
+                                error: function(error) {
+                                    handleResponseMessageError(error
+                                        .responseJSON
+                                        .message, 'خطأ', 'error')
+                                    resolve();
+                                },
+                            });
+                        }
+                    })
+                }
+
+            });
+        });
+
+
+
+        $(document).on('click', '.edit_material', function() {
+            let rowParent = $(this).parents('tr');
+            rowParent.addClass('edit');
+            rowParent.find('input').eq(0).focus().select()
+        });
+
+
+        $(document).on('click', '.update_material', function() {
+
+            let rowParent = $(this).closest('tr'); // Get the row being updated
+
+            let price = parseFloat(rowParent.find('input.material_price').val()) || 0;
+            let qty = parseFloat(rowParent.find('input.material_quantity').val()) || 0;
+            let total = price * qty;
+
+            // Update the table cells
+            rowParent.find('td').eq(4).find('span').text(price.toFixed(2)); // Update price
+            rowParent.find('td').eq(5).find('span').text(qty); // Update quantity
+            rowParent.find('td').eq(6).text(total.toFixed(2)); // Update total price
+
+            // Remove 'edit' class to return to base state
+            rowParent.removeClass('edit');
+
+            // Recalculate totals for the table
+            calcTotal();
+        });
+
+        function setData(method = null) {
+            let refund_method = $('input[name="purchases_method"]:checked').val();
+            let materialArray = [];
+            tableBody.find('tr').each(function() {
+                let material_id = $(this).attr('rowId').trim();
+                let expire_date = $(this).find('td').eq(2).text().trim();
+                let price = $(this).find('td').eq(4).text().trim();
+                let qty = $(this).find('td').eq(5).text().trim();
+                let total = $(this).find('td').eq(6).text().trim();
+
+
+                materialArray.push({
+                    material_id: material_id,
+                    expire_date: expire_date,
+                    price: price,
+                    qty: qty,
+                    total: total
+
+                });
+            });
+
+            let formData = new FormData();
+            if (method) {
+                formData.append('_method', method);
+
+            }
+            formData.append("refund_method", refund_method);
+            formData.append("serial_nr", serial_number.val());
+            formData.append("supplier_id", supplier.val());
+            formData.append("section_id", sections.val());
+            formData.append("store_id", stores.val());
+
+            formData.append("refund_date", date.val());
+
+            formData.append("materialArray", JSON.stringify(materialArray));
+
+            formData.append("total", $('.sumTotal').text());
+
+            formData.append("notes", notes.val());
+            formData.append("refund_image", refund_image);
+            return formData;
+        }
+
+        $(document).on('click', '#save_supplier_refund', function() {
+            let button = $(this);
+            let originalHtml = button.html();
+            button.html(spinner).prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('stock.material.supplier.refund.store') }}",
+                dataType: 'json',
+                enctype: "multipart/form-data",
+                processData: false,
+                cache: false,
+                contentType: false,
+                data: setData(),
+                success: function(response) {
+                    console.log(response)
+                    return false;
+                    if (response.status == 201) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: response.message
+                        });
+                    }
+                    if (response.status == 422) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    }
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
+
+                },
+                error: handleAjaxError,
+                complete: function() {
+                    button.html(originalHtml).prop('disabled', false);
+                }
+            });
+        });
+
+        $(document).on('change', '#refund_id', function(params) {
+            let refund = $(this).val();
+            if (!refund) return;
+            fetch(`/stock/material/supplier/refund/${refund}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    displayInvoices(data.data);
+                })
+                .catch((error) => errorMsg(error));
+        })
+
+        function displayInvoices(invoice) {
+            $('#refund_nr').val(invoice.id).attr('disabled', true)
+            serial_number.val(invoice.serial_nr)
+            serial_number.attr('disabled', true);
+            supplier.val(invoice.supplier.id).trigger('change')
+            date.val(invoice.refund_date)
+            notes.val(invoice.notes)
+            updateInvoiceMethod(invoice, invoice.refund_method)
+            updateTableData(invoice.details)
+            saveBtn[0].classList.add("d-none");
+            updateBtn[0].classList.remove("d-none");
+            updateBtn.attr('data-id', invoice.id)
+            checkForm()
+        }
+
+        function updateInvoiceMethod(invoice, method) {
+
+            if (method === "sections") {
+                preventChangeEvent = true;
+                sections.empty()
+                    .val("<option selected disabled>اختر القسم </option>")
+                    .trigger("change");
+                document
+                    .querySelectorAll(".stores")
+                    .forEach((el) => el.classList.add("d-none"));
+                document
+                    .querySelectorAll(".branch-sec")
+                    .forEach((el) => el.classList.remove("d-none"));
+                branchs.val(invoice.section.branch.id).trigger('change').attr("disabled", true)
+                sections.append(
+                    `<option  value="${invoice.section.id}" selected>${invoice.section.name}</option>`
+                ).attr("disabled", true)
+
+            } else if (method === "stores") {
+                document
+                    .querySelectorAll(".branch-sec")
+                    .forEach((el) => el.classList.add("d-none"));
+                document
+                    .querySelectorAll(".stores")
+                    .forEach((el) => el.classList.remove("d-none"));
+                stores.val(invoice.store.id).trigger('change').attr("disabled", true)
+
+            }
+            let existingMethodCheckboxContainer = $('.method-checkbox');
+
+            // Define the new HTML content
+            let newMethodCheckboxContainer = `
+                <div class='form-check'>
+                    <input class="form-check-input purchases-method" type="radio" value="${method}"
+                        id="${method}_method" name="purchases_method" checked>
+                    <label class="form-check-label" for="${method}_method">
+                        ${method === 'sections' ? 'اقسام' : 'مخازن'}
+                    </label>
+                </div>`;
+
+            // Update the HTML content using jQuery
+            existingMethodCheckboxContainer.html(newMethodCheckboxContainer);
+            preventChangeEvent = false;
+        }
+
+        function updateTableData(details) {
+            if (!details.length) return;
+
+            let html = ''; // Initialize html as an empty string
+
+            details.forEach((item) => {
+                html += `
+                <tr rowId="${item.material.id}" data-id="${item.id}" class="old">
+                    <td>${item.material.id}</td>
+                    <td>${item.material.name}</td>
+                    <td>${item.expire_date}</td>
+                    <td>${item.material.unit.name_ar}</td>
+                    <td>
+                        <input type="number" value="${item.price}" class="material_price"/>
+                        <span>${parseFloat(item.price).toFixed(2)}</span>
+                    </td>
+                    <td>
+                        <input type="number" class="material_quantity" value="${item.qty}"/>
+                        <span>${item.qty}</span>
+                    </td>
+                    <td class="totalPrice">${parseFloat(item.total).toFixed(2)}</td>
+                    <td>
+                        <div class="del-edit">
+                            <button class="btn btn-danger delete_material"><i class="fa-regular fa-trash-can"></i></button>
+                            <button class="btn btn-warning edit_material"><i class="fa-regular fa-pen-to-square"></i></button>
+                        </div>
+                        <button class="btn btn-primary update_material update">تعديل</button>
+                    </td>
+                </tr>`;
+            });
+
+            // Remove the 'not-found' row if it exists
+            tableBody.find('tr.not-found').remove();
+
+            // Update the table body with new rows
+            tableBody.html(html); // Use the updated html string directly
+            calcTotal();
+        }
+
+        $('#update_supplier_refund').on('click', function() {
+            let button = $(this);
+            let id = button.attr('data-id');
+            if (!id) return;
+            let originalHtml = button.html();
+            button.html(spinner).prop('disabled', true);
+            let url = '{{ url('stock/material/supplier/refund') }}/' + id;
+            $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: 'json',
+                enctype: "multipart/form-data",
+                processData: false,
+                cache: false,
+                contentType: false,
+                data: setData(),
+                success: function(response) {
+                    if (response.status == 200) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: response.message
+                        });
+                    }
+                    if (response.status == 422) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: response.message
+                        });
+                    }
+                    button.html(originalHtml).prop('disabled', false);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300)
+                },
+                error: handleAjaxError,
+                complete: function() {
+                    button.html(originalHtml).prop('disabled', false);
+                }
+            });
+        });
+
+        function resetPage() {
+            materials.val(materials.find("option:first").val()).change();
+            material_quantity.val('')
+            material_unit.val('')
+            material_price.val('')
+            material_total_price.val('')
+            material_last_price.val('')
+            material_current_Balance.val('')
+            tableBody.html('<tr class="not-found"> <td colspan="8">لا يوجد بيانات</td></tr>');
+            calcTotal();
+            checkForm();
+        }
+
+    })
 </script>

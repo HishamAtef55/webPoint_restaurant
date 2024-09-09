@@ -145,11 +145,12 @@
          */
         function displaySections(sections) {
             let container = $("#section_id");
-            // let html = '<option selected disabled>اختر القسم</option>';
+
             let html = '';
             if (!sections.length) {
                 html += `<option value="">لاتوجد اقسام</option>`;
             } else {
+                 html = '<option selected disabled>اختر القسم</option>';
                 sections.forEach((section) => {
                     html += `<option value="${section.id}">${section.name}</option>`;
                 });

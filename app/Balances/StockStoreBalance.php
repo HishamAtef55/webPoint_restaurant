@@ -65,122 +65,6 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
         }
     }
 
-    /**
-     * exchangePurchase
-     * @param Store $store
-     * @return bool
-     */
-    public function exchangeBalance(
-        $store
-    ): bool {
-
-        try {
-
-            if (!$this->balance) return false;
-
-            /*
-            * increase balance of section
-            */
-
-            foreach ($this->balance as $balance) {
-                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
-
-                $qty = $oldBalance->qty - $balance['qty'];
-
-                if ($qty < 0) return false;
-
-                $oldBalance->update([
-                    'qty' => $qty,
-                ]);
-            }
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('increase store balance creation failed: ' . $e->getMessage(), [
-                'balance' => $this->balance,
-                'params' => $store,
-            ]);
-            DB::rollBack();
-            return false;
-        }
-    }
-
-    /**
-     * halkBalance
-     * @param Store $store
-     * @return bool
-     */
-    public function halkBalance(
-        $store
-    ): bool {
-
-        try {
-
-            if (!$this->balance) return false;
-
-            /*
-            * increase balance of section
-            */
-
-            foreach ($this->balance as $balance) {
-                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
-
-                $qty = $oldBalance->qty - $balance['qty'];
-
-                if ($qty < 0) return false;
-
-                $oldBalance->update([
-                    'qty' => $qty,
-                ]);
-            }
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('halk store balance creation failed: ' . $e->getMessage(), [
-                'balance' => $this->balance,
-                'params' => $store,
-            ]);
-            DB::rollBack();
-            return false;
-        }
-    }
-
-    /**
-     * halkItemBalance
-     * @param Store $store
-     * @return bool
-     */
-    public function halkItemBalance(
-        $store
-    ): bool {
-
-        try {
-
-            if (!$this->balance) return false;
-
-            /*
-            * increase balance of section
-            */
-
-            foreach ($this->balance as $balance) {
-                $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
-
-                $qty = $oldBalance->qty - $balance['qty'];
-
-                if ($qty < 0) return false;
-
-                $oldBalance->update([
-                    'qty' => $qty,
-                ]);
-            }
-            return true;
-        } catch (\Throwable $e) {
-            Log::error('halk item store balance creation failed: ' . $e->getMessage(), [
-                'balance' => $this->balance,
-                'params' => $store,
-            ]);
-            DB::rollBack();
-            return false;
-        }
-    }
 
     /**
      * increaseBalance
@@ -201,7 +85,7 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
 
                 if ($oldBalance) {
-                    $qty = $oldBalance->qty + $balance['qty']; // Using + instead of +=
+                    $qty = $oldBalance->qty + $balance['qty'];
 
                     $oldBalance->update(['qty' => $qty]);
                 } else {
@@ -245,8 +129,13 @@ class StockStoreBalance extends BalanceAbstract implements BalanceInterface
             */
             foreach ($this->balance as $balance) {
                 $oldBalance = $store->balance()->where('material_id', $balance['material_id'])->first();
+               
+                if (!$oldBalance) return false;
+               
                 $qty = $oldBalance->qty - $balance['qty'];
+              
                 if ($qty < 0) return false;
+              
                 $oldBalance->update([
                     'qty' => $qty,
                 ]);

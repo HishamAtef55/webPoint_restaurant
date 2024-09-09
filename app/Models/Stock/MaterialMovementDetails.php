@@ -73,6 +73,17 @@ class MaterialMovementDetails extends MorphPivot
     }
 
     /**
+     * supplier_refund
+     *
+     * @return MorphTo
+     */
+    public function supplier_refund(): MorphTo
+    {
+        return $this->morphTo(MaterialSupplierRefund::class, 'stockable');
+    }
+
+
+    /**
      * materials
      *
      * @return BelongsTo

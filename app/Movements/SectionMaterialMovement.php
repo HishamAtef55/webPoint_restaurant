@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\SectionMaterialMove;
+use App\Models\Stock\MaterialSupplierRefund;
 use App\Movements\Abstract\MovementAbstract;
 use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
@@ -256,7 +257,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             foreach ($materialIds as $materialId) {
                 $oldBalance = $section->balance()->where('material_id', $materialId)->first();
                 if (!$oldBalance) return false;
-                
+
                 $qty = $oldBalance->qty + $details->qty;
 
                 $oldBalance->update([
@@ -276,6 +277,67 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             return false;
         }
     }
+
+
+    /**
+     * deleteSupplierRefundMovement
+     * @param MaterialSupplierRefund $supplier_refund
+     * @param MaterialMovementDetails $details,
+     * @return bool
+     */
+    public function deleteSupplierRefundMovement(
+        MaterialSupplierRefund $supplier_refund,
+        MaterialMovementDetails $details,
+    ): bool {
+
+        try {
+
+            DB::beginTransaction();
+
+            $section = $supplier_refund->section;
+
+            /*
+            *  store delete move
+            */
+            $section->move()->where([
+                'material_id' => $details->material_id,
+                'supplier_refund_nr' => $supplier_refund->id
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+            /*
+            *  update store balance
+            */
+
+            $oldBalance = $section->balance()->where('material_id', $details['material_id'])->first();
+
+            if (!$oldBalance) return false;
+
+            $qty = $oldBalance->qty + $details['qty'];
+
+            if ($qty < 0) return false;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('supplier refund details deleted failed: ' . $e->getMessage(), [
+                'supplier_refund' => $supplier_refund,
+                'supplier_refund_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
 
 
     /**
@@ -499,6 +561,7 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             MaterialMove::EXCHANGE->value => $this->createExchangeMovement($section),
             MaterialMove::HALK->value => $this->createHalkMovement($section),
             MaterialMove::HALKITEM->value => $this->createHalkItemMovement($section),
+            MaterialMove::SUPPLIER_REFUND->value => $this->createSupplierRefundMovement($section),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -536,6 +599,42 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
             }
         }
     }
+
+
+    /**
+     * createSupplierRefundMovement
+     * @param Section $section
+     * @return void
+     */
+    private function createSupplierRefundMovement(
+        Section $section
+    ): void {
+        /*
+        * material move inside store
+        */
+        foreach ($this->movement as &$move) {
+
+            $existingMovement = $section->move()->where([
+                'material_id' => $move['material_id'],
+                'supplier_refund_nr' => $move['supplier_refund_nr']
+            ])->first();
+            $section->move()->updateOrCreate(
+                [
+                    'material_id' => $move['material_id'],
+                    'supplier_refund_nr' => $move['supplier_refund_nr']
+                ],
+                [
+                    'qty' => $move['qty'],
+                    'price' => $move['price'],
+                    'type' => $move['type'],
+                ]
+            );
+            if ($existingMovement) {
+                $move['qty'] -= $existingMovement->qty;
+            }
+        }
+    }
+
 
     /**
      * createExchangeMovement
@@ -651,9 +750,10 @@ class SectionMaterialMovement extends MovementAbstract implements MovementInterf
     ): bool {
         return match ($this->type) {
             MaterialMove::PURCHASES->value => Balance::sectionBalance()->validate($this->movement)->purchasesBalance($section),
-            MaterialMove::EXCHANGE->value => Balance::sectionBalance()->validate($this->movement)->exchangeBalance($section),
-            MaterialMove::HALK->value => Balance::sectionBalance()->validate($this->movement)->halkBalance($section),
-            MaterialMove::HALKITEM->value => Balance::sectionBalance()->validate($this->movement)->halkItemBalance($section),
+            MaterialMove::EXCHANGE->value => Balance::sectionBalance()->validate($this->movement)->increaseBalance($section),
+            MaterialMove::HALK->value => Balance::sectionBalance()->validate($this->movement)->decreaseBalance($section),
+            MaterialMove::HALKITEM->value => Balance::sectionBalance()->validate($this->movement)->decreaseBalance($section),
+            MaterialMove::SUPPLIER_REFUND->value => Balance::sectionBalance()->validate($this->movement)->decreaseBalance($section),
             default => false,
         };
     }

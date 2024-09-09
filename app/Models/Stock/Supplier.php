@@ -2,13 +2,14 @@
 
 namespace App\Models\Stock;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Supplier extends Model
 {
     use HasFactory;
-        
+
     /**
      * table
      *
@@ -22,7 +23,9 @@ class Supplier extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name', 'phone', 'address'
+        'name',
+        'phone',
+        'address'
     ];
 
     /**
@@ -38,4 +41,15 @@ class Supplier extends Model
      * @var array<string, string>
      */
     protected $casts = [];
+
+
+    /**
+     * purchases
+     *
+     * @return HasMany
+     */
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchases::class, 'supplier_id', 'id');
+    }
 }

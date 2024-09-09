@@ -96,8 +96,9 @@
                         <a class="text-muted py-1 d-block" href="{{ route('stock.material.halks.item.index') }}"> إذن
                             هالك صنف </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'back_to_suppliers') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('back_to_suppliers') }}"> مرتجع الي مورد </a>
+                    <li class="@if (Route::current()->getName() == 'stock.material.supplier.refund.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.supplier.refund.index') }}">
+                            مرتجع الي مورد </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'back_to_stores') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('back_to_stores') }}"> مرتجع الي مخزن </a>

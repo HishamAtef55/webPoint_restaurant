@@ -14,6 +14,7 @@ use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\StoreMaterialMove;
+use App\Models\Stock\MaterialSupplierRefund;
 use App\Movements\Abstract\MovementAbstract;
 use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
@@ -276,6 +277,63 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
         }
     }
 
+
+    /**
+     * deleteSupplierRefundMovement
+     * @param MaterialSupplierRefund $supplier_refund
+     * @param MaterialMovementDetails $detail
+     * @return bool
+     */
+    public function deleteSupplierRefundMovement(
+        MaterialSupplierRefund $supplier_refund,
+        MaterialMovementDetails $details,
+    ): bool {
+        try {
+
+            DB::beginTransaction();
+
+            $store = $supplier_refund->store;
+
+            /*
+            *  store delete move
+            */
+
+            $store->move()->where([
+                'material_id' => $details->material_id,
+                'supplier_refund_nr' => $supplier_refund->id
+            ])->delete();
+
+            /*
+            *  update store balance
+            */
+
+            $oldBalance = $store->balance()->where('material_id', $details['material_id'])->first();
+            
+            if (!$oldBalance) return false;
+
+            $qty = $oldBalance->qty + $details['qty'];
+
+            if ($qty < 0) return false;
+
+            $oldBalance->update([
+                'qty' => $qty,
+            ]);
+
+
+            DB::commit();
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error('supplier refund details deleted failed: ' . $e->getMessage(), [
+                'supplier_refund' => $supplier_refund,
+                'supplier_refund_details' => $details,
+            ]);
+            DB::rollBack();
+            return false;
+        }
+    }
+
+
     /**
      * createTransferFromMovement
      * @param Store $store
@@ -501,6 +559,7 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
             MaterialMove::PURCHASES->value => $this->createPurchasesMovement($store),
             MaterialMove::EXCHANGE->value => $this->createExchangeMovement($store),
             MaterialMove::HALK->value => $this->createHalkMovement($store),
+            MaterialMove::SUPPLIER_REFUND->value => $this->createSupplierRefundMovement($store),
             default => throw new \Exception('Unsupported movement type: ' . $this->type),
         };
     }
@@ -608,6 +667,40 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
     }
 
     /**
+     * createPurchasesMovement
+     * @param Store $store
+     * @return void
+     */
+    private function createSupplierRefundMovement(
+        Store $store
+    ): void {
+        /*
+            * material move inside store
+        */
+        foreach ($this->movement as &$move) {
+
+            $existingMovement = $store->move()->where([
+                'material_id' => $move['material_id'],
+                'supplier_refund_nr' => $move['supplier_refund_nr']
+            ])->first();
+            $store->move()->updateOrCreate(
+                [
+                    'material_id' => $move['material_id'],
+                    'supplier_refund_nr' => $move['supplier_refund_nr']
+                ],
+                [
+                    'qty' => $move['qty'],
+                    'price' => $move['price'],
+                    'type' => $move['type'],
+                ]
+            );
+            if ($existingMovement) {
+                $move['qty'] -=  $existingMovement->qty;
+            }
+        }
+    }
+
+    /**
      * updateBalance
      * @param Store $store
      * @return bool
@@ -617,8 +710,9 @@ class StoreMaterialMovement extends MovementAbstract implements MovementInterfac
     ): bool {
         return match ($this->type) {
             MaterialMove::PURCHASES->value => Balance::storeBalance()->validate($this->movement)->purchasesBalance($store),
-            MaterialMove::EXCHANGE->value => Balance::storeBalance()->validate($this->movement)->exchangeBalance($store),
-            MaterialMove::HALK->value => Balance::storeBalance()->validate($this->movement)->halkBalance($store),
+            MaterialMove::EXCHANGE->value => Balance::storeBalance()->validate($this->movement)->decreaseBalance($store),
+            MaterialMove::HALK->value => Balance::storeBalance()->validate($this->movement)->decreaseBalance($store),
+            MaterialMove::SUPPLIER_REFUND->value => Balance::storeBalance()->validate($this->movement)->decreaseBalance($store),
             default => false,
         };
     }

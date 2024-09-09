@@ -10,6 +10,7 @@ use App\Http\Controllers\Stock\MaterialHalk\MaterialHalkController;
 use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
 use App\Http\Controllers\Stock\MaterialHalk\Item\MaterialHalkItemController;
 use App\Http\Controllers\Stock\MaterialHalk\Item\FilterSectionItemsController;
+use App\Http\Controllers\Stock\SupplierRefund\MaterialSupplierRefundController;
 use App\Http\Controllers\Stock\MaterialTransfer\SectionMaterialBalanceController;
 
 /*
@@ -119,5 +120,24 @@ Route::group(
     function () {
         Route::resource('item', MaterialHalkItemController::class);
         Route::get('item/{branch}/filter', FilterSectionItemsController::class);
+    }
+);
+
+
+/*
+        * @routes('material/supplier/refund)
+        */
+
+Route::group(
+    [
+        'prefix' => '/material/supplier/refund',
+        'as' => 'material.supplier.refund.',
+    ],
+    function () {
+        Route::get('/', [MaterialSupplierRefundController::class, 'index'])->name('index');
+        Route::post('/', [MaterialSupplierRefundController::class, 'store'])->name('store');
+        Route::get('/{refund}', [MaterialSupplierRefundController::class, 'show'])->name('show');
+        Route::post('/{refund}', [MaterialSupplierRefundController::class, 'update'])->name('update');
+        Route::delete('/{refund}', [MaterialSupplierRefundController::class, 'destroy'])->name('destroy');
     }
 );

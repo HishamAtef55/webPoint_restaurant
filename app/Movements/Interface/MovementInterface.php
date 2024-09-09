@@ -11,6 +11,7 @@ use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\PurchasesDetails;
+use App\Models\Stock\MaterialSupplierRefund;
 use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
 use App\Models\Stock\MaterialTransferDetails;
@@ -114,5 +115,16 @@ interface MovementInterface
     public function deleteHalkItemMovement(
         MaterialHalkItem $halk_item,
         MaterialHalkItemDetails $details,
+    ): bool;
+
+    /** 
+     * deleteSupplierRefundMovement
+     * @param MaterialSupplierRefund $supplier_refund
+     * @param  MaterialMovementDetails $details,
+     * @return bool
+     */
+    public function deleteSupplierRefundMovement(
+        MaterialSupplierRefund $supplier_refund,
+        MaterialMovementDetails $details,
     ): bool;
 }

@@ -50,6 +50,7 @@ use App\Http\Controllers\Stock\Material\FilterNotRecipeMaterialController;
 use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
 use App\Http\Controllers\Stock\MaterialHalk\Item\MaterialHalkItemController;
 use App\Http\Controllers\Stock\MaterialHalk\Item\FilterSectionItemsController;
+use App\Http\Controllers\Stock\SupplierRefund\MaterialSupplierRefundController;
 use App\Http\Controllers\Stock\MaterialTransfer\SectionMaterialBalanceController;
 
 
@@ -255,6 +256,26 @@ Route::group(
                 Route::get('item/{branch}/filter', FilterSectionItemsController::class);
             }
         );
+
+
+        /*
+        * @routes('material/supplier/refund)
+        */
+
+        Route::group(
+            [
+                'prefix' => '/material/supplier/refund',
+                'as' => 'material.supplier.refund.',
+            ],
+            function () {
+                Route::get('/', [MaterialSupplierRefundController::class, 'index'])->name('index');
+                Route::post('/', [MaterialSupplierRefundController::class, 'store'])->name('store');
+                Route::get('/{refund}', [MaterialSupplierRefundController::class, 'show'])->name('show');
+                Route::post('/{refund}', [MaterialSupplierRefundController::class, 'update'])->name('update');
+                Route::delete('/{refund}', [MaterialSupplierRefundController::class, 'destroy'])->name('destroy');
+    
+            }
+        );
     }
 );
 
@@ -288,17 +309,6 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
     Route::post('printDetails', 'printDetails')->name('printDetails');
 });
 
-
-Route::group(['prefix' => 'stock', 'controller' => BackToSuppliersControllers::class], function () {
-    Route::get('back_to_suppliers', 'index')->name('back_to_suppliers');
-    Route::post('saveBackToSuppliers', 'save')->name('saveBackToSuppliers');
-    Route::post('getBackToSuppliers', 'get')->name('getBackToSuppliers');
-    Route::post('getBackToSuppliersViaSerial', 'getViaSerial')->name('getBackToSuppliersViaSerial');
-    Route::post('updateBackToSuppliers', 'update')->name('updateBackToSuppliers');
-    Route::post('updateItemBackToSuppliers', 'updateItem')->name('updateItemBackToSuppliers');
-    Route::post('deleteItemBackToSuppliers', 'deleteItem')->name('deleteItemBackToSuppliers');
-    Route::post('deleteBackToSuppliers', 'delete')->name('deleteBackToSuppliers');
-});
 
 Route::group(['prefix' => 'stock', 'controller' => BackToStoresControllers::class], function () {
     Route::get('back_to_stores', 'index')->name('back_to_stores');

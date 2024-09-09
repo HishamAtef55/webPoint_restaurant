@@ -20,33 +20,6 @@ interface BalanceInterface
     ): bool;
 
     /**
-     * exchangeBalance
-     * @param Store|Section $model
-     * @return bool
-     */
-    public function exchangeBalance(
-        mixed $model
-    ): bool;
-
-    /**
-     * halkBalance
-     * @param Store|Section $model
-     * @return bool
-     */
-    public function halkBalance(
-        mixed $model
-    ): bool;
-
-    /**
-     * halkBalance
-     * @param Store|Section $model
-     * @return bool
-     */
-    public function halkItemBalance(
-        mixed $model
-    ): bool;
-
-    /**
      * increaseBalance
      * @param Store|Section $model
      * @return bool
@@ -77,4 +50,5 @@ interface BalanceInterface
         Material $material,
         int $id
     ): int;
+
 }
