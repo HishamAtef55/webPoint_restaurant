@@ -100,8 +100,8 @@
                         <a class="text-muted py-1 d-block" href="{{ route('stock.material.supplier.refund.index') }}">
                             مرتجع الي مورد </a>
                     </li>
-                    <li class="@if (Route::current()->getName() == 'back_to_stores') active @endif">
-                        <a class="text-muted py-1 d-block" href="{{ route('back_to_stores') }}"> مرتجع الي مخزن </a>
+                    <li class="@if (Route::current()->getName() == 'stock.material.store.refund.index') active @endif">
+                        <a class="text-muted py-1 d-block" href="{{ route('stock.material.store.refund.index') }}"> مرتجع الي مخزن </a>
                     </li>
                     <li class="@if (Route::current()->getName() == 'materialOperations') active @endif">
                         <a class="text-muted py-1 d-block" href="{{ route('materialOperations') }}"> التشغيل </a>

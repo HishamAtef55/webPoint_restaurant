@@ -128,15 +128,15 @@ class StockSectionBalance extends BalanceAbstract implements BalanceInterface
             * decrease balance of section
             */
             foreach ($this->balance as $balance) {
-              
+
                 $oldBalance = $section->balance()->where('material_id', $balance['material_id'])->first();
-               
-                if(!$oldBalance) return false;
-              
+
+                if (!$oldBalance) return false;
+
                 $qty = $oldBalance->qty - $balance['qty'];
-              
+
                 if ($qty < 0) return false;
-              
+
                 $oldBalance->update([
                     'qty' => $qty,
                 ]);

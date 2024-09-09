@@ -16,13 +16,13 @@ class ExchangeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'order_nr' => $this->order_nr,
+            'exchange_nr' => $this->exchange_nr,
             'exchange_date' => $this->exchange_date,
             'section' => SectionResource::make($this->section),
             'store' => StoreResource::make($this->store),
             'note' => $this->notes,
             'total' => $this->total / 100,
-            'details' => ExchangeDetailsResource::collection($this->details),
+            'details' => MaterialMovementDetailsResource::collection($this->details),
         ];
     }
 }

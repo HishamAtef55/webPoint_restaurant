@@ -532,8 +532,6 @@
                 contentType: false,
                 data: setData(),
                 success: function(response) {
-                    console.log(response)
-                    return false;
                     if (response.status == 201) {
                         Toast.fire({
                             icon: 'success',

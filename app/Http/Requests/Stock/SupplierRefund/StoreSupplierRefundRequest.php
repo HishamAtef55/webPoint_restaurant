@@ -31,7 +31,7 @@ class StoreSupplierRefundRequest extends FormRequest
 
             'refund_method' => ['required', 'string'],
 
-            'serial_nr' => ['nullable', 'string', 'unique:stock_materials_purchases,serial_nr'],
+            'serial_nr' => ['nullable', 'string', 'unique:stock_materials_suppliers_refund,serial_nr'],
 
             'notes' => 'nullable|string',
 

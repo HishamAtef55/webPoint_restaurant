@@ -1,19 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Stock\MaterialHalk;
 use App\Http\Controllers\Stock\OrdersControllers;
 use App\Http\Controllers\Stock\MaterialOperations;
 use App\Http\Controllers\Stock\materialManufacturing;
 use App\Http\Controllers\Stock\OpenBalanceController;
 use App\Http\Controllers\Stock\InDirectCostController;
 use App\Http\Controllers\Stock\Stores\StoreController;
-use App\Http\Controllers\Stock\BackToStoresControllers;
 use App\Http\Controllers\Stock\Purchases\FilterBalance;
 use App\Http\Controllers\Stock\ComponentItemsController;
 use App\Http\Controllers\Stock\Purchases\FilterSections;
 use App\Http\Controllers\Stock\Groups\SubGroupController;
-use App\Http\Controllers\Stock\BackToSuppliersControllers;
 use App\Http\Controllers\Stock\Groups\MainGroupController;
 use App\Http\Controllers\Stock\Items\FilterItemController;
 use App\Http\Controllers\Stock\OpenBalanceDailyController;
@@ -46,6 +43,7 @@ use App\Http\Controllers\StockReports\ManufacturingReportsController;
 use App\Http\Controllers\Stock\Material\FilterMaterialBranchController;
 use App\Http\Controllers\Stock\Material\FilterMaterialRecipeController;
 use App\Http\Controllers\Stock\ItemsDetails\FilterItemsDetailsController;
+use App\Http\Controllers\Stock\StoreRefund\MaterialStoreRefundController;
 use App\Http\Controllers\Stock\Material\FilterNotRecipeMaterialController;
 use App\Http\Controllers\Stock\MaterialTransfer\MaterialTransferController;
 use App\Http\Controllers\Stock\MaterialHalk\Item\MaterialHalkItemController;
@@ -273,8 +271,28 @@ Route::group(
                 Route::get('/{refund}', [MaterialSupplierRefundController::class, 'show'])->name('show');
                 Route::post('/{refund}', [MaterialSupplierRefundController::class, 'update'])->name('update');
                 Route::delete('/{refund}', [MaterialSupplierRefundController::class, 'destroy'])->name('destroy');
-    
             }
+        );
+
+
+        /*
+        * @routes('material/store/refund)
+        */
+
+        Route::group(
+            [
+                'prefix' => '/material/store/refund',
+                'as' => 'material.store.refund.',
+            ],
+            function () {
+                Route::get('/', [MaterialStoreRefundController::class, 'index'])->name('index');
+                Route::post('/', [MaterialStoreRefundController::class, 'store'])->name('save');
+                Route::get('/{refund}', [MaterialStoreRefundController::class, 'show'])->name('show');
+                Route::post('/{refund}', [MaterialStoreRefundController::class, 'update'])->name('update');
+                Route::delete('/{refund}', [MaterialStoreRefundController::class, 'destroy'])->name('destroy');
+                Route::get('/filter/{section}', SectionMaterialBalanceController::class)->name('section.balance.filter');
+            }
+            
         );
     }
 );
@@ -310,16 +328,6 @@ Route::group(['prefix' => 'stock', 'controller' => ComponentDetailsItemControlle
 });
 
 
-Route::group(['prefix' => 'stock', 'controller' => BackToStoresControllers::class], function () {
-    Route::get('back_to_stores', 'index')->name('back_to_stores');
-    Route::post('saveBackToStores', 'save')->name('saveBackToStores');
-    Route::post('getBackToStores', 'get')->name('getBackToStores');
-    Route::post('getBackToStoresViaSerial', 'getViaSerial')->name('getBackToStoresViaSerial');
-    Route::post('deleteBackToStores', 'delete')->name('deleteBackToStores');
-    Route::post('updateBackToStores', 'update')->name('updateBackToStores');
-    Route::post('updateItemBackToStores', 'updateItem')->name('updateItemBackToStores');
-    Route::post('deleteItemBackToStores', 'deleteItem')->name('deleteItemBackToStores');
-});
 
 Route::group(['prefix' => 'stock', 'controller' => MaterialOperations::class], function () {
     Route::get('materialOperations', 'index')->name('materialOperations');

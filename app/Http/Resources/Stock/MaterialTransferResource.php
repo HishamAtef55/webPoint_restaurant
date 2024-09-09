@@ -22,7 +22,7 @@ class MaterialTransferResource extends JsonResource
             'transfer_type' => $this->transfer_type,
             'image' => $this->image,
             'notes' => $this->notes,
-            'details' => MaterialTransferDetailsResource::collection($this->details),
+            'details' => MaterialMovementDetailsResource::collection($this->details),
             $this->mergeWhen($this->transfer_type == PurchasesMethod::SECTIONS->value, [
                 'from_section' => SectionResource::make($this->from_section),
                 'to_section' => SectionResource::make($this->to_section),

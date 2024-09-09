@@ -29,7 +29,7 @@ class Exchange extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'order_nr',
+        'exchange_nr',
         'exchange_date',
         'image',
         'notes',

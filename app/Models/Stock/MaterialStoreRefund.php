@@ -2,11 +2,13 @@
 
 namespace App\Models\Stock;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class SectionMaterialMove extends Model
+class MaterialStoreRefund extends Model
 {
     use HasFactory;
 
@@ -15,7 +17,7 @@ class SectionMaterialMove extends Model
      *
      * @var string
      */
-    protected $table = "stock_sections_materials_movement";
+    protected $table = "stock_materials_stores_refund";
 
     /**
      * The attributes that are mass assignable.
@@ -45,24 +47,53 @@ class SectionMaterialMove extends Model
      */
     protected $guarded = [];
 
+    /**
+     * user
+     *
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
     /**
-     * groups
+     * section
      *
      * @return BelongsTo
      */
     public function section(): BelongsTo
     {
-        return $this->belongsTo(Section::class, 'section_id ', 'id');
+        return $this->belongsTo(Section::class, 'section_id', 'id');
     }
 
     /**
-     * groups
+     * store
      *
      * @return BelongsTo
      */
-    public function material(): BelongsTo
+    public function store(): BelongsTo
     {
-        return $this->belongsTo(Material::class, 'material_id', 'id');
+        return $this->belongsTo(Store::class, 'store_id', 'id');
+    }
+
+    /**
+     * details
+     *
+     * @return MorphMany
+     */
+    public function details(): MorphMany
+    {
+        return $this->morphMany(MaterialMovementDetails::class, 'stockable');
+    }
+
+    /**
+     * details
+     *
+     * @return bool
+     */
+    public function hasDetails(): bool
+    {
+        return $this->details->count() > 1;
     }
 }

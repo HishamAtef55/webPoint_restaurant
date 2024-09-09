@@ -17,7 +17,7 @@ class MaterialSupplierRefund extends Model
      *
      * @var string
      */
-    protected $table = "stock_materials_supplier_refund";
+    protected $table = "stock_materials_suppliers_refund";
 
     /**
      * The attributes that are mass assignable.

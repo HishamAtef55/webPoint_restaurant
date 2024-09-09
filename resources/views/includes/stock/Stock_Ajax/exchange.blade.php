@@ -1,6 +1,6 @@
 @include('includes.stock.Stock_Ajax.public_function')
 <script>
-    let order_nr = $('#order_nr');
+    let exchange_nr = $('#exchange_nr');
     let supplier = $('#supplier_id');
     let tax = $('#tax');
     let date = $('#exchange_date');
@@ -440,7 +440,7 @@
                 formData.append('_method', method);
 
             }
-            formData.append("order_nr", order_nr.val());
+            formData.append("exchange_nr", exchange_nr.val());
             formData.append("section_id", sections.val());
             formData.append("store_id", stores.val());
 
@@ -506,8 +506,8 @@
 
         function displayInvoices(exchange) {
             $('#invoice_id').val(exchange.id).attr('disabled', true)
-            order_nr.val(exchange.order_nr)
-            order_nr.attr('disabled', true);
+            exchange_nr.val(exchange.exchange_nr)
+            exchange_nr.attr('disabled', true);
             date.val(exchange.exchange_date)
             notes.val(exchange.note)
             updateExchangeOptions(exchange)

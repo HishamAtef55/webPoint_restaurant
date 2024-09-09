@@ -26,7 +26,7 @@ class PurchasesResource extends JsonResource
             'tax' => $this->tax,
             'notes' => $this->notes,
             'total' => $this->total / 100,
-            'details' => PurchasesDetailsResource::collection($this->details),
+            'details' => MaterialMovementDetailsResource::collection($this->details),
         ];
     }
 }

@@ -17,7 +17,7 @@ class SectionResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'store' => StoreResource::make($this->store),
+            // 'store' => StoreResource::make($this->store),
             'branch' => BranchResource::make($this->branch),
             'groups' => $this->groups,
             'balance' => BalanceResource::collection($this->balance)

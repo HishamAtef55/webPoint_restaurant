@@ -29,7 +29,7 @@ class UpdateExchangeRequest extends FormRequest
 
         return [
 
-            'order_nr' => [
+            'exchange_nr' => [
                 'nullable',
                 'string',
                 Rule::unique('stock_materials_exchange')->ignore($this->route('exchange')),

@@ -15,7 +15,7 @@ class StoreMaterialMove extends Model
      *
      * @var string
      */
-    protected $table = "stock_store_material_move";
+    protected $table = "stock_stores_materials_movement";
 
     /**
      * The attributes that are mass assignable.

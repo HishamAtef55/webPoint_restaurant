@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Stock\Exchange;
+namespace App\Http\Requests\Stock\StoreRefund;
 
-
-use App\Rules\BalanceQtyRule;
+use App\Enums\PaymentType;
 use App\Enums\PurchasesMethod;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreExchangeRequest extends FormRequest
+class StoreRefundRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,11 +28,18 @@ class StoreExchangeRequest extends FormRequest
     {
         return [
 
-            'exchange_nr' => ['nullable', 'string', 'unique:stock_materials_exchange,exchange_nr'],
+
+
+            'serial_nr' => ['nullable', 'string', 'unique:stock_materials_stores_refund,serial_nr'],
 
             'notes' => 'nullable|string',
 
-            'exchange_date' => 'required|date',
+
+
+            'total' => 'required',
+
+
+            'refund_date' => 'required|date',
 
             'store_id' => [
                 'required',
@@ -46,44 +53,30 @@ class StoreExchangeRequest extends FormRequest
                 'exists:stock_sections,id'
             ],
 
-            'total' => 'required',
 
             'materialArray' => 'required',
 
             'materialArray.*.material_id' => [
                 'required',
                 'integer',
-                'exists:stock_stores_balance,material_id'
+                'exists:stock_materials,id'
             ],
+
             'materialArray.*.qty' => [
                 'required',
                 'integer',
                 'min:1',
-                function ($attribute, $value, $fail) {
-                    // Extract the index from the attribute
-                    preg_match('/materialArray\.(\d+)\.qty/', $attribute, $matches);
-                    $index = $matches[1];
-
-                    // Get the corresponding material_id
-                    $materialId = $this->input("materialArray.$index.material_id");
-
-                    // Pass the material_id to the custom rule
-                    $rule = new BalanceQtyRule($materialId);
-                    if (!$rule->passes($attribute, $value)) {
-                        $fail($rule->message());
-                    }
-                },
             ],
+            
             'materialArray.*.price' => [
                 'required',
-                'integer'
-            ],
-            'materialArray.*.total' => [
-                'required',
-                'integer'
             ],
 
-            'image' => 'nullable'
+            'materialArray.*.total' => [
+                'required',
+            ],
+
+            'refund_image' => 'nullable'
         ];
     }
 }

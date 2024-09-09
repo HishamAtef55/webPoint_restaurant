@@ -11,6 +11,7 @@ use App\Models\Stock\ExchangeDetails;
 use App\Models\Stock\MaterialHalkItem;
 use App\Models\Stock\MaterialTransfer;
 use App\Models\Stock\PurchasesDetails;
+use App\Models\Stock\MaterialStoreRefund;
 use App\Models\Stock\MaterialSupplierRefund;
 use App\Models\Stock\MaterialHalkItemDetails;
 use App\Models\Stock\MaterialMovementDetails;
@@ -47,6 +48,17 @@ interface MovementInterface
      */
     public function deleteExchangeMovement(
         Exchange $exchange,
+        MaterialMovementDetails $details,
+    ): bool;
+
+    /**
+     * deleteRefundMovement
+     * @param MaterialStoreRefund  $refund
+     * @param MaterialMovementDetails $details
+     * @return bool
+     */
+    public function deleteRefundMovement(
+        MaterialStoreRefund  $refund,
         MaterialMovementDetails $details,
     ): bool;
 

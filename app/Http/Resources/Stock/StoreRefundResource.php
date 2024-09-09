@@ -4,7 +4,7 @@ namespace App\Http\Resources\Stock;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SupplierRefundDetailsResource extends JsonResource
+class StoreRefundResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,13 +16,13 @@ class SupplierRefundDetailsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'refund_id' => $this->stockable_id,
-            'material_id' => $this->material_id,
-            'expire_date' => $this->expire_date,
-            'qty' => $this->qty,
-            'price' => $this->price / 100,
+            'serial_nr' => $this->serial_nr,
+            'section' => SectionResource::make($this->section),
+            'store' => StoreResource::make($this->store),
+            'refund_date' => $this->refund_date,
+            'notes' => $this->notes,
             'total' => $this->total / 100,
-            'material' => MaterialResource::make($this->materials)
+            'details' => MaterialMovementDetailsResource::collection($this->details),
         ];
     }
 }

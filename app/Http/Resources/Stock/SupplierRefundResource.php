@@ -24,7 +24,7 @@ class SupplierRefundResource extends JsonResource
             'refund_date' => $this->refund_date,
             'notes' => $this->notes,
             'total' => $this->total / 100,
-            'details' => SupplierRefundDetailsResource::collection($this->details),
+            'details' => MaterialMovementDetailsResource::collection($this->details),
         ];
     }
 }
